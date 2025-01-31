@@ -107,6 +107,7 @@ export default function MapScreen({ navigation }) {
                     <MapView
                         ref={mapRef}
                         style={styles.map}
+                        provider="google"
                         initialRegion={{
                             latitude: location.latitude,
                             longitude: location.longitude,
@@ -147,6 +148,35 @@ export default function MapScreen({ navigation }) {
         </View>
     );
 }
+
+
+// const MapScreen = () => {
+//     const origin = {latitude: 53.3400, longitude: -6.2550 };
+//     const destination = { latitude: 53.3400, longitude: -6.2550};
+
+//     return (
+//         <View style={styles.container}>
+//           <MapView
+//             style={styles.map}
+//             provider="google" // Forces Google Maps on iOS
+//             initialRegion={{
+//               latitude: 53.3400,
+//               longitude: -6.2550,
+//               latitudeDelta: 0.1,
+//               longitudeDelta: 0.1,
+//             }}
+//           >
+//           </MapView>
+//         </View>
+//       );
+// };
+
+
+
+
+
+
+
 
 const styles = StyleSheet.create({
     container: {
