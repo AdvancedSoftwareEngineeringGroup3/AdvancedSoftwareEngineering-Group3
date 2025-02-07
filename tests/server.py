@@ -17,7 +17,13 @@ class DataBase():
         self.DB_PORT = int(os.getenv("DB_PORT"))
         self.connection = None
 
-    def connect_db(self):
+    def connect_db(self) -> None:
+        """Initialise database connection
+
+        Inputs: None
+
+        Returns: None
+        """
         try:
             # Connect to the database
             self.connection = pg8000.connect(
@@ -32,8 +38,13 @@ class DataBase():
         except Exception as e:
             print("An error occurred:", e)
 
-
     def create_table(self, table_name: str, table_info: dict) -> None:
+        """ Creates table in database
+
+        Inputs: table name (str), table info (dict[columns, data type])
+
+        Returns: None
+        """
         try:
             cursor = self.connection.cursor()
             query =  f"""CREATE TABLE {table_name} ("""
@@ -45,52 +56,73 @@ class DataBase():
             cursor.execute(query)
             cursor.close()
 
-        #print(query)
         except Exception as e:
            print("An error occurred:", e)
 
-    def add_entry(self, table_name, table_info, table_data):
+    def add_entry(self, table_name: str, table_data: dict) -> None:
+        """Add row to database with new entry
+        
+        Inputs: table name (str), table data (columns, user data)
 
+        Returns: None
+        """
         cursor = self.connection.cursor()
 
         query =  f"""INSERT INTO {table_name} ("""
-        #TODO: Add check for lenght of data and table info dict.values
 
-        for key in table_info.keys():
+        # Insert column names
+        for key in table_data.keys():
             query += f"""{key},"""
-            query = query[0:-1]
-            query += ") "
-
-        query += """VALUES ("""
-
-        for key in table:
-            query += f"""{key},"""
-            query = query[0:-1]
-            query += ") "
-
-
-            cursor.execute(query)
-            cursor.close()
-
-
-        query = f""" {f} (first_name, second_name)
-                VALUES ('Keith', 'Ahern')"""
         
-        cursor.execute(query)
+        query = query[0:-1]
+        query += ") VALUES ("
 
-        query = "SELECT * FROM name;"
-        cursor.execute(query)
-        records = cursor.fetchall()
+        # Insert entry values for each column
+        for value in table_data.values():
+            query += f"""'{value}',"""
+        query = query[0:-1]
+        query += ");"
 
-        # Print the results
-        print("name:")
-        for record in records:
-            print(record)
+
+        cursor.execute(query)
+        cursor.close()    
+
+    def remove_entry(self, table_name: str, username: str) -> None:
+        """Remove entry (entire row) from table
+
+        Args:
+            table_name (str): name of table to be queried
+            username (str): username given as identifier in table
+        """
+        cursor = self.connection.cursor()
+        query = f"DELETE FROM {table_name} WHERE username = '{username}';"
+        cursor.execute(query)
         cursor.close()
-            
 
-    def query_db(self, tablename):
+    def update_entry(self, table_name: str, user: str, column: str, data: str) -> None:
+        """Update entry of specific column
 
+        Args:
+            table_name (str): name of table to be queried
+            user (str): username given as identifier in table
+            column (str): column to be edited in table
+            data (str): data to be inserted in new column entry
+        """
+        cursor = self.connection.cursor()
+
+        query = f"""UPDATE {table_name}
+                SET {column} = '{data}'
+                WHERE username = '{user}';""" # TODO: check if username needs to be made dynamic
+
+        cursor.execute(query)
+        cursor.close()
+
+    def print_table(self, tablename: str):
+        """Prints current selected table
+
+        Args:
+            tablename (str): Name of table to be printed
+        """
         try:
             cursor = self.connection.cursor()
             query = f"SELECT * FROM {tablename};"
@@ -104,25 +136,63 @@ class DataBase():
             
             # Close the cursor
             cursor.close()
+
         except Exception as e:
            print("An error occurred:", e)
 
-
     def close_con(self):
-        # Close the connection
+        """Close the connection
+        """
         self.connection.close()
+
+    def search_user(self, table_name: str, user: str) -> bool:
+        """Search for user in database
+
+        Args:
+            table_name (str): Name of table to be queried
+            user (str): Name of user to search
+
+        Returns:
+            bool: True if user found, False if user not found in table
+        """
+        try:
+            cursor = self.connection.cursor()
+
+            query = f"SELECT username FROM {table_name} WHERE username = '{user}';"
+            cursor.execute(query)
+            record = list(cursor.fetchall())
+            cursor.close()
+
+            if record:
+                return True
+            return False
+        except Exception as e:
+            print("An error occurred: ", e)
 
 def main():
     # Initiliase database class
     db = DataBase()
-    table_info = {"id": "SERIAL PRIMARY KEY",
-                "first_name": "VARCHAR(50)",
-                "second_name": "VARCHAR(50)"}
+    table_info = {
+        "id": "SERIAL PRIMARY KEY",
+        "username": "VARCHAR(50)",
+        "password": "VARCHAR(50)",
+
+    }
+    table_data = {
+        "username": "Conor",
+        "password": "abc123"
+    }
     table_name = "testTable"
+
     # Connect to db
     db.connect_db()
     db.create_table(table_name, table_info)
-    db.query_db(table_name)
+    db.add_entry(table_name, table_data)
+    db.add_entry(table_name, {"username": "Keith", "password": "strong password"})
+    # db.remove_entry(table_name, 'Conor')
+    db.update_entry(table_name, 'Keith', 'password', 'Roots123')
+    db.print_table(table_name)
+    print(db.search_user(table_name, 'Conor'))
     db.close_con()
 
 if __name__ == "__main__":
