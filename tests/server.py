@@ -19,10 +19,6 @@ class DataBase():
 
     def connect_db(self) -> None:
         """Initialise database connection
-
-        Inputs: None
-
-        Returns: None
         """
         try:
             # Connect to the database
@@ -38,12 +34,12 @@ class DataBase():
         except Exception as e:
             print("An error occurred:", e)
 
-    def create_table(self, table_name: str, table_info: dict) -> None:
+    def create_table(self, table_name: str, table_info: dict[str, str]) -> None:
         """ Creates table in database
 
-        Inputs: table name (str), table info (dict[columns, data type])
-
-        Returns: None
+        Args: 
+            table name (str): name of table to be queried
+            table info (dict[str, str]): dict containing columns as keys and data type as column type
         """
         try:
             cursor = self.connection.cursor()
@@ -59,12 +55,12 @@ class DataBase():
         except Exception as e:
            print("An error occurred:", e)
 
-    def add_entry(self, table_name: str, table_data: dict) -> None:
+    def add_entry(self, table_name: str, table_data: dict[str, str]) -> None:
         """Add row to database with new entry
         
-        Inputs: table name (str), table data (columns, user data)
-
-        Returns: None
+        Args:
+            table name (str): name of table to be queried 
+            table data (str, str): keys are columns, values are user data
         """
         cursor = self.connection.cursor()
 
