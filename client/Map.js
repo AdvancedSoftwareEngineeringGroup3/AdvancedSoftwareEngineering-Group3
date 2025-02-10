@@ -8,7 +8,7 @@ export default function MapScreen({ navigation }) {
     const [location, setLocation] = useState(null); // No hardcoded initial location
     const [errorMessage, setErrorMessage] = useState('');
     const mapRef = useRef(null); // Reference to the MapView
-
+   
     // WebSocket Setup
     useEffect(() => {
         const wsUrl = `${process.env.EXPO_PUBLIC_API_URL.replace(/^http/, 'ws')}/ws/location`;
@@ -148,36 +148,6 @@ export default function MapScreen({ navigation }) {
         </View>
     );
 }
-
-
-// const MapScreen = () => {
-//     const origin = {latitude: 53.3400, longitude: -6.2550 };
-//     const destination = { latitude: 53.3400, longitude: -6.2550};
-
-//     return (
-//         <View style={styles.container}>
-//           <MapView
-//             style={styles.map}
-//             provider="google" // Forces Google Maps on iOS
-//             initialRegion={{
-//               latitude: 53.3400,
-//               longitude: -6.2550,
-//               latitudeDelta: 0.1,
-//               longitudeDelta: 0.1,
-//             }}
-//           >
-//           </MapView>
-//         </View>
-//       );
-// };
-
-
-
-
-
-
-
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
