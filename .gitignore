@@ -4,4 +4,6 @@
 
 *.pyc
 *.env
+
+tests/myvenv/
 **/.expo/
