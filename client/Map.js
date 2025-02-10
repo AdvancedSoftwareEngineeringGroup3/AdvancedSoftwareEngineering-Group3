@@ -107,7 +107,6 @@ export default function MapScreen({ navigation }) {
                     <MapView
                         ref={mapRef}
                         style={styles.map}
-                        provider="google"
                         initialRegion={{
                             latitude: location.latitude,
                             longitude: location.longitude,
