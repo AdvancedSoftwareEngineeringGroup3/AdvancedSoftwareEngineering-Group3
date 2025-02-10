@@ -7,6 +7,7 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
+
 class DataBase():
     def __init__(self):
         # Database connection details
@@ -43,7 +44,7 @@ class DataBase():
         """
         try:
             cursor = self.connection.cursor()
-            query =  f"""CREATE TABLE {table_name} ("""
+            query = f"""CREATE TABLE {table_name} ("""
 
             for key in table_info.keys():
                 query += f"{key} {table_info[key]},"
@@ -53,35 +54,37 @@ class DataBase():
             cursor.close()
 
         except Exception as e:
-           print("An error occurred:", e)
+            print("An error occurred:", e)
 
     def add_entry(self, table_name: str, table_data: dict[str, str]) -> None:
         """Add row to database with new entry
-        
+
         Args:
             table name (str): name of table to be queried 
             table data (str, str): keys are columns, values are user data
         """
         cursor = self.connection.cursor()
 
-        query =  f"""INSERT INTO {table_name} ("""
+        query = f"""INSERT INTO {table_name} ("""
 
         # Insert column names
         for key in table_data.keys():
             query += f"""{key},"""
-        
+
         query = query[0:-1]
         query += ") VALUES ("
 
         # Insert entry values for each column
         for value in table_data.values():
-            query += f"""'{value}',"""
+            if "ARRAY" in value:
+                query += f"""{value},"""
+            else:
+                query += f"""'{value}',"""
         query = query[0:-1]
         query += ");"
 
-
         cursor.execute(query)
-        cursor.close()    
+        cursor.close()
 
     def remove_entry(self, table_name: str, username: str) -> None:
         """Remove entry (entire row) from table
@@ -108,7 +111,7 @@ class DataBase():
 
         query = f"""UPDATE {table_name}
                 SET {column} = '{data}'
-                WHERE username = '{user}';""" # TODO: check if username needs to be made dynamic
+                WHERE username = '{user}';"""  # TODO: check if username needs to be made dynamic
 
         cursor.execute(query)
         cursor.close()
@@ -126,15 +129,15 @@ class DataBase():
             records = cursor.fetchall()
 
             # Print the results
-            print("Contacts:")
+            print(f"{tablename}:")
             for record in records:
                 print(record)
-            
+
             # Close the cursor
             cursor.close()
 
         except Exception as e:
-           print("An error occurred:", e)
+            print("An error occurred:", e)
 
     def close_con(self):
         """Close the connection
@@ -165,31 +168,41 @@ class DataBase():
         except Exception as e:
             print("An error occurred: ", e)
 
+
 def main():
-    # Initiliase database class
+    # Initialise database class
     db = DataBase()
+
+    table_name = "user_table"
     table_info = {
         "id": "SERIAL PRIMARY KEY",
         "username": "VARCHAR(50)",
         "password": "VARCHAR(50)",
-
+        "friends_list": "VARCHAR[]",
+        "pending_friends": "VARCHAR[]",
+        "sus_score": "VARCHAR(50)",
+        "ip": "VARCHAR(50)",
     }
+
     table_data = {
         "username": "Conor",
-        "password": "abc123"
+        "password": "abc123",
+        "friends_list": "ARRAY['mark', 'gunjan', 'fiona']",
+        "pending_friends": "ARRAY['jason', 'keith', 'cormac']",
+        "sus_score": "100"
     }
-    table_name = "testTable"
 
     # Connect to db
     db.connect_db()
     db.create_table(table_name, table_info)
     db.add_entry(table_name, table_data)
-    db.add_entry(table_name, {"username": "Keith", "password": "strong password"})
+    # db.add_entry(table_name, {"username": "Keith", "password": "strong password"})
     # db.remove_entry(table_name, 'Conor')
-    db.update_entry(table_name, 'Keith', 'password', 'Roots123')
+    # db.update_entry(table_name, 'Keith', 'password', 'Roots123')
     db.print_table(table_name)
-    print(db.search_user(table_name, 'Conor'))
+    # print(db.search_user(table_name, 'Conor'))
     db.close_con()
+
 
 if __name__ == "__main__":
     main()
