@@ -1,12 +1,9 @@
-# connect_to_db.py
-
 import pg8000
 from dotenv import load_dotenv
 import os
 
 # Load environment variables from .env file
 load_dotenv()
-
 
 class DataBase():
     def __init__(self):
