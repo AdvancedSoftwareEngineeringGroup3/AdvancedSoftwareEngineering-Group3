@@ -33,7 +33,13 @@ class Server:
         # Login function
         #self.login_logic.handle_login()
 
+
     def configure_logging(self):
+        """configure logging in server
+
+        Returns:
+            logging object: logging object
+        """
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s - %(levelname)s - %(message)s",
