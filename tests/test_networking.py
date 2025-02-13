@@ -1,56 +1,88 @@
-import pytest
-from unittest.mock import patch, MagicMock
-from server.Database_class import DataBase
+# import pytest
+# from unittest.mock import patch, MagicMock
+# from server.Database_class import DataBase
 
-@pytest.fixture
-def db():
-    """Fixture to initialise and return the DataBase object"""
-    return DataBase()
+# # Processing a friend request - sent request
+# # Processing a friend request - friend acceptance
+# # Handling a message request between two clients
+# # Source username to IP lookup in db, sending to destination username using IP lookup in db
 
-@patch("server.Database_class.pg8000.connect")
-def test_connect_db(mock_connect, db):
-    """Test database connection"""
-    mock_connect.return_value = MagicMock()
-    db.connect_db()
-    mock_connect.assert_called_once_with(
-        host=db.DB_HOST,
-        database=db.DB_NAME,
-        user=db.DB_USER,
-        password=db.DB_PASSWORD,
-        port=db.DB_PORT
-    )
-    assert db.connection is not None
+# import pytest
+# import psycopg2
 
-def test_create_table(db):
-    """Test create_table method"""
-    db.connection = MagicMock()
-    cursor_mock = db.connection.cursor.return_value
-    table_name = "test_table"
-    table_info = {
-        "id": "SERIAL PRIMARY KEY",
-        "username": "VARCHAR(50)",
-        "friends": "VARCHAR(50)",
-        "pending friends": "VARCHAR(50)"
-    }
+# DB_NAME = "test_db"
+# DB_USER = "your_user"
+# DB_PASSWORD = "your_password"
+# DB_HOST = "localhost"
+# DB_PORT = "5432"
+
+# @pytest.fixture(scope="session")
+# def setup_db():
+#     """Fixture to create and destroy a temporary PostgreSQL test database."""
+#     # Connect to the default database
+#     conn = psycopg2.connect(
+#         dbname="postgres",
+#         user=DB_USER,
+#         password=DB_PASSWORD,
+#         host=DB_HOST,
+#         port=DB_PORT
+#     )
+#     conn.autocommit = True
+#     cursor = conn.cursor()
     
-    db.create_table(table_name, table_info)
-    cursor_mock.execute.assert_called_once_with(
-        "CREATE TABLE test_table (id SERIAL PRIMARY KEY,name VARCHAR(50));"
-    )
-    cursor_mock.close.assert_called_once()
-
-def test_add_entry(db):
-    """Test add_entry method"""
-    db.connection = MagicMock()
-    cursor_mock = db.connection.cursor.return_value
-    table_name = "test_table"
-    table_data = {
-        "username": "john_doe",
-        "password": "password123"
-    }
+#     # Create test database
+#     cursor.execute(f"CREATE DATABASE {DB_NAME};")
+#     yield  # Tests run here
     
-    db.add_entry(table_name, table_data)
-    cursor_mock.execute.assert_called_once_with(
-        "INSERT INTO test_table (username,password) VALUES ('john_doe','password123');"
-    )
-    cursor_mock.close.assert_called_once()
+#     # Drop test database after tests
+#     cursor.execute(f"DROP DATABASE {DB_NAME};")
+#     cursor.close()
+#     conn.close()
+
+# @pytest.fixture
+# def db_conn(setup_db):
+#     """Fixture to connect to the test database."""
+#     conn = psycopg2.connect(
+#         dbname=DB_NAME,
+#         user=DB_USER,
+#         password=DB_PASSWORD,
+#         host=DB_HOST,
+#         port=DB_PORT
+#     )
+#     yield conn
+#     conn.close()
+
+# def test_insert_and_query(db_conn):
+#     """Example test that inserts and queries data."""
+#     cursor = db_conn.cursor()
+#     cursor.execute("""
+#         CREATE TABLE users (
+#             id SERIAL PRIMARY KEY,
+#             username VARCHAR(50) NOT NULL
+#         );
+#     """)
+#     cursor.execute("INSERT INTO users (username) VALUES ('john_doe');")
+#     cursor.execute("SELECT username FROM users WHERE username = 'john_doe';")
+#     result = cursor.fetchone()
+#     assert result[0] == 'john_doe'
+#     cursor.close()
+
+
+
+# def test_sent_friend_request_db(db_conn):
+#     # Sender User, Receiver User
+#     friend_request = ReceiveFriendRequest()
+
+#     sender = friend_request[0]
+#     receiver = friend_request[1]
+
+#     cursor = db_conn.cursor()
+#     cursor.execute(f"SELECT pending FROM users WHERE username = '{receiver}'")
+
+#     cursor.execute(f"""UPDATE {table_name}
+#                 SET {column} = '{data}'
+#                 WHERE username = '{user}';INSERT INTO users (pending_requests) VALUES ('{sender}') WHERE username = {receiver};""")
+
+#     cursor.close()
+    
+

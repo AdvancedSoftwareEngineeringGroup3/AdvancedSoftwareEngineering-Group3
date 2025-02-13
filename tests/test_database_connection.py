@@ -2,10 +2,16 @@ import pytest
 from unittest.mock import patch, MagicMock
 from server.Database_class import DataBase
 
+DB_NAME = "test_db"
+DB_USER = "your_user"
+DB_PASSWORD = "your_password"
+DB_HOST = "localhost"
+DB_PORT = "5432"
+
 @pytest.fixture
 def db():
     """Fixture to initialise and return the DataBase object"""
-    return DataBase()
+    return DataBase(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT)
 
 @patch("server.Database_class.pg8000.connect")
 def test_connect_db(mock_connect, db):
@@ -80,6 +86,22 @@ def test_update_entry(db):
         "UPDATE test_table\n                SET password = 'new_password123'\n                WHERE username = 'john_doe';"
     )
     cursor_mock.close.assert_called_once()
+
+def test_search_entry(db):
+    """Test search_entry method when entry is found"""
+    db.connection = MagicMock()
+    cursor_mock = db.connection.cursor.return_value
+    cursor_mock.fetchall.return_value = ['jason', 'keith', 'cormac']
+    table_name = "test_table"
+    user = "john_doe"
+    column = "pending_friends"
+    
+    result = db.search_entry(table_name, user, column)
+    cursor_mock.execute.assert_called_once_with(
+        "SELECT pending_friends FROM test_table WHERE username = 'john_doe';"
+    )
+    cursor_mock.close.assert_called_once()
+    assert result == ['jason', 'keith', 'cormac']
 
 def test_print_table(db, capsys):
     """Test print_table method"""

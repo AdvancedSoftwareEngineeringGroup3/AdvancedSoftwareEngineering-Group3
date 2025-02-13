@@ -6,7 +6,7 @@ import os
 load_dotenv()
 
 class DataBase():
-    def __init__(self):
+    def __init__(self, host=os.getenv("DB_HOST"), name=os.getenv("DB_NAME"), user=os.getenv("DB_USER"), password=os.getenv("DB_PASSWORD"), port=int(os.getenv("DB_PORT"))):
         # Database connection details
         self.DB_HOST = os.getenv("DB_HOST")
         self.DB_NAME = os.getenv("DB_NAME")
@@ -113,6 +113,28 @@ class DataBase():
         cursor.execute(query)
         cursor.close()
 
+    def search_entry(self, table_name: str, user: str, column: str): 
+        """Search for entry in Table Cell
+        
+        Args:
+            table_name (str): Name of table to be queried
+            user (str): selected user
+            column (str): column needed
+        """
+        cursor = self.connection.cursor()
+
+        query = f"""SELECT {column} FROM {table_name} WHERE username = '{user}';"""
+        
+        cursor.execute(query)
+        records = cursor.fetchall()
+
+        if type(records) is tuple:
+            records = records[0][0]
+
+        cursor.close()
+
+        return records
+
     def print_table(self, tablename: str):
         """Prints current selected table
 
@@ -193,10 +215,12 @@ def main():
     db.connect_db()
     db.create_table(table_name, table_info)
     db.add_entry(table_name, table_data)
+
+    result = db.search_entry(table_name, "Conor", "pending_friends")
     # db.add_entry(table_name, {"username": "Keith", "password": "strong password"})
     # db.remove_entry(table_name, 'Conor')
     # db.update_entry(table_name, 'Keith', 'password', 'Roots123')
-    db.print_table(table_name)
+    # db.print_table(table_name)
     # print(db.search_user(table_name, 'Conor'))
     db.close_con()
 
