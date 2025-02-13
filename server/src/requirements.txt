@@ -9,3 +9,4 @@ python-dotenv
 passlib
 websockets
 bcrypt
+pytest
