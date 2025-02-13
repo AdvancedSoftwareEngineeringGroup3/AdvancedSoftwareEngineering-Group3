@@ -15,15 +15,15 @@ def test_calculate_route():
 
     response = get_routes(origin, Destination, mode, alternatives, key)
 
-    assert response.get("status") == 'OK'
+    assert response.get("status") == "OK"
 
 
 def test_calculate_route_missing_params():
     # missing parameters test
 
-    response = get_routes('', '', '', '', '')
+    response = get_routes("", "", "", "", "")
 
-    assert response.get("status") == 'INVALID_REQUEST'
+    assert response.get("status") == "INVALID_REQUEST"
 
 
 def test_calculate_route_api_key():
@@ -34,10 +34,7 @@ def test_calculate_route_api_key():
     mode = "Walking"
 
     response = get_routes(
-        origin,
-        Destination,
-        mode,
-        alternatives='TRUE',
-        key='Ahdlkjhfdadsf1234sxf')
+        origin, Destination, mode, alternatives="TRUE", key="Ahdlkjhfdadsf1234sxf"
+    )
 
     assert response.get("status") == "REQUEST_DENIED"

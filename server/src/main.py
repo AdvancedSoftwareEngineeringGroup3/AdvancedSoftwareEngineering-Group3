@@ -8,6 +8,7 @@ from src.login import Login
 from src.weatherApi import weatherAPI
 from dotenv import load_dotenv
 
+
 class Server:
     def __init__(self):
         # Configure logging
@@ -31,8 +32,7 @@ class Server:
         self.register_routes()
 
         # Login function
-        #self.login_logic.handle_login()
-
+        # self.login_logic.handle_login()
 
     def configure_logging(self):
         """configure logging in server
@@ -62,7 +62,9 @@ class Server:
         async def log_requests(request: Request, call_next):
             self.logger.info(f"Incoming {request.method} request to {request.url}")
             response = await call_next(request)
-            self.logger.info(f"Returning response with status code: {response.status_code}")
+            self.logger.info(
+                f"Returning response with status code: {response.status_code}"
+            )
             return response
 
     def register_routes(self):
@@ -97,7 +99,9 @@ class Server:
                 while True:
                     data = await websocket.receive_text()
                     self.logger.info(f"Received data: {data}")
-                    await self.connection_manager.broadcast(f"Received location: {data}")
+                    await self.connection_manager.broadcast(
+                        f"Received location: {data}"
+                    )
             except WebSocketDisconnect:
                 self.connection_manager.disconnect(websocket)
                 self.logger.info("WebSocket disconnected")
@@ -131,6 +135,7 @@ class ConnectionManager:
     async def broadcast(self, message: str):
         for connection in self.active_connections:
             await connection.send_text(message)
+
 
 # Instantiate server
 server = Server()

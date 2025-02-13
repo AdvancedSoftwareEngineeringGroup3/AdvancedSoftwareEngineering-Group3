@@ -6,6 +6,7 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
+
 @pytest.fixture
 def db_credentials(monkeypatch):
     """Mock database environment variables."""
@@ -14,6 +15,7 @@ def db_credentials(monkeypatch):
     monkeypatch.setenv("DB_USER", "test_user")
     monkeypatch.setenv("DB_PASSWORD", "test_password")
     monkeypatch.setenv("DB_PORT", "5432")
+
 
 def test_db_connection(db_credentials):
     """Test database connection."""
@@ -30,7 +32,7 @@ def test_db_connection(db_credentials):
             database=DB_NAME,
             user=DB_USER,
             password=DB_PASSWORD,
-            port=DB_PORT
+            port=DB_PORT,
         )
         assert connection is not None, "Connection failed"
         assert connection.client_encoding is not None, "Invalid connection encoding"

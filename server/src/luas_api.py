@@ -4,6 +4,7 @@ import time
 import datetime
 import xml.etree.ElementTree as ET
 
+
 class luasAPI:
 
     def __init__(self):
@@ -12,8 +13,7 @@ class luasAPI:
     def get(self, stop):
         # URL of Open Data
         self.stop = stop
-        self.url = f'http://luasforecasts.rpa.ie/xml/get.ashx?action=forecast&stop={self.stop}&encrypt=false'
-
+        self.url = f"http://luasforecasts.rpa.ie/xml/get.ashx?action=forecast&stop={self.stop}&encrypt=false"
 
         # while True:
         #     # Fetch the geoJSON data from the URL
@@ -39,29 +39,36 @@ class luasAPI:
             root = ET.fromstring(self.response.content)
 
             # initialise dictionaries to store tram info by direction
-            tram_info = {'Inbound': [], 'Outbound': []}
+            tram_info = {"Inbound": [], "Outbound": []}
 
             # iterate through each direction
-            for direction in root.findall('direction'):
-                direction_name = direction.get('name')
-                for tram in direction.findall('tram'):
-                    due_mins = tram.get('dueMins')
-                    destination = tram.get('destination')
-                    tram_info[direction_name].append({'dueMins': due_mins, 'destination': destination})
+            for direction in root.findall("direction"):
+                direction_name = direction.get("name")
+                for tram in direction.findall("tram"):
+                    due_mins = tram.get("dueMins")
+                    destination = tram.get("destination")
+                    tram_info[direction_name].append(
+                        {"dueMins": due_mins, "destination": destination}
+                    )
 
             # print the extracted tram information
-            print('Inbound Trams:', tram_info['Inbound'])
-            print('Outbound Trams:', tram_info['Outbound'], '\n')
+            print("Inbound Trams:", tram_info["Inbound"])
+            print("Outbound Trams:", tram_info["Outbound"], "\n")
 
         else:
-            print('Failed to retrieve data:', self.response.status_code)
-        
+            print("Failed to retrieve data:", self.response.status_code)
+
         # time.sleep(self.poll_interval)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     luas = luasAPI()
     while True:
-        stop = str(input('Enter stop code to see live arrivals and departures, or \"exit\" to leave: '))
-        if stop == 'exit':
+        stop = str(
+            input(
+                'Enter stop code to see live arrivals and departures, or "exit" to leave: '
+            )
+        )
+        if stop == "exit":
             break
         luas.get(stop)
