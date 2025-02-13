@@ -10,9 +10,9 @@ def get_routes(origin, destination, mode, alternatives, key):
         "destination": destination,
         "mode": mode,
         "alternatives": alternatives,
-        "key": key
+        "key": key,
     }
 
     response = requests.get(url, params=parameters)
-    
+
     return response.json()

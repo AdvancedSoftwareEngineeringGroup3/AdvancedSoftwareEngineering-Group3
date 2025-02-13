@@ -7,7 +7,8 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
-class DataBase():
+
+class DataBase:
     def __init__(self):
         # Database connection details
         self.DB_HOST = os.getenv("DB_HOST")
@@ -18,8 +19,7 @@ class DataBase():
         self.connection = None
 
     def connect_db(self) -> None:
-        """Initialise database connection
-        """
+        """Initialise database connection"""
         try:
             # Connect to the database
             self.connection = pg8000.connect(
@@ -27,7 +27,7 @@ class DataBase():
                 database=self.DB_NAME,
                 user=self.DB_USER,
                 password=self.DB_PASSWORD,
-                port=self.DB_PORT
+                port=self.DB_PORT,
             )
             print("Connection successful!")
 
@@ -35,15 +35,16 @@ class DataBase():
             print("An error occurred:", e)
 
     def create_table(self, table_name: str, table_info: dict[str, str]) -> None:
-        """ Creates table in database
+        """Creates table in database
 
-        Args: 
+        Args:
             table name (str): name of table to be queried
-            table info (dict[str, str]): dict containing columns as keys and data type as column type
+            table info (dict[str, str]): dict containing columns
+            as keys and data type as column type
         """
         try:
             cursor = self.connection.cursor()
-            query =  f"""CREATE TABLE {table_name} ("""
+            query = f"""CREATE TABLE {table_name} ("""
 
             for key in table_info.keys():
                 query += f"{key} {table_info[key]},"
@@ -53,23 +54,23 @@ class DataBase():
             cursor.close()
 
         except Exception as e:
-           print("An error occurred:", e)
+            print("An error occurred:", e)
 
     def add_entry(self, table_name: str, table_data: dict[str, str]) -> None:
         """Add row to database with new entry
-        
+
         Args:
-            table name (str): name of table to be queried 
+            table name (str): name of table to be queried
             table data (str, str): keys are columns, values are user data
         """
         cursor = self.connection.cursor()
 
-        query =  f"""INSERT INTO {table_name} ("""
+        query = f"""INSERT INTO {table_name} ("""
 
         # Insert column names
         for key in table_data.keys():
             query += f"""{key},"""
-        
+
         query = query[0:-1]
         query += ") VALUES ("
 
@@ -79,9 +80,8 @@ class DataBase():
         query = query[0:-1]
         query += ");"
 
-
         cursor.execute(query)
-        cursor.close()    
+        cursor.close()
 
     def remove_entry(self, table_name: str, username: str) -> None:
         """Remove entry (entire row) from table
@@ -108,7 +108,7 @@ class DataBase():
 
         query = f"""UPDATE {table_name}
                 SET {column} = '{data}'
-                WHERE username = '{user}';""" # TODO: check if username needs to be made dynamic
+                WHERE username = '{user}';"""  # TODO: check if username needs to be made dynamic
 
         cursor.execute(query)
         cursor.close()
@@ -129,16 +129,15 @@ class DataBase():
             print("Contacts:")
             for record in records:
                 print(record)
-            
+
             # Close the cursor
             cursor.close()
 
         except Exception as e:
-           print("An error occurred:", e)
+            print("An error occurred:", e)
 
     def close_con(self):
-        """Close the connection
-        """
+        """Close the connection"""
         self.connection.close()
 
     def search_user(self, table_name: str, user: str) -> bool:
@@ -165,6 +164,7 @@ class DataBase():
         except Exception as e:
             print("An error occurred: ", e)
 
+
 def main():
     # Initiliase database class
     db = DataBase()
@@ -172,12 +172,8 @@ def main():
         "id": "SERIAL PRIMARY KEY",
         "username": "VARCHAR(50)",
         "password": "VARCHAR(50)",
-
     }
-    table_data = {
-        "username": "Conor",
-        "password": "abc123"
-    }
+    table_data = {"username": "Conor", "password": "abc123"}
     table_name = "testTable"
 
     # Connect to db
@@ -186,10 +182,11 @@ def main():
     db.add_entry(table_name, table_data)
     db.add_entry(table_name, {"username": "Keith", "password": "strong password"})
     # db.remove_entry(table_name, 'Conor')
-    db.update_entry(table_name, 'Keith', 'password', 'Roots123')
+    db.update_entry(table_name, "Keith", "password", "Roots123")
     db.print_table(table_name)
-    print(db.search_user(table_name, 'Conor'))
+    print(db.search_user(table_name, "Conor"))
     db.close_con()
+
 
 if __name__ == "__main__":
     main()
