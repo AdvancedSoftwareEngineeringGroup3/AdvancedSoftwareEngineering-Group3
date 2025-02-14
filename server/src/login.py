@@ -2,7 +2,6 @@ from pydantic import BaseModel
 
 # May need to be chagned in future with restructure of DB connection
 from supabase import create_client, Client
-from pydantic import BaseModel
 from passlib.context import CryptContext
 import os
 from dotenv import load_dotenv
@@ -23,7 +22,9 @@ class Login:
         self.supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
 
         # Init Supabase Client
-        self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
+        self.supabase: Client = create_client(
+            self.supabase_url, self.supabase_key
+        )
         # register login route
         self.handle_login()
 
@@ -39,22 +40,26 @@ class Login:
 
                 if not user:
                     self.logger.warning(f"User not fond: {login.username}")
-                    # raise HTTPException(status_code=400, detail="Invalid username/password")
-                    return {"message": f"Invalid username"}
+                    return {"message": f'{"Invalid username"}'}
 
                 self.logger.info(f"User data found for {login.username}")
 
                 # Verify password using bcrypt
-                if not self.verify_password(login.password, user["hashed_password"]):
-                    return {"message": f"Invalid password"}
-                    # raise HTTPException(status_code=400, detail="Invalid username/password")
+                if not self.verify_password(
+                    login.password, user["hashed_password"]
+                ):
+                    return {"message": f'{"Invalid password"}'}
 
                 # return success message
-                return {"message": f"Login successful for user: {login.username}"}
+                return {
+                    "message": f"Login successful for user: {login.username}"
+                }
 
             except Exception as e:
                 self.logger.error(f"Error processing login: {str(e)}")
-                raise HTTPException(status_code=500, detail="Internal server error")
+                raise HTTPException(
+                    status_code=500, detail="Internal server error"
+                )
 
     def get_user_by_username(self, username: str):
         # Querty sb to find user by username
@@ -80,7 +85,9 @@ class Login:
             self.logger.error(f"Error querying Database: {str(e)}")
             return None
 
-    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
+    def verify_password(
+        self, plain_password: str, hashed_password: str
+    ) -> bool:
         # Verifies a plain password against hashed version
 
         try:

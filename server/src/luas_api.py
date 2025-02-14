@@ -1,7 +1,4 @@
 import requests
-from xml.dom.minidom import parseString
-import time
-import datetime
 import xml.etree.ElementTree as ET
 
 
@@ -13,7 +10,7 @@ class luasAPI:
     def get(self, stop):
         # URL of Open Data
         self.stop = stop
-        self.url = f"http://luasforecasts.rpa.ie/xml/get.ashx?action=forecast&stop={self.stop}&encrypt=false"
+        self.url = f"http://luasforecasts.rpa.ie/xml/get.ashx?action=forecast&stop={self.stop}&encrypt=false"  # noqa: E501
 
         # while True:
         #     # Fetch the geoJSON data from the URL
@@ -22,10 +19,15 @@ class luasAPI:
         #     # Check if the request was successful
         #     if response.status_code == 200:
         #         for item in response.json():
-        #             print(item['name'], ' ', item['available_bikes'], (int(item['last_update'])))
+        #             print(
+        #                 item["name"],
+        #                 " ",
+        #                 item["available_bikes"],
+        #                 (int(item["last_update"])),
+        #             )
 
         #     else:
-        #         print('Failed to retrieve data:', response.status_code)
+        #         print("Failed to retrieve data:", response.status_code)
 
         #     time.sleep(self.poll_interval)
 
@@ -66,7 +68,8 @@ if __name__ == "__main__":
     while True:
         stop = str(
             input(
-                'Enter stop code to see live arrivals and departures, or "exit" to leave: '
+                'Enter stop code to see live arrivals and departures,'
+                'or "exit" to leave: '
             )
         )
         if stop == "exit":

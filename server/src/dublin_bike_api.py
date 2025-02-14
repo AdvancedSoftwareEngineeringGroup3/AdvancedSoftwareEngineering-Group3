@@ -1,8 +1,5 @@
 from base_api import BaseAPI
 import requests
-import json
-import time
-import datetime
 
 # URL of Open Data
 APIKEY = "3386ce10aca77dde762ab5c2de0177f7405cb6b3"
@@ -17,7 +14,8 @@ class bikeAPI(BaseAPI):
         # URL of Open Data
         self.apiKey = apiKey
         self.url = (
-            "https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=" + APIKEY
+            "https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey="
+            + APIKEY
         )
 
         self.response = requests.get(self.url)

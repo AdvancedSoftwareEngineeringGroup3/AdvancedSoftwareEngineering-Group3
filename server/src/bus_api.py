@@ -1,4 +1,5 @@
-""" Python 3.2 """
+"""Python 3.2"""
+
 import urllib.request
 import json
 

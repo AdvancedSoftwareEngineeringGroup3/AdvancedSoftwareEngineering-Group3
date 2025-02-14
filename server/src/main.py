@@ -6,7 +6,6 @@ import uvicorn
 import sys
 from src.login import Login
 from src.weatherApi import weatherAPI
-from dotenv import load_dotenv
 
 
 class Server:
@@ -60,7 +59,9 @@ class Server:
     def add_middlewares(self):
         @self.app.middleware("http")
         async def log_requests(request: Request, call_next):
-            self.logger.info(f"Incoming {request.method} request to {request.url}")
+            self.logger.info(
+                f"Incoming {request.method} request to {request.url}"
+            )
             response = await call_next(request)
             self.logger.info(
                 f"Returning response with status code: {response.status_code}"
@@ -75,7 +76,9 @@ class Server:
 
         @self.app.post("/echo")
         async def echo_message(message: Message):
-            self.logger.info(f"Received message in echo endpoint: {message.text}")
+            self.logger.info(
+                f"Received message in echo endpoint: {message.text}"
+            )
             try:
                 return {"message": f"'{message.text}' sent from server"}
             except Exception as e:
@@ -84,12 +87,12 @@ class Server:
 
         @self.app.get("/weather")
         async def get_weather():
-            self.logger.info(f"Received weather API request")
+            self.logger.info(f'{"Received weather API request"}')
             try:
                 # Example coordinates for Dublin
                 return self.weather_api.get(lat="-6.266155", lng="53.350140")
             except Exception as e:
-                self.logger.error("Error hitting weather endpoint")
+                self.logger.error(f"Error hitting weather endpoint: {e}")
                 raise
 
         @self.app.websocket("/ws/location")
