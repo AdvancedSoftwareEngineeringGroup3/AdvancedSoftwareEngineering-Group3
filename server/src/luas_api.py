@@ -68,8 +68,8 @@ if __name__ == "__main__":
     while True:
         stop = str(
             input(
-                'Enter stop code to see live arrivals and departures,'
-                'or "exit" to leave: '
+                "Enter stop code to see live arrivals and departures,"
+                ' or "exit" to leave: '
             )
         )
         if stop == "exit":
