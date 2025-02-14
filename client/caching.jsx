@@ -1,29 +1,29 @@
-import {AsyncStorage} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-_storeData = async (key, data) => {
+export const storeData = async (key, data) => {
   try {
     await AsyncStorage.setItem(
     JSON.stringify(key),
     JSON.stringify(data),
     );
   } catch (error) {
-  console.error('Error storing data in cache')
+  console.error('Error storing data in cache');
   }
 };
 
-_retrieveData = async (key) => {
+export const retrieveData = async (key) => {
   try {
     const value = await AsyncStorage.getItem(JSON.stringify(key));
     if (value !== null) {
       console.log(value);
-      return value;
+      return value != null ? JSON.parse(value) : null;
     }
   } catch (error) {
     console.error('Error retrieving data from cache')
   }
 };
 
-_removeData = async (key) => {
+export const removeData = async (key) => {
   try {
     await AsyncStorage.removeItem(JSON.stringify(key));
     console.log('Removed successfully');
@@ -32,23 +32,17 @@ _removeData = async (key) => {
   }
 };
 
-_updateData = async (key, changedData) => {
+export const updateData = async (key, changedData) => {
   try {
     AsyncStorage.mergeItem(
       JSON.stringify(key),
-      JSON.stringify(changedData),
-      // () => {
-        _retrieveData(key)
-      // },
+      JSON.stringify(changedData)
     );
   } catch (error) {
-    console.error('Error updating data in cache')
+    console.error('Error updating data in cache');
   }
 };
 
-// let UID123_object = {
-//   name: 'Chris',
-//   age: 30,
 /*
 weekly emisions
 
@@ -87,31 +81,4 @@ weekly emisions
   }
 }
 
-  */
-//   traits: {hair: 'brown', eyes: 'brown'},
-// };
-// // You only need to define what will be added or updated
-// let UID123_delta = {
-//   age: 31,
-//   traits: {eyes: 'blue', shoe_size: 10},
-// };
-
-AsyncStorage.setItem(
-  'UID123',
-  JSON.stringify(UID123_object),
-  () => {
-    AsyncStorage.mergeItem(
-      'UID123',
-      JSON.stringify(UID123_delta),
-      () => {
-        AsyncStorage.getItem('UID123', (err, result) => {
-          console.log(result);
-        });
-      },
-    );
-  },
-);
-  
-  // Console log result:
-  // => {'name':'Chris','age':31,'traits':
-  //    {'shoe_size':10,'hair':'brown','eyes':'blue'}}
+*/
