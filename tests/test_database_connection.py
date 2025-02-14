@@ -83,7 +83,7 @@ def test_update_entry(db):
     
     db.update_entry(table_name, user, column, data)
     cursor_mock.execute.assert_called_once_with(
-        "UPDATE test_table\n                SET password = 'new_password123'\n                WHERE username = 'john_doe';"
+        "UPDATE test_table SET password = 'new_password123' WHERE username = 'john_doe';"
     )
     cursor_mock.close.assert_called_once()
 
@@ -102,6 +102,21 @@ def test_search_entry(db):
     )
     cursor_mock.close.assert_called_once()
     assert result == ['jason', 'keith', 'cormac']
+
+def test_append_entry(db):
+    """Test search_entry method when entry is found"""
+    db.connection = MagicMock()
+    cursor_mock = db.connection.cursor.return_value
+    table_name = "test_table"
+    sender = "cormac"
+    receiver = "john_doe"
+    column = "pending_friends"
+    
+    db.append_entry(table_name, sender, receiver, column)
+    cursor_mock.execute.assert_called_once_with(
+        "UPDATE test_table SET pending_friends = array_append(pending_friends,'cormac') WHERE username = 'john_doe';"
+    )
+    cursor_mock.close.assert_called_once()
 
 def test_print_table(db, capsys):
     """Test print_table method"""

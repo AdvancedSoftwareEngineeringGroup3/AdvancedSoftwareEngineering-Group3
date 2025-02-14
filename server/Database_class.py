@@ -5,6 +5,7 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
+
 class DataBase():
     def __init__(self, host=os.getenv("DB_HOST"), name=os.getenv("DB_NAME"), user=os.getenv("DB_USER"), password=os.getenv("DB_PASSWORD"), port=int(os.getenv("DB_PORT"))):
         # Database connection details
@@ -106,16 +107,14 @@ class DataBase():
         """
         cursor = self.connection.cursor()
 
-        query = f"""UPDATE {table_name}
-                SET {column} = '{data}'
-                WHERE username = '{user}';"""  # TODO: check if username needs to be made dynamic
+        query = f"""UPDATE {table_name} SET {column} = '{data}' WHERE username = '{user}';"""  # TODO: check if username needs to be made dynamic
 
         cursor.execute(query)
         cursor.close()
 
-    def search_entry(self, table_name: str, user: str, column: str): 
+    def search_entry(self, table_name: str, user: str, column: str):
         """Search for entry in Table Cell
-        
+
         Args:
             table_name (str): Name of table to be queried
             user (str): selected user
@@ -124,7 +123,7 @@ class DataBase():
         cursor = self.connection.cursor()
 
         query = f"""SELECT {column} FROM {table_name} WHERE username = '{user}';"""
-        
+
         cursor.execute(query)
         records = cursor.fetchall()
 
@@ -134,20 +133,20 @@ class DataBase():
         cursor.close()
 
         return records
-    
+
     def append_entry(self, table_name: str, sender: str, receiver: str, column: str) -> None:
-        """Append value to entry in Table Cell
-        
+        """Append value to an array entry in Table Cell
+
         Args:
             table_name (str): Name of table to be queried
             sender (str): user sending request
             receiver (str): user receiving request
-            column (str): column needed
+            column (str): column needed - must be an array column
         """
         cursor = self.connection.cursor()
 
-        query = f"""UPDATE {table_name} SET {column} = array_append({column},'{sender}') WHERE username = '{receiver}'"""
-        
+        query = f"""UPDATE {table_name} SET {column} = array_append({column},'{sender}') WHERE username = '{receiver}';"""
+
         cursor.execute(query)
         cursor.close()
 
