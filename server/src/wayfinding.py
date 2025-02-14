@@ -1,5 +1,4 @@
 import requests
-import json
 
 
 def get_routes(origin, destination, mode, alternatives, key):

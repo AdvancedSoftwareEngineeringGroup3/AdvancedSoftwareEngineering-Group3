@@ -34,7 +34,9 @@ class DataBase:
         except Exception as e:
             print("An error occurred:", e)
 
-    def create_table(self, table_name: str, table_info: dict[str, str]) -> None:
+    def create_table(
+        self, table_name: str, table_info: dict[str, str]
+    ) -> None:
         """Creates table in database
 
         Args:
@@ -95,7 +97,9 @@ class DataBase:
         cursor.execute(query)
         cursor.close()
 
-    def update_entry(self, table_name: str, user: str, column: str, data: str) -> None:
+    def update_entry(
+        self, table_name: str, user: str, column: str, data: str
+    ) -> None:
         """Update entry of specific column
 
         Args:
@@ -106,9 +110,10 @@ class DataBase:
         """
         cursor = self.connection.cursor()
 
+        # TODO: check if username needs to be made dynamic
         query = f"""UPDATE {table_name}
                 SET {column} = '{data}'
-                WHERE username = '{user}';"""  # TODO: check if username needs to be made dynamic
+                WHERE username = '{user}';"""
 
         cursor.execute(query)
         cursor.close()
@@ -153,7 +158,9 @@ class DataBase:
         try:
             cursor = self.connection.cursor()
 
-            query = f"SELECT username FROM {table_name} WHERE username = '{user}';"
+            query = (
+                f"SELECT username FROM {table_name} WHERE username = '{user}';"
+            )
             cursor.execute(query)
             record = list(cursor.fetchall())
             cursor.close()
@@ -180,7 +187,9 @@ def main():
     db.connect_db()
     db.create_table(table_name, table_info)
     db.add_entry(table_name, table_data)
-    db.add_entry(table_name, {"username": "Keith", "password": "strong password"})
+    db.add_entry(
+        table_name, {"username": "Keith", "password": "strong password"}
+    )
     # db.remove_entry(table_name, 'Conor')
     db.update_entry(table_name, "Keith", "password", "Roots123")
     db.print_table(table_name)

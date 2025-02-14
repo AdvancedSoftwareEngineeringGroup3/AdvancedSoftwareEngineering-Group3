@@ -13,7 +13,7 @@ class weatherAPI:  # (BaseAPI):
     def get(self, lat, lng):
         self.lat = lat
         self.lng = lng
-        self.url = f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.lng}&hourly=temperature_2m,apparent_temperature,precipitation,rain,snowfall,cloud_cover,wind_speed_10m&forecast_days=1&models=ecmwf_ifs025"
+        self.url = f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.lng}&hourly=temperature_2m,apparent_temperature,precipitation,rain,snowfall,cloud_cover,wind_speed_10m&forecast_days=1&models=ecmwf_ifs025"  # noqa: E501
 
         # Fetch the geoJSON data from the URL
         response = requests.get(self.url)
