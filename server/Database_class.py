@@ -134,6 +134,22 @@ class DataBase():
         cursor.close()
 
         return records
+    
+    def append_entry(self, table_name: str, sender: str, receiver: str, column: str) -> None:
+        """Append value to entry in Table Cell
+        
+        Args:
+            table_name (str): Name of table to be queried
+            sender (str): user sending request
+            receiver (str): user receiving request
+            column (str): column needed
+        """
+        cursor = self.connection.cursor()
+
+        query = f"""UPDATE {table_name} SET {column} = array_append({column},'{sender}') WHERE username = '{receiver}'"""
+        
+        cursor.execute(query)
+        cursor.close()
 
     def print_table(self, tablename: str):
         """Prints current selected table
@@ -207,7 +223,7 @@ def main():
         "username": "Conor",
         "password": "abc123",
         "friends_list": "ARRAY['mark', 'gunjan', 'fiona']",
-        "pending_friends": "ARRAY['jason', 'keith', 'cormac']",
+        "pending_friends": "ARRAY['cormac', 'jason']",
         "sus_score": "100"
     }
 
@@ -217,6 +233,11 @@ def main():
     db.add_entry(table_name, table_data)
 
     result = db.search_entry(table_name, "Conor", "pending_friends")
+    print(result)
+    db.append_entry(table_name, "keith", "Conor", "pending_friends")
+    result = db.search_entry(table_name, "Conor", "pending_friends")
+    print(result)
+
     # db.add_entry(table_name, {"username": "Keith", "password": "strong password"})
     # db.remove_entry(table_name, 'Conor')
     # db.update_entry(table_name, 'Keith', 'password', 'Roots123')
