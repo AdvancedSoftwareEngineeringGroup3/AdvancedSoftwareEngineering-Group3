@@ -39,7 +39,7 @@ jobs:
       - name: Run Black (Formatting Check)
         run: |
           cd server
-          black --check src/ tests/
+          black --check --diff src/ tests/
   test:
     name: Run Backend Tests
     runs-on: ubuntu-latest
