@@ -122,17 +122,23 @@ class DataBase():
         """
         cursor = self.connection.cursor()
 
-        query = f"""SELECT {column} FROM {table_name} WHERE username = '{user}';"""
+        records = None
 
-        cursor.execute(query)
-        records = cursor.fetchall()
+        try:
+            query = f"""SELECT {column} FROM {table_name} WHERE username = '{user}';"""
 
-        if type(records) is tuple:
-            records = records[0][0]
+            cursor.execute(query)
+            records = cursor.fetchall()
 
-        cursor.close()
+            if type(records) is tuple:
+                records = records[0][0]
+        except Exception as e:
+            print("An error occurred: ", e)
+            self.connection.rollback()
 
-        return records
+        finally:
+            cursor.close()
+            return records
 
     def append_entry(self, table_name: str, sender: str, receiver: str, column: str) -> None:
         """Append value to an array entry in Table Cell
@@ -145,13 +151,15 @@ class DataBase():
         """
         cursor = self.connection.cursor()
 
-        query = f"""UPDATE {table_name} SET {column} = array_append({column},'{sender}') WHERE username = '{receiver}';"""
         try:
+            query = f"""UPDATE {table_name} SET {column} = array_append({column},'{sender}') WHERE username = '{receiver}';"""
             cursor.execute(query)
         except Exception as e:
             print("An error occurred: Cannot append to non-array column in database")
+            self.connection.rollback()
         
-        cursor.close()
+        finally:
+            cursor.close()
 
     def print_table(self, tablename: str):
         """Prints current selected table
@@ -170,8 +178,6 @@ class DataBase():
             for record in records:
                 print(record)
 
-            # Close the cursor
-            cursor.close()
 
         except Exception as e:
             print("An error occurred:", e)
@@ -197,7 +203,6 @@ class DataBase():
             query = f"SELECT username FROM {table_name} WHERE username = '{user}';"
             cursor.execute(query)
             record = list(cursor.fetchall())
-            cursor.close()
 
             if record:
                 return True
