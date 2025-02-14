@@ -146,8 +146,11 @@ class DataBase():
         cursor = self.connection.cursor()
 
         query = f"""UPDATE {table_name} SET {column} = array_append({column},'{sender}') WHERE username = '{receiver}';"""
-
-        cursor.execute(query)
+        try:
+            cursor.execute(query)
+        except Exception as e:
+            print("An error occurred: Cannot append to non-array column in database")
+        
         cursor.close()
 
     def print_table(self, tablename: str):
@@ -233,8 +236,8 @@ def main():
 
     result = db.search_entry(table_name, "Conor", "pending_friends")
     print(result)
-    db.append_entry(table_name, "keith", "Conor", "pending_friends")
-    result = db.search_entry(table_name, "Conor", "pending_friends")
+    db.append_entry(table_name, "keith", "Conor", "sus_score")
+    result = db.search_entry(table_name, "Conor", "sus_score")
     print(result)
 
     # db.add_entry(table_name, {"username": "Keith", "password": "strong password"})
