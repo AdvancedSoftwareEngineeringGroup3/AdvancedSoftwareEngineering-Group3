@@ -4,9 +4,9 @@ from pydantic import BaseModel
 import logging
 import uvicorn
 import sys
-from server.src.login import Login
-from apis.weatherApi import weatherAPI
-from dotenv import load_dotenv
+from src.login import Login
+from src.weatherApi import weatherAPI
+
 
 class Server:
     def __init__(self):
@@ -31,8 +31,7 @@ class Server:
         self.register_routes()
 
         # Login function
-        #self.login_logic.handle_login()
-
+        # self.login_logic.handle_login()
 
     def configure_logging(self):
         """configure logging in server
@@ -60,9 +59,13 @@ class Server:
     def add_middlewares(self):
         @self.app.middleware("http")
         async def log_requests(request: Request, call_next):
-            self.logger.info(f"Incoming {request.method} request to {request.url}")
+            self.logger.info(
+                f"Incoming {request.method} request to {request.url}"
+            )
             response = await call_next(request)
-            self.logger.info(f"Returning response with status code: {response.status_code}")
+            self.logger.info(
+                f"Returning response with status code: {response.status_code}"
+            )
             return response
 
     def register_routes(self):
@@ -73,7 +76,9 @@ class Server:
 
         @self.app.post("/echo")
         async def echo_message(message: Message):
-            self.logger.info(f"Received message in echo endpoint: {message.text}")
+            self.logger.info(
+                f"Received message in echo endpoint: {message.text}"
+            )
             try:
                 return {"message": f"'{message.text}' sent from server"}
             except Exception as e:
@@ -82,12 +87,12 @@ class Server:
 
         @self.app.get("/weather")
         async def get_weather():
-            self.logger.info(f"Received weather API request")
+            self.logger.info(f'{"Received weather API request"}')
             try:
                 # Example coordinates for Dublin
                 return self.weather_api.get(lat="-6.266155", lng="53.350140")
             except Exception as e:
-                self.logger.error("Error hitting weather endpoint")
+                self.logger.error(f"Error hitting weather endpoint: {e}")
                 raise
 
         @self.app.websocket("/ws/location")
@@ -97,7 +102,9 @@ class Server:
                 while True:
                     data = await websocket.receive_text()
                     self.logger.info(f"Received data: {data}")
-                    await self.connection_manager.broadcast(f"Received location: {data}")
+                    await self.connection_manager.broadcast(
+                        f"Received location: {data}"
+                    )
             except WebSocketDisconnect:
                 self.connection_manager.disconnect(websocket)
                 self.logger.info("WebSocket disconnected")
@@ -131,6 +138,7 @@ class ConnectionManager:
     async def broadcast(self, message: str):
         for connection in self.active_connections:
             await connection.send_text(message)
+
 
 # Instantiate server
 server = Server()

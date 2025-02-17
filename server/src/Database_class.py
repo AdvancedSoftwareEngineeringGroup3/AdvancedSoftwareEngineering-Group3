@@ -17,8 +17,7 @@ class DataBase():
         self.connection = None
 
     def connect_db(self) -> None:
-        """Initialise database connection
-        """
+        """Initialise database connection"""
         try:
             # Connect to the database
             self.connection = pg8000.connect(
@@ -26,22 +25,26 @@ class DataBase():
                 database=self.DB_NAME,
                 user=self.DB_USER,
                 password=self.DB_PASSWORD,
-                port=self.DB_PORT
+                port=self.DB_PORT,
             )
             print("Connection successful!")
 
         except Exception as e:
             print("An error occurred:", e)
 
-    def create_table(self, table_name: str, table_info: dict[str, str]) -> None:
-        """ Creates table in database
+    def create_table(
+        self, table_name: str, table_info: dict[str, str]
+    ) -> None:
+        """Creates table in database
 
-        Args: 
+        Args:
             table name (str): name of table to be queried
-            table info (dict[str, str]): dict containing columns as keys and data type as column type
+            table info (dict[str, str]): dict containing columns
+            as keys and data type as column type
         """
         try:
             cursor = self.connection.cursor()
+            query = f"""CREATE TABLE {table_name} ("""
             query = f"""CREATE TABLE {table_name} ("""
 
             for key in table_info.keys():
@@ -58,8 +61,9 @@ class DataBase():
     def add_entry(self, table_name: str, table_data: dict[str, str]) -> None:
         """Add row to database with new entry
 
+
         Args:
-            table name (str): name of table to be queried 
+            table name (str): name of table to be queried
             table data (str, str): keys are columns, values are user data
         """
         try:
@@ -105,7 +109,9 @@ class DataBase():
         finally:
             cursor.close()
 
-    def update_entry(self, table_name: str, user: str, column: str, data: str) -> None:
+    def update_entry(
+        self, table_name: str, user: str, column: str, data: str
+    ) -> None:
         """Update entry of specific column
 
         Args:
@@ -197,8 +203,7 @@ class DataBase():
             cursor.close()
 
     def close_con(self):
-        """Close the connection
-        """
+        """Close the connection"""
         self.connection.close()
 
     def search_user(self, table_name: str, user: str) -> bool:
@@ -214,7 +219,9 @@ class DataBase():
         try:
             cursor = self.connection.cursor()
 
-            query = f"SELECT username FROM {table_name} WHERE username = '{user}';"
+            query = (
+                f"SELECT username FROM {table_name} WHERE username = '{user}';"
+            )
             cursor.execute(query)
             record = list(cursor.fetchall())
 
@@ -272,5 +279,7 @@ def main():
     db.close_con()
 
 
+
 if __name__ == "__main__":
     main()
+

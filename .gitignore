@@ -2,6 +2,7 @@
 ./assets/stops.txt
 ./assets/stop_times.txt
 
+.vscode/
 *.pyc
 *.env
 
