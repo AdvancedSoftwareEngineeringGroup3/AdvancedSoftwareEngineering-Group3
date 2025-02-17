@@ -175,6 +175,7 @@ class DataBase:
             cursor.close()
             return records
 
+    # maybe update "sender" to be more general data to append
     def append_entry(
         self, table_name: str, sender: str, receiver: str, column: str
     ) -> None:
