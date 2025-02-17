@@ -1,4 +1,4 @@
-from sustainability import calc_emissions, calc_scores
+from server.src.sustainability import calc_emissions, calc_scores
 import pytest
 
 
