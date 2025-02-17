@@ -135,6 +135,12 @@ export default function MapScreen({ navigation }) {
                         <Text style={styles.buttonText}>Log In</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
+                        style={styles.findRouteButton}
+                        onPress={() => navigation.navigate('FindRouteScreen')}
+                    >
+                        <Text style={styles.buttonText}>Find Route</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
                         style={styles.TouchableOpacity1}
                         onPress={() => navigation.navigate('WeatherScreen')}
                     >
@@ -194,6 +200,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#007bff',
         paddingVertical: 10,
         paddingHorizontal: 40,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    findRouteButton: {
+        position: 'absolute',
+        alignItems: 'center',
+        left: '34%',
+        top: '0%',
+        backgroundColor: '#007bff',
+        paddingVertical: 10,
+        paddingHorizontal: 35,
         borderRadius: 10,
         shadowColor: '#000',
         shadowOpacity: 0.2,

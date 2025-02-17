@@ -1,11 +1,15 @@
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+# from src.wayfinding import router  # Import the API routes
+from wayfinding import router  # Import the API routes
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import logging
 import uvicorn
 import sys
-from src.login import Login
-from src.weatherApi import weatherAPI
+# from src.login import Login
+# from src.weatherApi import weatherAPI
+from weatherApi import weatherAPI
+from login import Login
 from dotenv import load_dotenv
 
 class Server:
@@ -15,6 +19,8 @@ class Server:
 
         # Initialize FastAPI app
         self.app = FastAPI()
+        # Include the API routes from the my_routes.py file
+        self.app.include_router(router)
 
         # Instantiate components
         self.login_logic = Login(self.app, self.logger)
