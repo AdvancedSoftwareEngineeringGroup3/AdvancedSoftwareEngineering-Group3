@@ -6,8 +6,15 @@ import os
 load_dotenv()
 
 
-class DataBase():
-    def __init__(self, host=os.getenv("DB_HOST"), name=os.getenv("DB_NAME"), user=os.getenv("DB_USER"), password=os.getenv("DB_PASSWORD"), port=int(os.getenv("DB_PORT"))):
+class DataBase:
+    def __init__(
+        self,
+        host=os.getenv("DB_HOST"),
+        name=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        port=int(os.getenv("DB_PORT")),
+    ):
         # Database connection details
         self.DB_HOST = os.getenv("DB_HOST")
         self.DB_NAME = os.getenv("DB_NAME")
@@ -88,8 +95,9 @@ class DataBase():
             query += ");"
 
             cursor.execute(query)
-        except:
+        except Exception as e:
             self.connection.rollback()
+            print("An error occurred:", e)
         finally:
             cursor.close()
 
@@ -104,8 +112,9 @@ class DataBase():
             cursor = self.connection.cursor()
             query = f"DELETE FROM {table_name} WHERE username = '{username}';"
             cursor.execute(query)
-        except:
+        except Exception as e:
             self.connection.rollback()
+            print("An error occurred:", e)
         finally:
             cursor.close()
 
@@ -126,8 +135,9 @@ class DataBase():
             query = f"""UPDATE {table_name} SET {column} = '{data}' WHERE username = '{user}';"""  # TODO: check if username needs to be made dynamic
 
             cursor.execute(query)
-        except:
+        except Exception as e:
             self.connection.rollback()
+            print("An error occurred:", e)
         finally:
             cursor.close()
 
@@ -151,15 +161,17 @@ class DataBase():
             if type(records) is tuple:
                 records = records[0][0]
 
-            self.connection.commit() # commit needed to cement transaction in database
+            self.connection.commit()  # commit needed to cement transaction in database
         except Exception as e:
-            print("An error occurred: ", e)
+            print("An error occurred:", e)
             self.connection.rollback()
         finally:
             cursor.close()
             return records
 
-    def append_entry(self, table_name: str, sender: str, receiver: str, column: str) -> None:
+    def append_entry(
+        self, table_name: str, sender: str, receiver: str, column: str
+    ) -> None:
         """Append value to an array entry in Table Cell
 
         Args:
@@ -174,7 +186,10 @@ class DataBase():
             cursor.execute(query)
             self.connection.commit()
         except Exception as e:
-            print("An error occurred: Cannot append to non-array column in database")
+            print(
+                "An error occurred: Cannot append to non-array column in database"
+            )
+            print("An error occurred:", e)
             self.connection.rollback()
         finally:
             cursor.close()
@@ -229,7 +244,7 @@ class DataBase():
                 return True
             return False
         except Exception as e:
-            print("An error occurred: ", e)
+            print("An error occurred:", e)
             self.connection.rollback()
         finally:
             cursor.close()
@@ -255,7 +270,7 @@ def main():
         "password": "abc123",
         "friends_list": "ARRAY['mark', 'gunjan', 'fiona']",
         "pending_friends": "ARRAY['cormac', 'jason']",
-        "sus_score": "100"
+        "sus_score": "100",
     }
 
     # Connect to db
@@ -279,7 +294,5 @@ def main():
     db.close_con()
 
 
-
 if __name__ == "__main__":
     main()
-
