@@ -10,12 +10,12 @@ class Networking():
     def __init__(self, api, logger: logging.Logger):
         self.app = api
         self.logger = logger
-        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        # self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
         # Load environment vars
         load_dotenv()
-        self.supabase_url = os.getenv("SUPABASE_URL")
-        self.supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
+        # self.supabase_url = os.getenv("SUPABASE_URL")
+        # self.supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
 
         # register login route
         self.handle_login()
@@ -34,7 +34,10 @@ class Networking():
             return {"message": f"Friend request to {request.receiver} unsuccessful"}
 
     def update_pending_friends(sender, receiver):
-        pass #TODO:
+        # Search for receiver
+        # If they exist, add the sender to pending friends list
+        # Send back positive message
+        # Else send back negative message
 
 class RequestData(BaseModel):
     sender: str

@@ -262,6 +262,8 @@ def main():
     result = db.search_entry(table_name, "Conor", "sus_score")
     print(result)
 
+    db.search_user(table_name, "Fiona")
+
     # db.add_entry(table_name, {"username": "Keith", "password": "strong password"})
     # db.remove_entry(table_name, 'Conor')
     # db.update_entry(table_name, 'Keith', 'password', 'Roots123')
