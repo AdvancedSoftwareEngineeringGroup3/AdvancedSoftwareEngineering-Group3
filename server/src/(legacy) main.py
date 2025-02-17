@@ -63,11 +63,13 @@ async def echo_message(message: Message):
 @app.post("/login")
 async def login_data(login: Login):
     logger.info(
-        f"Received message in login endpoint: {login.username} {login.password}"
+        f"Received message in login endpoint: "
+        f"{login.username} {login.password}"
     )
     try:
         return {
-            "login details": f"'username={login.username}' 'password={login.password}'sent from server"
+            "login details": f"'username={login.username}' "
+            f"'password={login.password}'sent from server"
         }
     except Exception as e:
         logger.error(f"Error processing message: {str(e)}")

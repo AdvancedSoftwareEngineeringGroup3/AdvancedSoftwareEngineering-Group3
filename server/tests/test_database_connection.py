@@ -53,7 +53,8 @@ def test_add_entry(db):
 
     db.add_entry(table_name, table_data)
     cursor_mock.execute.assert_called_once_with(
-        "INSERT INTO test_table (username,password) VALUES ('john_doe','password123');"
+        "INSERT INTO test_table (username,password) "
+        "VALUES ('john_doe','password123');"
     )
     cursor_mock.close.assert_called_once()
 
@@ -83,7 +84,8 @@ def test_update_entry(db):
 
     db.update_entry(table_name, user, column, data)
     cursor_mock.execute.assert_called_once_with(
-        "UPDATE test_table SET password = 'new_password123' WHERE username = 'john_doe';"
+        "UPDATE test_table SET password = 'new_password123' "
+        "WHERE username = 'john_doe';"
     )
     cursor_mock.close.assert_called_once()
 
@@ -99,7 +101,8 @@ def test_search_entry(db):
 
     result = db.search_entry(table_name, user, column)
     cursor_mock.execute.assert_called_once_with(
-        "SELECT pending_friends FROM test_table WHERE username = 'john_doe';"
+        "SELECT pending_friends FROM test_table "
+        "WHERE username = 'john_doe';"
     )
     cursor_mock.close.assert_called_once()
     assert result == ["jason", "keith", "cormac"]
@@ -116,7 +119,9 @@ def test_append_entry(db):
 
     db.append_entry(table_name, sender, receiver, column)
     cursor_mock.execute.assert_called_once_with(
-        "UPDATE test_table SET pending_friends = array_append(pending_friends,'cormac') WHERE username = 'john_doe';"
+        "UPDATE test_table "
+        "SET pending_friends = array_append(pending_friends,'cormac') "
+        "WHERE username = 'john_doe';"
     )
     cursor_mock.close.assert_called_once()
 

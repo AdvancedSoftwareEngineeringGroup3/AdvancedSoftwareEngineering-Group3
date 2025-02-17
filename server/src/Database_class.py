@@ -132,7 +132,10 @@ class DataBase:
         try:
             cursor = self.connection.cursor()
 
-            query = f"""UPDATE {table_name} SET {column} = '{data}' WHERE username = '{user}';"""  # TODO: check if username needs to be made dynamic
+            # TODO: check if username needs to be made dynamic
+            query = f"UPDATE {table_name} "
+            f"SET {column} = '{data}' "
+            f"WHERE username = '{user}';"
 
             cursor.execute(query)
         except Exception as e:
@@ -153,7 +156,9 @@ class DataBase:
             records = None
             cursor = self.connection.cursor()
 
-            query = f"""SELECT {column} FROM {table_name} WHERE username = '{user}';"""
+            query = f"SELECT {column} "
+            f"FROM {table_name} "
+            f"WHERE username = '{user}';"
 
             cursor.execute(query)
             records = cursor.fetchall()
@@ -161,7 +166,8 @@ class DataBase:
             if type(records) is tuple:
                 records = records[0][0]
 
-            self.connection.commit()  # commit needed to cement transaction in database
+            # commit needed to cement transaction in database
+            self.connection.commit()
         except Exception as e:
             print("An error occurred:", e)
             self.connection.rollback()
@@ -182,12 +188,15 @@ class DataBase:
         """
         try:
             cursor = self.connection.cursor()
-            query = f"""UPDATE {table_name} SET {column} = array_append({column},'{sender}') WHERE username = '{receiver}';"""
+            query = f"UPDATE {table_name} "
+            f"SET {column} = array_append({column},'{sender}') "
+            f"WHERE username = '{receiver}';"
             cursor.execute(query)
             self.connection.commit()
         except Exception as e:
             print(
-                "An error occurred: Cannot append to non-array column in database"
+                "An error occurred: "
+                "Cannot append to non-array column in database"
             )
             print("An error occurred:", e)
             self.connection.rollback()
@@ -235,7 +244,8 @@ class DataBase:
             cursor = self.connection.cursor()
 
             query = (
-                f"SELECT username FROM {table_name} WHERE username = '{user}';"
+                f"SELECT username FROM {table_name} "
+                f"WHERE username = '{user}';"
             )
             cursor.execute(query)
             record = list(cursor.fetchall())
@@ -286,7 +296,8 @@ def main():
 
     db.search_user(table_name, "Fiona")
 
-    # db.add_entry(table_name, {"username": "Keith", "password": "strong password"})
+    # db.add_entry(table_name, {"username": "Keith",
+    # "password": "strong password"})
     # db.remove_entry(table_name, 'Conor')
     # db.update_entry(table_name, 'Keith', 'password', 'Roots123')
     # db.print_table(table_name)
