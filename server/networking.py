@@ -34,10 +34,7 @@ class Networking():
             return {"message": f"Friend request to {request.receiver} unsuccessful"}
 
     def update_pending_friends(sender, receiver):
-        
-
-            
-
+        pass #TODO:
 
 class RequestData(BaseModel):
     sender: str

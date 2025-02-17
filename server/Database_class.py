@@ -52,6 +52,7 @@ class DataBase():
             cursor.close()
 
         except Exception as e:
+            self.connection.rollback()
             print("An error occurred:", e)
 
     def add_entry(self, table_name: str, table_data: dict[str, str]) -> None:
@@ -61,28 +62,32 @@ class DataBase():
             table name (str): name of table to be queried 
             table data (str, str): keys are columns, values are user data
         """
-        cursor = self.connection.cursor()
+        try:
+            cursor = self.connection.cursor()
 
-        query = f"""INSERT INTO {table_name} ("""
+            query = f"""INSERT INTO {table_name} ("""
 
-        # Insert column names
-        for key in table_data.keys():
-            query += f"""{key},"""
+            # Insert column names
+            for key in table_data.keys():
+                query += f"""{key},"""
 
-        query = query[0:-1]
-        query += ") VALUES ("
+            query = query[0:-1]
+            query += ") VALUES ("
 
-        # Insert entry values for each column
-        for value in table_data.values():
-            if "ARRAY" in value:
-                query += f"""{value},"""
-            else:
-                query += f"""'{value}',"""
-        query = query[0:-1]
-        query += ");"
+            # Insert entry values for each column
+            for value in table_data.values():
+                if "ARRAY" in value:
+                    query += f"""{value},"""
+                else:
+                    query += f"""'{value}',"""
+            query = query[0:-1]
+            query += ");"
 
-        cursor.execute(query)
-        cursor.close()
+            cursor.execute(query)
+        except:
+            self.connection.rollback()
+        finally:
+            cursor.close()
 
     def remove_entry(self, table_name: str, username: str) -> None:
         """Remove entry (entire row) from table
@@ -91,10 +96,14 @@ class DataBase():
             table_name (str): name of table to be queried
             username (str): username given as identifier in table
         """
-        cursor = self.connection.cursor()
-        query = f"DELETE FROM {table_name} WHERE username = '{username}';"
-        cursor.execute(query)
-        cursor.close()
+        try:
+            cursor = self.connection.cursor()
+            query = f"DELETE FROM {table_name} WHERE username = '{username}';"
+            cursor.execute(query)
+        except:
+            self.connection.rollback()
+        finally:
+            cursor.close()
 
     def update_entry(self, table_name: str, user: str, column: str, data: str) -> None:
         """Update entry of specific column
@@ -105,12 +114,16 @@ class DataBase():
             column (str): column to be edited in table
             data (str): data to be inserted in new column entry
         """
-        cursor = self.connection.cursor()
+        try:
+            cursor = self.connection.cursor()
 
-        query = f"""UPDATE {table_name} SET {column} = '{data}' WHERE username = '{user}';"""  # TODO: check if username needs to be made dynamic
+            query = f"""UPDATE {table_name} SET {column} = '{data}' WHERE username = '{user}';"""  # TODO: check if username needs to be made dynamic
 
-        cursor.execute(query)
-        cursor.close()
+            cursor.execute(query)
+        except:
+            self.connection.rollback()
+        finally:
+            cursor.close()
 
     def search_entry(self, table_name: str, user: str, column: str):
         """Search for entry in Table Cell
@@ -120,11 +133,10 @@ class DataBase():
             user (str): selected user
             column (str): column needed
         """
-        cursor = self.connection.cursor()
-
-        records = None
-
         try:
+            records = None
+            cursor = self.connection.cursor()
+
             query = f"""SELECT {column} FROM {table_name} WHERE username = '{user}';"""
 
             cursor.execute(query)
@@ -132,10 +144,11 @@ class DataBase():
 
             if type(records) is tuple:
                 records = records[0][0]
+
+            self.connection.commit() # commit needed to cement transaction in database
         except Exception as e:
             print("An error occurred: ", e)
             self.connection.rollback()
-
         finally:
             cursor.close()
             return records
@@ -149,15 +162,14 @@ class DataBase():
             receiver (str): user receiving request
             column (str): column needed - must be an array column
         """
-        cursor = self.connection.cursor()
-
         try:
+            cursor = self.connection.cursor()
             query = f"""UPDATE {table_name} SET {column} = array_append({column},'{sender}') WHERE username = '{receiver}';"""
             cursor.execute(query)
+            self.connection.commit()
         except Exception as e:
             print("An error occurred: Cannot append to non-array column in database")
             self.connection.rollback()
-        
         finally:
             cursor.close()
 
@@ -178,9 +190,11 @@ class DataBase():
             for record in records:
                 print(record)
 
-
         except Exception as e:
             print("An error occurred:", e)
+            self.connection.rollback()
+        finally:
+            cursor.close()
 
     def close_con(self):
         """Close the connection
@@ -209,6 +223,9 @@ class DataBase():
             return False
         except Exception as e:
             print("An error occurred: ", e)
+            self.connection.rollback()
+        finally:
+            cursor.close()
 
 
 def main():
