@@ -31,14 +31,14 @@ jobs:
           cd server
           python -m pip install --upgrade pip
           pip install flake8 black
-      - name: Run flake8 (Linting)
-        run: |
-          cd server
-          flake8 src/ tests/
       - name: Run Black (Formatting Check)
         run: |
           cd server
           black --check --diff src/ tests/
+      - name: Run flake8 (Linting)
+        run: |
+          cd server
+          flake8 src/ tests/
   test:
     name: Run Backend Tests
     runs-on: ubuntu-latest
