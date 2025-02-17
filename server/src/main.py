@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import logging
 import uvicorn
 import sys
-from login import Login
+from server.src.login import Login
 from apis.weatherApi import weatherAPI
 from dotenv import load_dotenv
 

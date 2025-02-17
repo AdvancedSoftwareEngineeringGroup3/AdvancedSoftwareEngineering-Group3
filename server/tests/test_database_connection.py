@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from server.Database_class import DataBase
+from server.src.Database_class import DataBase
 
 DB_NAME = "test_db"
 DB_USER = "your_user"
