@@ -41,6 +41,14 @@ def calc_emissions(distance: float, vehicle_type: VehicleEnum) -> float:
 
 
 def calc_scores(emissions_difference: float) -> float:
+    """Function calculates sustainibility score based on the save carbon emissions of taking public transport vs a car
+
+    Args:
+        emissions_difference (float): differences in journies
+
+    Returns:
+        float: sustainibility score
+    """
     if emissions_difference < 0:
         return -1
 
