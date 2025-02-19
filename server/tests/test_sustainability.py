@@ -1,5 +1,4 @@
 from sustainability import calc_emissions, calc_scores
-import pytest
 
 
 #   Test Emissions calculating function
