@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import Dashboard from './SustainabilityDashboard';
 
 export default function MapScreen({ navigation }) {
     const [webSocket, setWebSocket] = useState(null);
@@ -129,13 +130,19 @@ export default function MapScreen({ navigation }) {
                         <Text style={styles.buttonText}>Send Location</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={styles.TouchableOpacity}
+                        style={styles.loginButton}
                         onPress={() => navigation.navigate('LoginScreen')}
                     >
                         <Text style={styles.buttonText}>Log In</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={styles.TouchableOpacity1}
+                        style={styles.dashboardButton}
+                        onPress={() => navigation.navigate('Dashboard')}
+                    >
+                        <Text style={styles.buttonText}>Sustainability Dashboard</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.weatherButton}
                         onPress={() => navigation.navigate('WeatherScreen')}
                     >
                         <Text style={styles.buttonText}>Weather</Text>
@@ -158,8 +165,8 @@ const styles = StyleSheet.create({
     },
     sendButton: {
         position: 'absolute',
-        bottom: 20,
-        left: '50%',
+        bottom: 15,
+        left: '80%',
         transform: [{ translateX: -50 }],
         backgroundColor: '#007bff',
         paddingVertical: 10,
@@ -171,7 +178,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
-    TouchableOpacity: {
+    loginButton: {
         position: 'absolute',
         alignItems: 'center',
         left: '70%',
@@ -186,7 +193,7 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         elevation: 5,
     },
-    TouchableOpacity1: {
+    weatherButton: {
         position: 'absolute',
         alignItems: 'center',
         left: '0%',
@@ -194,6 +201,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#007bff',
         paddingVertical: 10,
         paddingHorizontal: 40,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    dashboardButton: {
+        position: 'absolute',
+        alignItems: 'center',
+        left: '0%',
+        top: '93%',
+        backgroundColor: '#007bff',
+        paddingVertical: 10,
+        paddingHorizontal: 10,
         borderRadius: 10,
         shadowColor: '#000',
         shadowOpacity: 0.2,

@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from './LogIn';
 import MapScreen from './Map';
 import WeatherScreen from './Weather';
+import Dashboard from './SustainabilityDashboard'
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +15,7 @@ export default function App() {
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="WeatherScreen" component={WeatherScreen} />
+        <Stack.Screen name="Dashboard" component={Dashboard} />
       </Stack.Navigator>
     </NavigationContainer>
   );
