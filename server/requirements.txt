@@ -10,3 +10,4 @@ passlib
 websockets
 bcrypt
 pytest
+pg8000

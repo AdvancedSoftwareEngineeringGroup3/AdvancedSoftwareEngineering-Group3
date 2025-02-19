@@ -2,14 +2,18 @@
 FROM python:3.10-slim
 
 # Set the working directory inside the container
-WORKDIR /app/src
+WORKDIR /app
 
 # Copy requirements and install dependencies
-COPY src/requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
-COPY . .
+COPY src/ src/
+COPY tests/ tests/
+
+# Copy environment vars
+COPY .env .env
 
 # Expose the FastAPI port
 EXPOSE 8000

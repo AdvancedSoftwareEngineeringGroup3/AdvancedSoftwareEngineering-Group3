@@ -1,12 +1,12 @@
-import pytest
 import os
 from src.wayfinding import get_routes
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def test_calculate_route():
-    
+
     origin = "Tara Street"
     destination = "Ashbourne Meath"
     mode = "Walking"
@@ -27,7 +27,7 @@ def test_calculate_route_missing_params():
     
 def test_calculate_route_api_key():
     # wrong API key
-    
+
     origin = "Tara Street"
     Destination = "Ashbourne"
     mode = "Walking"

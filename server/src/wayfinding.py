@@ -32,5 +32,5 @@ def get_routes(origin: str = Body(...),
     print("parameters are ok!")
 
     response = requests.get(url, params=parameters)
-    
+
     return response.json()
