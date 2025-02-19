@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 # from src.wayfinding import router  # Import the API routes
-from wayfinding import router  # Import the API routes
+from src.wayfinding import router  # Import the API routes
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import logging
