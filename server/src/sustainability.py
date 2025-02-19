@@ -2,10 +2,10 @@ from enum import Enum
 
 
 class VehicleEnum(Enum):
-    Bus = 'b'
-    Car = 'c'
-    Luas = 'l'
-    Train = 't'
+    Bus = "b"
+    Car = "c"
+    Luas = "l"
+    Train = "t"
 
 
 def calc_emissions(distance: float, vehicle_type: VehicleEnum) -> float:
@@ -24,13 +24,13 @@ def calc_emissions(distance: float, vehicle_type: VehicleEnum) -> float:
 
     if distance < 0:
         return -1
-    elif vehicle_type == 'b':
+    elif vehicle_type == "b":
         emission_factor = 25
-    elif vehicle_type == 'c':
+    elif vehicle_type == "c":
         emission_factor = 102
-    elif vehicle_type == 'l':
+    elif vehicle_type == "l":
         emission_factor = 5
-    elif vehicle_type == 't':
+    elif vehicle_type == "t":
         emission_factor = 28
     else:
         return -1
