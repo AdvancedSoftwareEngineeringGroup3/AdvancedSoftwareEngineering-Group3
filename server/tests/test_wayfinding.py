@@ -52,6 +52,21 @@ def test_check_transport_modes():
 
     for mode in modes:
         response = get_routes(origin, destination, mode, alternatives, key=key)
-    
-    assert response.get("status") == "OK"
+
+        if response["routes"]:
+            first_route = response["routes"][0]
+            if first_route["legs"]:
+                first_leg = first_route["legs"][0]                   
+                if first_leg["steps"]:
+                    first_step = first_leg["steps"][mode=="transit"] # true == 1 --> check second leg for transit , false == 0 --> otherwise check the first leg
+                    travel_mode = first_step["travel_mode"]
+                    print(f"Travel mode for the route: {travel_mode}")
+                else:
+                    print("No steps found in the leg.")
+            else:
+                print("No legs found in the route.")
+        else:
+            print("No routes found in the response.")
+
+        assert travel_mode.lower() == mode
     
