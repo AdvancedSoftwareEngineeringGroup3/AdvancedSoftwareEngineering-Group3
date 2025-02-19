@@ -1,4 +1,4 @@
-from sustainability import calc_emissions, calc_scores
+from src.sustainability import calc_emissions, calc_scores
 
 
 #   Test Emissions calculating function
