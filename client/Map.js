@@ -9,7 +9,7 @@ export default function MapScreen({ navigation }) {
     const [location, setLocation] = useState(null); // No hardcoded initial location
     const [errorMessage, setErrorMessage] = useState('');
     const mapRef = useRef(null); // Reference to the MapView
-
+   
     // WebSocket Setup
     useEffect(() => {
         const wsUrl = `${process.env.EXPO_PUBLIC_API_URL.replace(/^http/, 'ws')}/ws/location`;
@@ -154,7 +154,6 @@ export default function MapScreen({ navigation }) {
         </View>
     );
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
