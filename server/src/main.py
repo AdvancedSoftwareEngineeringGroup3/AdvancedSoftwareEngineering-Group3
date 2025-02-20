@@ -6,6 +6,7 @@ import uvicorn
 import sys
 from src.login import Login
 from src.weatherApi import weatherAPI
+from src.preferences import UserPersonalizedSettings
 
 
 class Server:
@@ -20,6 +21,7 @@ class Server:
         self.login_logic = Login(self.app, self.logger)
         self.connection_manager = ConnectionManager()
         self.weather_api = weatherAPI()
+        self.userPersonalisation  = UserPersonalizedSettings()
 
         # Configure CORS
         self.configure_cors()
@@ -94,6 +96,18 @@ class Server:
             except Exception as e:
                 self.logger.error(f"Error hitting weather endpoint: {e}")
                 raise
+
+        @self.app.post("/setPreferences")
+        async def set_Preferences():
+            self.logger.info(f'{"Recieved Personalisation Request"}')
+            try:
+                
+                return self.userPersonalisation.post()      
+    
+            
+
+
+
 
         @self.app.websocket("/ws/location")
         async def websocket_endpoint(websocket: WebSocket):
