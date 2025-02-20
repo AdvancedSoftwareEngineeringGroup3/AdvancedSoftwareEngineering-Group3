@@ -35,19 +35,32 @@ class Networking():
 
     def update_pending_friends(sender, receiver):
         table_name = "user_table"
-        # Search for receiver
         if search_user(table_name, receiver):
-            # If they exist, add the sender to pending friends list
             try:
-                append_entry(table_name, sender, receiver, "pending_friends")
-                # Send back positive message
-                self.logger.info(f"Friend request sent successfully")
-        # Else send back negative message
+                request_list = search_entry(table_name, receiver, "pending_friends")
+                if sender not in request_list:
+                    append_entry(table_name, sender, receiver, "pending_friends")
+                    self.logger.info(f"Friend request sent successfully")
+                else:
+                    self.logger.info(f"Friend request already sent")
             except Exception as e:
                 self.logger(e)
                 print(e)
         else:
             self.logger.info(f"User {receiver} not found")
+
+    # client requests pending friend requests
+    def handle_pending_friend_request(self):
+        @self.app.post("/check_requests")
+        async def check_friends_list(user: str):
+            self.logger.info(f"Received request for pending friends from {user}")
+            # TODO: switch out "update_pending_friends"
+            if (self.update_pending_friends(request.sender, request.receiver)):
+                self.logger.info(f"Friend request successfully sent to {request.receiver}")
+
+                return {"message": f"Friend request successfully sent to {request.receiver}"}
+            
+            return {"message": f"Friend request to {request.receiver} unsuccessful"}
 
 class RequestData(BaseModel):
     sender: str
