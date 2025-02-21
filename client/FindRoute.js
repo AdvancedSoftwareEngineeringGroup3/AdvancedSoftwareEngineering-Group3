@@ -43,9 +43,14 @@ export default function FindRouteScreen({ navigation }){
 
             const data = await response.json();
             console.log('Server response:', data);
+
             setServerResponse("Data has been queried successfully!")
-            await new Promise(resolve => setTimeout(resolve, 3000));
-            setServerResponse("")
+            // await new Promise(resolve => setTimeout(resolve, 3000));
+            // setServerResponse("")
+
+            // Navigate to DisplayRouteScreen with the response data
+            navigation.navigate('DisplayRouteScreen', { routeData: data });
+
         } catch (error) {
             console.error('Error details:', error);
         }

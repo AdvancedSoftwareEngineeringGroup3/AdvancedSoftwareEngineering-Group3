@@ -11,3 +11,4 @@ websockets
 bcrypt
 pytest
 pg8000
+polyline

@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert, Platform } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { getCurrentLocation, startLocationTracking } from './mapUtils';
+import { decode } from '@googlemaps/polyline-codec'; // For decoding the polyline
 
 export default function MapScreen({ navigation }) {
     const [webSocket, setWebSocket] = useState(null);
-    const [location, setLocation] = useState(null);
+    const [location, setLocation] = useState(null); // No hardcoded initial location
     const [errorMessage, setErrorMessage] = useState('');
-    const mapRef = useRef(null);
+    const [polylineCoordinates, setPolylineCoordinates] = useState([]); // State for polyline coordinates
+    const mapRef = useRef(null); // Reference to the MapView
 
     // WebSocket Setup
     useEffect(() => {
@@ -21,79 +22,112 @@ export default function MapScreen({ navigation }) {
             console.log('WebSocket connection opened');
             setWebSocket(socket);
         };
-        
-        socket.onmessage = (event) => console.log('Message from server:', event.data); // check if required
-        socket.onerror = (error) => console.error('WebSocket error:', error);
-        socket.onclose = () => console.log('WebSocket connection closed');
 
-        return () => socket.close();
+        socket.onmessage = (event) => {
+            console.log('Message from server:', event.data);
+        };
+
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        socket.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        return () => {
+            socket.close();
+        };
     }, []);
 
     // Location Setup
-    // useEffect(() => {
-    //     (async () => {
-    //         const { status } = await Location.requestForegroundPermissionsAsync();
-    //         if (status !== 'granted') {
-    //             setErrorMessage('Permission to access location was denied.');
-    //             return;
-    //         }
-
-    //         const currentLocation = await Location.getCurrentPositionAsync({
-    //             accuracy: Location.Accuracy.BestForNavigation,
-    //         });
-    //         setLocation(currentLocation.coords);
-
-    //         // Track location updates
-    //         const locationSubscription = await Location.watchPositionAsync(
-    //             {
-    //                 accuracy: Location.Accuracy.BestForNavigation,
-    //                 timeInterval: 5000,
-    //                 distanceInterval: 5,
-    //             },
-    //             (newLocation) => {
-    //                 setLocation(newLocation.coords);
-    //                 if (mapRef.current) {
-    //                     mapRef.current.animateToRegion({
-    //                         latitude: newLocation.coords.latitude,
-    //                         longitude: newLocation.coords.longitude,
-    //                         latitudeDelta: 0.01,
-    //                         longitudeDelta: 0.01,
-    //                     }, 1000);
-    //                 }
-    //             }
-    //         );
-
-    //         return () => locationSubscription.remove();
-    //     })();
-    // }, []);
-
     useEffect(() => {
         (async () => {
-            try {
-                const initialLocation = await getCurrentLocation();
-                setLocation(initialLocation);
-
-                const locationSubscription = await startLocationTracking(setLocation);
-
-                return () => locationSubscription.remove();
-            } catch (error) {
-                setErrorMessage(error.message);
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setErrorMessage('Permission to access location was denied.');
+                return;
             }
+
+            // Fetch initial location
+            const currentLocation = await Location.getCurrentPositionAsync({
+                accuracy: Location.Accuracy.BestForNavigation,
+            });
+            const { latitude, longitude } = currentLocation.coords;
+            setLocation({ latitude, longitude });
+
+            // Set up continuous location tracking
+            const locationSubscription = await Location.watchPositionAsync(
+                {
+                    accuracy: Location.Accuracy.BestForNavigation,
+                    timeInterval: 5000, // Update every 5 seconds
+                    distanceInterval: 5, // Update if device moves 5 meters
+                },
+                (newLocation) => {
+                    const { latitude, longitude } = newLocation.coords;
+                    console.log('Updated Location:', { latitude, longitude });
+                    setLocation({ latitude, longitude });
+
+                    // Animate the map to the new region
+                    if (mapRef.current) {
+                        mapRef.current.animateToRegion(
+                            {
+                                latitude,
+                                longitude,
+                                latitudeDelta: 0.01,
+                                longitudeDelta: 0.01,
+                            },
+                            1000 // Animation duration in milliseconds
+                        );
+                    }
+                }
+            );
+
+            return () => locationSubscription.remove();
         })();
     }, []);
 
-    // Send Location to WebSocket
-    const sendLocation = () => {
-        if (webSocket && location) {
-            webSocket.send(JSON.stringify(location));
-            console.log('Sent location:', location);
-        } else {
-            Alert.alert(
-                'Location/WebSocket Issue',
-                !location ? 'Fetching GPS location...' : 'WebSocket not connected.'
-            );
+    // Function to Fetch and Decode Polyline
+    const fetchPolyline = async () => {
+        try {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/wayfinding/get_routes`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    origin: "Tara Street, Dublin",
+                    destination: "Ashbourne, Ireland",
+                    mode: "walking",
+                    alternatives: false
+                })
+            });
+    
+            const data = await response.json();
+    
+            if (data.route) {
+                setPolylineCoordinates(data.route); // The response is already a list of { latitude, longitude }
+            }
+        } catch (error) {
+            console.error("Error fetching polyline:", error);
         }
     };
+
+    // Function to Send Location to WebSocket
+    const sendLocation = () => {
+        if (webSocket && location) {
+            const locationData = JSON.stringify(location);
+            webSocket.send(locationData);
+            console.log('Sent location:', locationData);
+        } else if (!location) {
+            Alert.alert('Location not available', 'Please wait for the GPS to fetch your location.');
+        } else {
+            Alert.alert('WebSocket not connected', 'Please wait for the WebSocket connection to establish.');
+        }
+    };
+
+    // Fetch polyline when the component mounts
+    useEffect(() => {
+        fetchPolyline();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -121,6 +155,14 @@ export default function MapScreen({ navigation }) {
                             title="Dublin"
                             description="Marker description"
                         />
+                        {/* Render the polyline */}
+                        {polylineCoordinates.length > 0 && (
+                            <Polyline
+                                coordinates={polylineCoordinates}
+                                strokeColor="#FF0000" // Red color
+                                strokeWidth={3}
+                            />
+                        )}
                     </MapView>
                     <TouchableOpacity style={styles.sendButton} onPress={sendLocation}>
                         <Text style={styles.buttonText}>Send Location</Text>
@@ -150,22 +192,6 @@ export default function MapScreen({ navigation }) {
         </View>
     );
 }
-
-// const styles = StyleSheet.create({
-//     container: { flex: 1, ...(Platform.OS === 'web' ? { height: '100vh' } : {}) },
-//     map: { flex: 1, minHeight: 300 },
-//     sendButton: {
-//         position: 'absolute', bottom: 20, left: '50%', transform: [{ translateX: -50 }],
-//         backgroundColor: '#007bff', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 10,
-//     },
-//     button: {
-//         position: 'absolute', bottom: 60, left: '50%', transform: [{ translateX: -50 }],
-//         backgroundColor: '#007bff', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 10,
-//     },
-//     buttonText: { color: '#fff', fontWeight: 'bold', textAlign: 'center' },
-//     error: { flex: 1, textAlign: 'center', fontSize: 18, color: 'red' },
-//     loadingText: { flex: 1, textAlign: 'center', fontSize: 18 },
-// });
 
 const styles = StyleSheet.create({
     container: {
