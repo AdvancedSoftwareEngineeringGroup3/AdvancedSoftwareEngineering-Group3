@@ -212,6 +212,35 @@ class DataBase:
         finally:
             cursor.close()
 
+    def remove_from_array(
+            self, table_name: str, user: str, column: str, value_to_remove: str
+    ) -> None:
+        """Remove a specific value from an array column in a user's row.
+
+        Args:
+            table_name (str): Name of the table to be queried
+            user (str): The username used to identify the record in the table
+            column (str): The array column to remove the value from
+            value_to_remove (str): The value to remove from the array
+        """
+        try:
+            cursor = self.connection.cursor()
+            query = (
+                f"UPDATE {table_name} "
+                f"SET {column} = ARRAY_REMOVE({column}, '{value_to_remove}')"
+                f"WHERE username = '{user}';"
+            )
+            cursor.execute(query)
+            self.connection.commit()
+
+        except Exception as e:
+            self.connection.rollback()
+            print("An error occurred while removing value from array column:", e)
+
+        finally:
+            cursor.close()
+
+
     def print_table(self, tablename: str):
         """Prints current selected table
 
