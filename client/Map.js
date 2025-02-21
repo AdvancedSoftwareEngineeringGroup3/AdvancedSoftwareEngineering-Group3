@@ -147,6 +147,14 @@ export default function MapScreen({ navigation }) {
                     >
                         <Text style={styles.buttonText}>Weather</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.PreferencesButton}
+                        onPress={() => navigation.navigate('PreferencesScreen')}
+                    >
+                        <Text style={styles.buttonText}>User Preferences</Text>
+                    </TouchableOpacity>
+
                 </>
             ) : (
                 <Text style={styles.loadingText}>Fetching your location...</Text>
@@ -182,6 +190,21 @@ const styles = StyleSheet.create({
         position: 'absolute',
         alignItems: 'center',
         left: '70%',
+        top: '0%',
+        backgroundColor: '#007bff',
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    PreferencesButton: {
+        position: 'absolute',
+        alignItems: 'center',
+        left: '0%',
         top: '0%',
         backgroundColor: '#007bff',
         paddingVertical: 10,

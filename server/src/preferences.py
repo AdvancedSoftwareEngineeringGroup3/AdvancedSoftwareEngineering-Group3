@@ -1,4 +1,4 @@
-from Database_class import DataBase
+from src.Database_class import DataBase
 
 class UserPersonalizedSettings:
     

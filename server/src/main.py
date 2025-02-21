@@ -7,6 +7,7 @@ import sys
 from src.login import Login
 from src.weatherApi import weatherAPI
 from src.preferences import UserPersonalizedSettings
+from src.Database_class import DataBase
 
 
 class Server:
@@ -100,9 +101,9 @@ class Server:
         @self.app.post("/setPreferences")
         async def set_Preferences():
             self.logger.info(f'{"Recieved Personalisation Request"}')
-            try:
+            #try:
                 
-                return self.userPersonalisation.post()      
+                #return self.userPersonalisation.post()      
     
             
 
