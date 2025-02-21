@@ -227,11 +227,11 @@ class DataBase:
 
         except Exception as e:
             self.connection.rollback()
-            print("An error occurred while removing value from array column:", e)
+            print("An error occurred while removing"
+                  + "value from array column:", e)
 
         finally:
             cursor.close()
-
 
     def print_table(self, tablename: str):
         """Prints current selected table
