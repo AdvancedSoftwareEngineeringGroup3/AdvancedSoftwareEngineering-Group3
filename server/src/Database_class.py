@@ -49,21 +49,29 @@ class DataBase:
             table info (dict[str, str]): dict containing columns
             as keys and data type as column type
         """
+
         try:
             cursor = self.connection.cursor()
-            query = f"""CREATE TABLE {table_name} ("""
             query = f"""CREATE TABLE {table_name} ("""
 
             for key in table_info.keys():
                 query += f"{key} {table_info[key]},"
             query = query[0:-1]
             query += ");"
+
+            print(query)
             cursor.execute(query)
             cursor.close()
 
         except Exception as e:
             self.connection.rollback()
             print("An error occurred:", e)
+
+
+        # cursor = self.connection.cursor()
+        # data = cursor.execute("SELECT * FROM information_schema.tables")
+        # data = cursor.fetchall()
+        # print(data)
 
     def add_entry(self, table_name: str, table_data: dict[str, str]) -> None:
         """Add row to database with new entry
@@ -156,9 +164,9 @@ class DataBase:
             records = None
             cursor = self.connection.cursor()
 
-            query = f"SELECT {column} "
-            f"FROM {table_name} "
-            f"WHERE username = '{user}';"
+            query = f"""SELECT {column}
+            FROM {table_name}
+            WHERE username = '{user}';"""
 
             cursor.execute(query)
             records = cursor.fetchall()
@@ -294,7 +302,7 @@ def main():
     # Initialise database class
     db = DataBase()
 
-    table_name = "user_table"
+    table_name = "testing_table"
     table_info = {
         "id": "SERIAL PRIMARY KEY",
         "username": "VARCHAR(50)",
@@ -320,11 +328,12 @@ def main():
 
     result = db.search_entry(table_name, "Conor", "pending_friends")
     print(result)
-    db.append_entry(table_name, "keith", "Conor", "sus_score")
-    result = db.search_entry(table_name, "Conor", "sus_score")
-    print(result)
 
-    db.search_user(table_name, "Fiona")
+    db.append_entry(table_name, "keith", "Conor", "pending_friends")
+    db.append_entry(table_name, "siobhan", "Conor", "pending_friends")
+    
+    result = db.search_entry(table_name, "Conor", "pending_friends")
+    print(result)
 
     # db.add_entry(table_name, {"username": "Keith",
     # "password": "strong password"})
