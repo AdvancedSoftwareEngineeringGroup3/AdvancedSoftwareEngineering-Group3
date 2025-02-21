@@ -36,6 +36,114 @@ export default function PreferencesScreen({ navigation }) {
                 onValueChange={() => handleToggle("bike")}
                 />
             </View>
+
+            <View style={styles.switchContainer}>
+                <Text> Private Vehicle </Text> 
+                <Switch
+                //trackColor={{false: '#767577', true: '#81b0ff'}}
+                value={userPreferences.privateVehicle}
+                onValueChange={() => handleToggle("privateVechicle")}
+                />
+            </View>
+
+            <View style={styles.switchContainer}>
+                <Text> Accessibility </Text> 
+                <Switch
+                //trackColor={{false: '#767577', true: '#81b0ff'}}
+                value={userPreferences.accessibility}
+                onValueChange={() => handleToggle("accessibility")}
+                />
+            </View>
+
+            <View style={styles.switchContainer}>
+                <Text> Motorways </Text> 
+                <Switch
+                //trackColor={{false: '#767577', true: '#81b0ff'}}
+                value={userPreferences.motorways}
+                onValueChange={() => handleToggle("motorways")}
+                />
+            </View>
+
+
+            <View style={styles.switchContainer}>
+                <Text> tolls </Text> 
+                <Switch
+                //trackColor={{false: '#767577', true: '#81b0ff'}}
+                value={userPreferences.tolls}
+                onValueChange={() => handleToggle("tolls")}
+                />
+            </View>
+
+
+            <View style={styles.switchContainer}>
+                <Text> Bus </Text> 
+                <Switch
+                //trackColor={{false: '#767577', true: '#81b0ff'}}
+                value={userPreferences.bus}
+                onValueChange={() => handleToggle("bus")}
+                />
+            </View>
+
+            <View style={styles.switchContainer}>
+                <Text> Car </Text> 
+                <Switch
+                //trackColor={{false: '#767577', true: '#81b0ff'}}
+                value={userPreferences.car}
+                onValueChange={() => handleToggle("car")}
+                />
+            </View>
+
+            <View style={styles.switchContainer}>
+                <Text> train </Text> 
+                <Switch
+                //trackColor={{false: '#767577', true: '#81b0ff'}}
+                value={userPreferences.train}
+                onValueChange={() => handleToggle("train")}
+                />
+            </View>
+
+            <View style={styles.switchContainer}>
+                <Text> Walk </Text> 
+                <Switch
+                //trackColor={{false: '#767577', true: '#81b0ff'}}
+                value={userPreferences.walk}
+                onValueChange={() => handleToggle("walk")}
+                />
+            </View>
+
+            <View style={styles.switchContainer}>
+                <Text> Tram </Text> 
+                <Switch
+                //trackColor={{false: '#767577', true: '#81b0ff'}}
+                value={userPreferences.tram}
+                onValueChange={() => handleToggle("tram")}
+                />
+            </View>
+
+            <View style={styles.switchContainer}>
+                <Text> I own a Bike </Text> 
+                <Switch
+                //trackColor={{false: '#767577', true: '#81b0ff'}}
+                value={userPreferences.personalBike}
+                onValueChange={() => handleToggle("personalBike")}
+                />
+            </View>
+
+            
+
+
+
+
+
+
+
+
+            
+
+
+
+
+            
         </SafeAreaView>
     </View>
     )
