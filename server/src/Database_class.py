@@ -67,15 +67,8 @@ class DataBase:
             self.connection.rollback()
             print("An error occurred:", e)
 
-
-        # cursor = self.connection.cursor()
-        # data = cursor.execute("SELECT * FROM information_schema.tables")
-        # data = cursor.fetchall()
-        # print(data)
-
     def add_entry(self, table_name: str, table_data: dict[str, str]) -> None:
         """Add row to database with new entry
-
 
         Args:
             table name (str): name of table to be queried
@@ -213,7 +206,7 @@ class DataBase:
             cursor.close()
 
     def remove_from_array(
-            self, table_name: str, user: str, column: str, value_to_remove: str
+        self, table_name: str, user: str, column: str, value_to_remove: str
     ) -> None:
         """Remove a specific value from an array column in a user's row.
 
@@ -235,8 +228,11 @@ class DataBase:
 
         except Exception as e:
             self.connection.rollback()
-            print("An error occurred while removing"
-                  + "value from array column:", e)
+            print(
+                "An error occurred while removing"
+                + "value from array column:",
+                e,
+            )
 
         finally:
             cursor.close()
@@ -331,7 +327,7 @@ def main():
 
     db.append_entry(table_name, "keith", "Conor", "pending_friends")
     db.append_entry(table_name, "siobhan", "Conor", "pending_friends")
-    
+
     result = db.search_entry(table_name, "Conor", "pending_friends")
     print(result)
 

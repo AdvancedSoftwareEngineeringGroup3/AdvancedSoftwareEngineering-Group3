@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import logging
-from Database_class import DataBase
+from .Database_class import DataBase
 
 
 class Networking:
@@ -11,14 +11,17 @@ class Networking:
 
         # Load environment vars
         load_dotenv()
-        self.handle_login()
+
+        self.api_fetch_all_friends()
+        self.api_friend_request_response()
+        self.api_send_friend_request()
 
     # client sends request to server
     def api_send_friend_request(self):
         @self.app.post("/send_request")
         async def request_data(request: RequestData):
             self.logger.info(
-                "Received friend request from " +
+                f"Received friend request from "
                 f"{request.sender} to {request.receiver}"
             )
 
@@ -26,11 +29,11 @@ class Networking:
                 return {"message": "Cannot send request to self"}
             else:
                 response = self.db_handle_friend_request(
-                    self, request.sender, request.receiver
+                    request.sender, request.receiver
                 )
                 return {"message": response}
 
-    def db_handle_friend_request(self, sender, receiver):
+    def db_handle_friend_request(self, sender: str, receiver: str):
         db = DataBase()
         db.connect_db()
         table_name = "user_table"
@@ -52,7 +55,7 @@ class Networking:
                     db.close_con()
                     return "Friend request already sent"
             except Exception as e:
-                self.logger(e)
+                self.logger.error(e)
                 print(e)
                 db.close_con()
                 return "Error during friend request"
@@ -64,15 +67,15 @@ class Networking:
     # client requests pending friend requests
     def api_fetch_all_friends(self):
         @self.app.post("/check_requests")
-        async def check_friends_list(user: str):
+        async def check_friends_list(user: CurrentUser):
             self.logger.info(
                 f"Received request for pending friends from {user}"
             )
-            friends, pending_friends = self.fetch_all_friends(user)
+            friends, pending_friends = self.db_fetch_all_friends(user)
             self.logger.info("Friends & Pending friends retrieved")
             return {"friends": friends, "pending_friends": pending_friends}
 
-    def db_fetch_all_friends(user):
+    def db_fetch_all_friends(self, user):
         table_name = "user_table"
         db = DataBase()
         db.connect_db()
@@ -83,14 +86,14 @@ class Networking:
 
     def api_friend_request_response(self):
         @self.app.post("/request_response")
-        async def answer_friend_request(
-            user: str, requester: str, answer: bool
-        ):
+        @self.app.post("/request_response")
+        async def answer_friend_request(request: FriendRequestResponse):
             self.logger.info(
-                f"Processing friend request from {requester} to {user}"
+                f"Processing friend request from "
+                f"{request.requester} to {request.user}"
             )
             return_msg = self.db_friend_request_response(
-                self, user, requester, answer
+                request.user, request.requester, request.answer
             )
 
             return {"message": return_msg}
@@ -138,6 +141,12 @@ class RequestData(BaseModel):
 
 class CurrentUser(BaseModel):
     user: str
+
+
+class FriendRequestResponse(BaseModel):
+    user: str
+    requester: str
+    answer: bool
 
 
 if __name__ == "__main__":
