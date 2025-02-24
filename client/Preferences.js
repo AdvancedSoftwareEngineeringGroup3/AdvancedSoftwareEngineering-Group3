@@ -6,23 +6,69 @@ export default function PreferencesScreen({ navigation }) {
 
     const [username, setUsername] = useState("");
 
-    const [userPreferences, setUserPreferences] = useState({
-        bike: false,
-        privateVehicle: false,
-        accessibility: false,
-        motorways: false,
-        tolls: false,
-        bus: false,
-        car: false,
-        train: false,
-        walk: false,
-        tram: false,
-        personalBike: false,
-    })
-    
-    const handleToggle = (key) => {
-        setUserPreferences((prev) => ({ ...prev, [key]: !prev[key] }));
+    const [isBikeEnabled, setIsBikeEnabled] = useState(false);
+    const [isPrivateVehicleEnabled, setIsPrivateVehicleEnabled] = useState(false);
+    const [isAccessibilityEnabled, setIsAccessibilityEnabled] = useState(false);
+    const [isMotorwaysEnabled, setIsMotorwaysEnabled] = useState(false);
+    const [isTollsEnabled, setIsTollsEnabled] = useState(false);
+    const [isBusEnabled, setIsBusEnabled] = useState(false);
+    const [isCarEnabled, setIsCarEnabled] = useState(false);
+    const [isTrainEnabled, setIsTrainEnabled] = useState(false);
+    const [isWalkEnabled, setIsWalkEnabled] = useState(false);
+    const [isTramEnabled, setIsTramEnabled] = useState(false);
+    const [isPersonalBikeEnabled, setIsPersonalBikeEnabled] = useState(false);
+
+    const handleToggleBike = () => setIsBikeEnabled(prev => !prev);
+    const handleTogglePrivateVehicle = () => setIsPrivateVehicleEnabled(prev => !prev);
+    const handleToggleAccessibility = () => setIsAccessibilityEnabled(prev => !prev);
+    const handleToggleMotorways = () => setIsMotorwaysEnabled(prev => !prev);
+    const handleToggleTolls = () => setIsTollsEnabled(prev => !prev);
+    const handleToggleBus = () => setIsBusEnabled(prev => !prev);
+    const handleToggleCar = () => setIsCarEnabled(prev => !prev);
+    const handleToggleTrain = () => setIsTrainEnabled(prev => !prev);
+    const handleToggleWalk = () => setIsWalkEnabled(prev => !prev);
+    const handleToggleTram = () => setIsTramEnabled(prev => !prev);
+    const handleTogglePersonalBike = () => setIsPersonalBikeEnabled(prev => !prev);
+      
+    const savePreferences = async () => {
+       
+       try {
+            const baseUrl = Platform.OS === 'web'
+              ? 'http://localhost:8000'
+              : process.env.EXPO_PUBLIC_API_URL;
+            console.log(`Sending request to ${baseUrl}/setPreferences`);
+      
+            const response = await fetch(`${baseUrl}/setPreferences`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({bike: isBikeEnabled, privateVehicle: isPrivateVehicleEnabled,
+                                    accessibility: isAccessibilityEnabled, motorways: isMotorwaysEnabled,
+                                    tolls: isTollsEnabled, bus: isBusEnabled, car: isCarEnabled, train: isTrainEnabled,
+                                    walk: isWalkEnabled, tram: isTramEnabled, personalBike: isPersonalBikeEnabled}),
+            });
+
+            console.log(JSON.stringify({bike: isBikeEnabled, privateVehicle: isPrivateVehicleEnabled,
+                accessibility: isAccessibilityEnabled, motorways: isMotorwaysEnabled,
+                tolls: isTollsEnabled, bus: isBusEnabled, car: isCarEnabled, train: isTrainEnabled,
+                walk: isWalkEnabled, tram: isTramEnabled, personalBike: isPersonalBikeEnabled}));
+            
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+      
+            // Await response and print message from server
+            const data = await response.json();
+            alert(data.message)
+            
+            console.log('Server response:', data);
+          } catch (error) {
+            console.error('Error details:', error);
+          }
       };
+
+
 
     return (
 
@@ -32,8 +78,8 @@ export default function PreferencesScreen({ navigation }) {
                 <Text> Bike </Text> 
                 <Switch
                 //trackColor={{false: '#767577', true: '#81b0ff'}}
-                value={userPreferences.bike}
-                onValueChange={() => handleToggle("bike")}
+                value={isBikeEnabled}
+                onValueChange={handleToggleBike}
                 />
             </View>
 
@@ -41,8 +87,8 @@ export default function PreferencesScreen({ navigation }) {
                 <Text> Private Vehicle </Text> 
                 <Switch
                 //trackColor={{false: '#767577', true: '#81b0ff'}}
-                value={userPreferences.privateVehicle}
-                onValueChange={() => handleToggle("privateVechicle")}
+                value={isPrivateVehicleEnabled}
+                onValueChange={handleTogglePrivateVehicle}
                 />
             </View>
 
@@ -50,8 +96,8 @@ export default function PreferencesScreen({ navigation }) {
                 <Text> Accessibility </Text> 
                 <Switch
                 //trackColor={{false: '#767577', true: '#81b0ff'}}
-                value={userPreferences.accessibility}
-                onValueChange={() => handleToggle("accessibility")}
+                value={isAccessibilityEnabled}
+                onValueChange={handleToggleAccessibility}
                 />
             </View>
 
@@ -59,8 +105,8 @@ export default function PreferencesScreen({ navigation }) {
                 <Text> Motorways </Text> 
                 <Switch
                 //trackColor={{false: '#767577', true: '#81b0ff'}}
-                value={userPreferences.motorways}
-                onValueChange={() => handleToggle("motorways")}
+                value={isMotorwaysEnabled}
+                onValueChange={handleToggleMotorways}
                 />
             </View>
 
@@ -69,18 +115,17 @@ export default function PreferencesScreen({ navigation }) {
                 <Text> tolls </Text> 
                 <Switch
                 //trackColor={{false: '#767577', true: '#81b0ff'}}
-                value={userPreferences.tolls}
-                onValueChange={() => handleToggle("tolls")}
+                value={isTollsEnabled}
+                onValueChange={handleToggleTolls}
                 />
             </View>
-
 
             <View style={styles.switchContainer}>
                 <Text> Bus </Text> 
                 <Switch
                 //trackColor={{false: '#767577', true: '#81b0ff'}}
-                value={userPreferences.bus}
-                onValueChange={() => handleToggle("bus")}
+                value={isBusEnabled}
+                onValueChange={handleToggleBus}
                 />
             </View>
 
@@ -88,8 +133,8 @@ export default function PreferencesScreen({ navigation }) {
                 <Text> Car </Text> 
                 <Switch
                 //trackColor={{false: '#767577', true: '#81b0ff'}}
-                value={userPreferences.car}
-                onValueChange={() => handleToggle("car")}
+                value={isCarEnabled}
+                onValueChange={handleToggleCar}
                 />
             </View>
 
@@ -97,8 +142,8 @@ export default function PreferencesScreen({ navigation }) {
                 <Text> train </Text> 
                 <Switch
                 //trackColor={{false: '#767577', true: '#81b0ff'}}
-                value={userPreferences.train}
-                onValueChange={() => handleToggle("train")}
+                value={isTrainEnabled}
+                onValueChange={handleToggleTrain}
                 />
             </View>
 
@@ -106,8 +151,8 @@ export default function PreferencesScreen({ navigation }) {
                 <Text> Walk </Text> 
                 <Switch
                 //trackColor={{false: '#767577', true: '#81b0ff'}}
-                value={userPreferences.walk}
-                onValueChange={() => handleToggle("walk")}
+                value={isWalkEnabled}
+                onValueChange={handleToggleWalk}
                 />
             </View>
 
@@ -115,8 +160,8 @@ export default function PreferencesScreen({ navigation }) {
                 <Text> Tram </Text> 
                 <Switch
                 //trackColor={{false: '#767577', true: '#81b0ff'}}
-                value={userPreferences.tram}
-                onValueChange={() => handleToggle("tram")}
+                value={isTramEnabled}
+                onValueChange={handleToggleTram}
                 />
             </View>
 
@@ -124,26 +169,16 @@ export default function PreferencesScreen({ navigation }) {
                 <Text> I own a Bike </Text> 
                 <Switch
                 //trackColor={{false: '#767577', true: '#81b0ff'}}
-                value={userPreferences.personalBike}
-                onValueChange={() => handleToggle("personalBike")}
+                value={isPersonalBikeEnabled}
+                onValueChange={handleTogglePersonalBike}
                 />
             </View>
 
-            
+            <TouchableOpacity style={styles.TouchableOpacity} onPress={savePreferences}
+                      color="#841584">
+                      <Text>Save</Text>
+                    </TouchableOpacity>
 
-
-
-
-
-
-
-
-            
-
-
-
-
-            
         </SafeAreaView>
     </View>
     )
@@ -157,12 +192,26 @@ const styles = StyleSheet.create({
       justifyContent: "center",
       paddingVertical: 10,
       paddingHorizontal: 45,
-      top: '-20%',
+      top: '-8%',
     },
     switchContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
         marginVertical: 10,
+    },
+    TouchableOpacity: {
+        alignItems: 'center',
+        left: '0%',
+        top: '5%',
+        backgroundColor: '#007bff',
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+        elevation: 5,
       },
 });

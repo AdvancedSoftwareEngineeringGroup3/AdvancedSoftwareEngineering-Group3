@@ -1,48 +1,48 @@
-from src.Database_class import DataBase
+import requests
+import os
+import json
+import logging
+from fastapi import FastAPI
+from fastapi import Query, Body
+from dotenv import load_dotenv
+from pydantic import BaseModel
 
-class UserPersonalizedSettings:
+class Preferences:
+    def __init__(self, api, logger: logging.Logger):
+        
+        self.app = api
+        self.logger = logger
+        load_dotenv()
+
+        self.set_Preferences()
+
+
+
+    def set_Preferences(self):
+        @self.app.post("/setPreferences")
+        async def set_Preferences(request: userPersonalizedSettings):
+            self.logger.info(
+                "Received user personalized settings:"
+            )
+            print("User personalized preferences object: ", request)
     
-    def __init__(self, walkspeed = 0, travelMode = {'bus':False, 'car':False, 'train':False, 'walk':False, 'bike':False, 'tram':False}, 
-                 bike = False, privateVehicle = False, accessibility = None, motorways = False, tolls = False):
+    #self.logger.info(f'{"Recieved Personalisation Request"}')
+    #try:
         
-        self.walkingSpeed = walkspeed
-        self.travelMode = travelMode
-        self.bike = bike
-        self.privateVehicle = privateVehicle
-        self.accessibility = accessibility
-        self.motorways = motorways
-        self.tolls = tolls
-        self.database = DataBase()
-        self.tablename = "personalisedSettings"
+        #return self.userPersonalisation.post()     
         
-    
         
-
-    def writePersonlisedSettings(self, username):
-        #TODO check if user info is in the database
-        """Writes personalise components. If no user data used add_entry 
-        if user exists use update_entry.
-
-        Args:
-            username (_type_): _description_
-        """
-        self.database.connect_db()
-
-
-        databaseDict = {"Username": username,
-                        "WalkingSpeed": self.walkingSpeed,
-                        "TravelMode": self.travelMode,
-                        "Bike":self.bike,
-                        "PrivateVehicle": self.privateVehicle,
-                        "Accessibility": self.accessibility,
-                        "Motorways": self.motorways,
-                        "Toll":self.tolls}
-
-        self.database.add_entry(self.tablename, databaseDict)
-
-
-
-        self.database.close_con()
-
-
-        return
+        
+class userPersonalizedSettings(BaseModel):
+    walkingSpeed: str
+    bike: str
+    privateVehicle: str
+    accessibility: str
+    motorways: str
+    tolls: str
+    bus: str
+    car: str
+    train: str
+    tram: str
+    personalBike: str
+    walk: str
