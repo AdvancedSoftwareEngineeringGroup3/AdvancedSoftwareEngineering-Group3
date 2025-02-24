@@ -14,14 +14,14 @@ def test_calculate_route():
     key = os.getenv("GOOGLE_MAPS_API_KEY")
 
     response = get_routes(origin, destination, mode, alternatives, key)
-    assert response.get("status") == 'OK'
+    assert response.get("status") == "OK"
 
 
 def test_calculate_route_missing_params():
     # missing parameters test
 
-    response = get_routes('', '', '', '')
-    assert response.get("status") == 'INVALID_REQUEST'
+    response = get_routes("", "", "", "")
+    assert response.get("status") == "INVALID_REQUEST"
 
 
 def test_calculate_route_api_key():
@@ -32,8 +32,9 @@ def test_calculate_route_api_key():
     mode = "Walking"
     key = "SAjhdgfsjkg67345834"
 
-    response = get_routes(origin, Destination, mode,
-                          alternatives='TRUE', key=key)
+    response = get_routes(
+        origin, Destination, mode, alternatives="TRUE", key=key
+    )
 
     assert response.get("status") == "REQUEST_DENIED"
 
