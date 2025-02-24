@@ -1,4 +1,3 @@
-import os
 from src.wayfinding import get_routes
 from dotenv import load_dotenv
 
@@ -11,7 +10,6 @@ def test_calculate_route():
     destination = "Ashbourne Meath"
     mode = "Walking"
     alternatives = "true"
-    key = os.getenv("GOOGLE_MAPS_API_KEY")
 
     response = get_routes(origin, destination, mode, alternatives)
     assert response.get("status") == "OK"
@@ -30,7 +28,6 @@ def test_calculate_route_api_key():
     origin = "Tara Street"
     Destination = "Ashbourne"
     mode = "Walking"
-    key = "SAjhdgfsjkg67345834"
 
     response = get_routes(
         origin, Destination, mode, alternatives="TRUE"
@@ -45,7 +42,6 @@ def test_check_transport_modes():
     destination = "Ashbourne Meath"
     mode = "Walking"
     alternatives = "true"
-    key = os.getenv("GOOGLE_MAPS_API_KEY")
     modes = ["driving", "walking", "transit", "bicycling"]
 
     response = ""
