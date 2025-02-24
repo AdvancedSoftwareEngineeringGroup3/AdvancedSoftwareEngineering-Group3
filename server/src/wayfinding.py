@@ -15,7 +15,7 @@ def get_routes(
     origin: str = Body(...),
     destination: str = Body(...),
     mode: str = Body(...),
-    alternatives: bool = Body(...)
+    alternatives: bool = Body(...),
 ):
     url = "https://maps.googleapis.com/maps/api/directions/json"
 
