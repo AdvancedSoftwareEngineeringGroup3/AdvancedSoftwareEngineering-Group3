@@ -29,9 +29,7 @@ def test_calculate_route_api_key():
     Destination = "Ashbourne"
     mode = "Walking"
 
-    response = get_routes(
-        origin, Destination, mode, alternatives="TRUE"
-    )
+    response = get_routes(origin, Destination, mode, alternatives="TRUE")
 
     assert response.get("status") == "REQUEST_DENIED"
 
