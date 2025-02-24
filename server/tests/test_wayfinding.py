@@ -13,7 +13,7 @@ def test_calculate_route():
     alternatives = "true"
     key = os.getenv("GOOGLE_MAPS_API_KEY")
 
-    response = get_routes(origin, destination, mode, alternatives, key)
+    response = get_routes(origin, destination, mode, alternatives)
     assert response.get("status") == "OK"
 
 
@@ -33,7 +33,7 @@ def test_calculate_route_api_key():
     key = "SAjhdgfsjkg67345834"
 
     response = get_routes(
-        origin, Destination, mode, alternatives="TRUE", key=key
+        origin, Destination, mode, alternatives="TRUE"
     )
 
     assert response.get("status") == "REQUEST_DENIED"
@@ -51,7 +51,7 @@ def test_check_transport_modes():
     response = ""
 
     for mode in modes:
-        response = get_routes(origin, destination, mode, alternatives, key=key)
+        response = get_routes(origin, destination, mode, alternatives)
 
         if response["routes"]:
             first_route = response["routes"][0]
