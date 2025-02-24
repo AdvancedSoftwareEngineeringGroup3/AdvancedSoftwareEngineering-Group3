@@ -5,6 +5,7 @@ import LoginScreen from './LogIn';
 import MapScreen from './Map';
 import WeatherScreen from './Weather';
 import Dashboard from './SustainabilityDashboard'
+import FriendsScreen from './FriendsScreen'
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +17,7 @@ export default function App() {
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="WeatherScreen" component={WeatherScreen} />
         <Stack.Screen name="Dashboard" component={Dashboard} />
+        <Stack.Screen name="FriendsScreen" component={FriendsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
