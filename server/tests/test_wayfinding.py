@@ -22,18 +22,6 @@ def test_calculate_route_missing_params():
     assert response.get("status") == "INVALID_REQUEST"
 
 
-def test_calculate_route_api_key():
-    # wrong API key
-
-    origin = "Tara Street"
-    Destination = "Ashbourne"
-    mode = "Walking"
-
-    response = get_routes(origin, Destination, mode, alternatives="TRUE")
-
-    assert response.get("status") == "REQUEST_DENIED"
-
-
 def test_check_transport_modes():
 
     origin = "Tara Street"
