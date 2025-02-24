@@ -9,6 +9,7 @@ GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 router = APIRouter()
 
+
 @router.post("/wayfinding/get_routes")
 def get_routes(
     origin: str = Body(...),
