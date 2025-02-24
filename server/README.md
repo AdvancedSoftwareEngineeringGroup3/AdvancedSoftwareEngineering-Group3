@@ -13,8 +13,21 @@ python main.py
 
 Do the following from the server directory:
 ```bash 
-docker build -t server . 
-docker run -p 8000:8000 server
+docker build -t {image name} . 
+docker run -p 8000:8000 {image name}
+```
+To run an existing container:
+```bash
+docker start {container ID or name}
+```
+To stop an existing container from running:
+```bash
+docker stop {container ID or name}
+```
+
+\* To list all containers:
+```bash
+docker ps
 ```
 
 ### APIs
