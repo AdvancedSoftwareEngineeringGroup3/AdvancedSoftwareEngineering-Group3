@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+# from src.wayfinding import router  # Import the API routes
+from src.wayfinding import router  # Import the API routes
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import logging
@@ -15,6 +17,8 @@ class Server:
 
         # Initialize FastAPI app
         self.app = FastAPI()
+        # Include the API routes from the my_routes.py file
+        self.app.include_router(router)
 
         # Instantiate components
         self.login_logic = Login(self.app, self.logger)
