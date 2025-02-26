@@ -5,8 +5,10 @@ from pydantic import BaseModel
 import logging
 import uvicorn
 import sys
-from src.login import Login
-from src.weatherApi import weatherAPI
+from login import Login
+from weatherApi import weatherAPI
+# from src.login import Login
+# from src.weatherApi import weatherAPI
 
 
 class Server:

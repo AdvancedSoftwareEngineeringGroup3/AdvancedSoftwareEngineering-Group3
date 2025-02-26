@@ -1,53 +1,142 @@
-import * as React from 'react';
-import { useState, useRef } from 'react';
-import { StyleSheet, View, SafeAreaView, TextInput, Button, Switch, TouchableOpacity, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-export default function FriendsScreen({ navigation }) {
+export default function FriendsScreen() {
+  const [friendRequestName, setFriendName] = useState('');
+  const [pendingFriends, setPendingFriends] = useState([]);
+  const [currentFriends, setCurrentFriends] = useState([]);
 
-    const [username, setUsername] = useState("");
+  // Function to send a friend request
+  const sendFriendRequest = () => {
+    if (friendRequestName.trim() !== '') {
+      setPendingFriends([...pendingFriends, friendRequestName.trim()]);
+      setFriendName('');
+    }
+  };
 
-    const [FriendsUI, setFriendsUI] = useState({
-        FriendsList: false,
-        pendingFriendsList:false,
-    })
-    
-    const handleToggle = (key) => {
-        setUserPreferences((prev) => ({ ...prev, [key]: !prev[key] }));
-      };
+  // Function to accept a friend request
+  const acceptFriendRequest = (friend) => {
+    setPendingFriends(pendingFriends.filter((name) => name !== friend));
+    setCurrentFriends([...currentFriends, friend]);
+  };
 
-    const handleClick = () => {
-        // sends information inputted in text box to server
+  // Function to reject a friend request
+  const rejectFriendRequest = (friend) => {
+    setPendingFriends(pendingFriends.filter((name) => name !== friend));
+  };
 
-    };
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        {/* Top Section: Input & Button */}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter friend's name"
+            value={friendRequestName}
+            onChangeText={setFriendName}
+          />
+          <Button title="Send Request" onPress={sendFriendRequest} />
+        </View>
 
-    return (
+        {/* Pending Friends List */}
+        <View style={styles.listContainer}>
+          <Text style={styles.sectionTitle}>Pending Friend Requests</Text>
+          <FlatList
+            data={pendingFriends}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.pendingItem}>
+                <Text style={styles.friendRequestName}>{item}</Text>
+                <TouchableOpacity onPress={() => acceptFriendRequest(item)} style={styles.acceptButton}>
+                  <Text style={styles.buttonText}>Accept</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => rejectFriendRequest(item)} style={styles.rejectButton}>
+                  <Text style={styles.buttonText}>Reject</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+        </View>
 
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-       <SafeAreaView style={styles.container}>
-            <View style={styles.buttonContainer}>
-                <Button title="Send Friend Request" onPress={handleClick} />
-            </View>
-        </SafeAreaView>
-            
-     
-    </View>
-    )
+        {/* Current Friends List */}
+        <View style={styles.listContainer}>
+          <Text style={styles.sectionTitle}>Current Friends</Text>
+          <FlatList
+            data={currentFriends}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.friendItem}>
+                <Text style={styles.friendRequestName}>{item}</Text>
+              </View>
+            )}
+          />
+        </View>
+      </View>
+    </GestureHandlerRootView>
+  );
 }
 
-
-
 const styles = StyleSheet.create({
-    container: {
-      alignItems: "center",
-      justifyContent: "center",
-      paddingVertical: 10,
-      paddingHorizontal: 45,
-      top: '-20%',
-    },
-    ButtonContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginVertical: 10,
-    },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  listContainer: {
+    flex: 1,
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  pendingItem: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 5,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  friendItem: {
+    backgroundColor: '#d1f0d1',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 5,
+  },
+  friendRequestName: {
+    fontSize: 16,
+  },
+  acceptButton: {
+    backgroundColor: '#4CAF50',
+    padding: 8,
+    borderRadius: 5,
+    marginLeft: 5,
+  },
+  rejectButton: {
+    backgroundColor: '#E74C3C',
+    padding: 8,
+    borderRadius: 5,
+    marginLeft: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 });
