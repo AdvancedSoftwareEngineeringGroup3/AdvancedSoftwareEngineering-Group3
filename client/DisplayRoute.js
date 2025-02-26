@@ -9,6 +9,8 @@ export default function DisplayRouteScreen({ route }) {
     const [location, setLocation] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [polylineCoordinates, setPolylineCoordinates] = useState([]);
+    // declare decodedPath as a global varibale so it can be used for destination marker
+    let decodedPath = [];
 
     // Get current location
     useEffect(() => {
@@ -31,7 +33,9 @@ export default function DisplayRouteScreen({ route }) {
     useEffect(() => {
         if (routeData && routeData.routes && routeData.routes.length > 0) {
             const encodedPolyline = routeData.routes[0].overview_polyline.points;
-            const decodedPath = decodeRoute(encodedPolyline); // Decode into lat/lng pairs
+            decodedPath = decodeRoute(encodedPolyline); // Decode into lat/lng pairs
+            // TODO: find out what decoded path looks like
+            console.log(decodedPath[-1]);
             setPolylineCoordinates(decodedPath);
         }
     }, [routeData]);
@@ -56,6 +60,12 @@ export default function DisplayRouteScreen({ route }) {
                             title="Your Location"
                             description="Real-time location"
                         />
+                        {/* TODO: add destination marker */} 
+                        {/* <Marker
+                            coordinate={decodedPath[-1].latitude, decodedPath[-1].longitude}
+                            title="Destination"
+                            description="Real-time location"
+                        /> */}
                         {polylineCoordinates.length > 0 && (
                         <Polyline
                             coordinates={polylineCoordinates}
