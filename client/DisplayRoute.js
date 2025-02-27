@@ -18,6 +18,7 @@ export default function DisplayRouteScreen({ route }) {
             try {
                 const initialLocation = await getCurrentLocation();
                 setLocation(initialLocation);
+                console.log(location);
 
                 const locationSubscription = await startLocationTracking(setLocation);
 
@@ -35,8 +36,9 @@ export default function DisplayRouteScreen({ route }) {
             const encodedPolyline = routeData.routes[0].overview_polyline.points;
             decodedPath = decodeRoute(encodedPolyline); // Decode into lat/lng pairs
             // TODO: find out what decoded path looks like
-            console.log(decodedPath[-1]);
+            console.log(decodedPath[decodedPath.length - 1]);
             setPolylineCoordinates(decodedPath);
+            setRoutes(routeData.routes); // Set the routes state
         }
     }, [routeData]);
 
@@ -49,8 +51,8 @@ export default function DisplayRouteScreen({ route }) {
                     <MapView
                         style={styles.map}
                         initialRegion={{
-                            latitude: routes.length > 0 ? routes[0][0].latitude : location.latitude,
-                            longitude: routes.length > 0 ? routes[0][0].longitude : location.longitude,
+                            latitude: routes.length > 0 ? routes[0].legs[0].start_location.lat : location.latitude,
+                            longitude: routes.length > 0 ? routes[0].legs[0].start_location.lng : location.longitude,
                             latitudeDelta: 0.01,
                             longitudeDelta: 0.01,
                         }}
@@ -61,11 +63,13 @@ export default function DisplayRouteScreen({ route }) {
                             description="Real-time location"
                         />
                         {/* TODO: add destination marker */} 
-                        {/* <Marker
-                            coordinate={decodedPath[-1].latitude, decodedPath[-1].longitude}
+                        {decodedPath.length > 0 && (
+                        <Marker
+                            coordinate={decodedPath[decodedPath.length - 1]}
                             title="Destination"
-                            description="Real-time location"
-                        /> */}
+                            description="Destination of the route"
+                        />
+                        )}
                         {polylineCoordinates.length > 0 && (
                         <Polyline
                             coordinates={polylineCoordinates}
