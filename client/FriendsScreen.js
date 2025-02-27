@@ -1,19 +1,56 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function FriendsScreen() {
+  const [senderName, setSenderName] = useState('')
   const [friendRequestName, setFriendName] = useState('');
   const [pendingFriends, setPendingFriends] = useState([]);
   const [currentFriends, setCurrentFriends] = useState([]);
 
+  // friend_list
+  // pending_friends
+
   // Function to send a friend request
-  const sendFriendRequest = () => {
-    if (friendRequestName.trim() !== '') {
-      setPendingFriends([...pendingFriends, friendRequestName.trim()]);
-      setFriendName('');
-    }
+  const sendFriendRequest = async () => {
+    try{
+      // send friend request name & username of the person sending friend request
+      const payload = {
+        receiver: friendRequestName,
+        sender: "Conor",
+      };
+
+        const baseUrl = Platform.OS === 'web'
+            ? 'http://localhost:8000'
+            : process.env.EXPO_PUBLIC_API_URL;
+        console.log(`Sending request to ${baseUrl}/send_request`);
+
+        const response = await fetch(`${baseUrl}/send_request`,{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application.json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          setPendingFriends([...pendingFriends, friendRequestName.trim()]);
+          setFriendName('');
+        } else {
+          console.error('Failed to send friend request');
+        }
+      } catch (error) {
+        console.error('Error sending friend request:', error);
+      }
   };
+
+    // Function to send a friend request
+    const sendFriendRequest1 = () => {
+      if (friendRequestName.trim() !== '') {
+        setPendingFriends([...pendingFriends, friendRequestName.trim()]);
+        setFriendName('');
+      }
+    };
 
   // Function to accept a friend request
   const acceptFriendRequest = (friend) => {
@@ -24,6 +61,7 @@ export default function FriendsScreen() {
   // Function to reject a friend request
   const rejectFriendRequest = (friend) => {
     setPendingFriends(pendingFriends.filter((name) => name !== friend));
+    
   };
 
   return (
@@ -76,7 +114,7 @@ export default function FriendsScreen() {
       </View>
     </GestureHandlerRootView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
