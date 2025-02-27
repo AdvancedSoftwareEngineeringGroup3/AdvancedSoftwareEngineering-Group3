@@ -5,10 +5,11 @@ from pydantic import BaseModel
 import logging
 import uvicorn
 import sys
-from login import Login
-from weatherApi import weatherAPI
-# from src.login import Login
-# from src.weatherApi import weatherAPI
+#from login import Login
+#from weatherApi import weatherAPI
+from src.login import Login
+from src.weatherApi import weatherAPI
+from src.networking import Networking
 
 
 class Server:
@@ -25,6 +26,7 @@ class Server:
         self.login_logic = Login(self.app, self.logger)
         self.connection_manager = ConnectionManager()
         self.weather_api = weatherAPI()
+        self.networking = Networking(self.app, self.logger)
 
         # Configure CORS
         self.configure_cors()

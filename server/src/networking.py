@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import logging
+from fastapi import FastAPI, Body
 from .Database_class import DataBase
 
 
@@ -19,7 +20,12 @@ class Networking:
     # client sends request to server
     def api_send_friend_request(self):
         @self.app.post("/send_request")
-        async def request_data(request: RequestData):
+        async def request_data(
+            receiver: str = Body(...),
+            sender: str = Body(...),                           
+                ):
+            
+
             self.logger.info(
                 f"Received friend request from "
                 f"{request.sender} to {request.receiver}"
