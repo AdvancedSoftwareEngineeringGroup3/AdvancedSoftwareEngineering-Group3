@@ -1,0 +1,36 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ "develop", "main" ]
+  pull_request:
+    branches: [ "develop", "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run Frontend Tests (Jest)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./client  # Removes need for cd client when running tests
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies  # Install dependencies
+      run: |
+        npm install
+
+    - name: Run tests  # Run Jest tests
+      run: |
+        npm test  
