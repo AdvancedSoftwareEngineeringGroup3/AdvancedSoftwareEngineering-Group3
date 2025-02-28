@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { decodeRoute, getCurrentLocation, startLocationTracking } from './mapUtils';
 
@@ -9,8 +9,7 @@ export default function DisplayRouteScreen({ route }) {
     const [location, setLocation] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [polylineCoordinates, setPolylineCoordinates] = useState([]);
-    // declare decodedPath as a global varibale so it can be used for destination marker
-    let decodedPath = [];
+    const [currentRoute, setCurrentRoute] = useState(routeData.routes[0]);
 
     // Get current location
     useEffect(() => {
@@ -33,14 +32,21 @@ export default function DisplayRouteScreen({ route }) {
     // Decode and set polyline coordinates
     useEffect(() => {
         if (routeData && routeData.routes && routeData.routes.length > 0) {
-            const encodedPolyline = routeData.routes[0].overview_polyline.points;
+            const encodedPolyline = currentRoute.overview_polyline.points;
             decodedPath = decodeRoute(encodedPolyline); // Decode into lat/lng pairs
-            // TODO: find out what decoded path looks like
-            console.log(decodedPath[decodedPath.length - 1]);
             setPolylineCoordinates(decodedPath);
             setRoutes(routeData.routes); // Set the routes state
         }
     }, [routeData]);
+
+    // Display all route options
+    const displaySelectedRoute = (index) => {
+        const selectedRoute = routeData.routes[index];
+        setCurrentRoute(selectedRoute);
+        const encodedPolyline = selectedRoute.overview_polyline.points;
+        const decodedPath = decodeRoute(encodedPolyline); // Decode into lat/lng pairs
+        setPolylineCoordinates(decodedPath);
+    };
 
     return (
         <View style={styles.container}>
@@ -61,11 +67,11 @@ export default function DisplayRouteScreen({ route }) {
                             coordinate={location}
                             title="Your Location"
                             description="Real-time location"
+                            icon={require('./assets/location-circle.png')}
                         />
-                        {/* TODO: add destination marker */} 
-                        {decodedPath.length > 0 && (
+                        {polylineCoordinates.length > 0 && (
                         <Marker
-                            coordinate={decodedPath[decodedPath.length - 1]}
+                            coordinate={polylineCoordinates[polylineCoordinates.length - 1]}
                             title="Destination"
                             description="Destination of the route"
                         />
@@ -78,6 +84,16 @@ export default function DisplayRouteScreen({ route }) {
                         />
                         )}
                     </MapView>
+                    <View>
+                        {routes.map((route, index) => {
+                            return (
+                            <TouchableOpacity key={index} onPress={() => displaySelectedRoute(index)}>
+                                <Text>Route {index + 1}</Text>
+                                <Text>Distance: {route.legs[0].distance.text}</Text>
+                                <Text>Duration: {route.legs[0].duration.text}</Text>
+                            </TouchableOpacity>
+                        )})}
+                    </View>
                 </>
             ) : (
                 <Text style={styles.loadingText}>Fetching your location...</Text>
