@@ -9,6 +9,17 @@ import logging
 from fastapi import HTTPException
 
 
+# Client Side - Check if Username is cached
+# If not, then prompt Login and Sign-up buttons
+# Login button lets you input login details of an existing user
+# Sign-up button lets you input new login details for creating a new user
+# If it is cached, don't prompt with buttons
+
+# Server Side - Two endpoints for Login and Sign-up
+# Login checks for username and password in db, verifies the user already exists
+# Sign-up checks if user does not exist, if not, add them to the database
+
+
 class Login:
 
     def __init__(self, api, logger: logging.Logger):

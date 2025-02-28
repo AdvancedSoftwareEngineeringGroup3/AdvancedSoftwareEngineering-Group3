@@ -49,10 +49,10 @@ export default function PreferencesScreen({ navigation }) {
                                     walk: isWalkEnabled, tram: isTramEnabled, personalBike: isPersonalBikeEnabled}),
             });
 
-            console.log(JSON.stringify({bike: isBikeEnabled, privateVehicle: isPrivateVehicleEnabled,
-                accessibility: isAccessibilityEnabled, motorways: isMotorwaysEnabled,
-                tolls: isTollsEnabled, bus: isBusEnabled, car: isCarEnabled, train: isTrainEnabled,
-                walk: isWalkEnabled, tram: isTramEnabled, personalBike: isPersonalBikeEnabled}));
+            console.log(JSON.stringify({bike: isBikeEnabled.toString(), privateVehicle: isPrivateVehicleEnabled.toString(),
+                accessibility: isAccessibilityEnabled.toString(), motorways: isMotorwaysEnabled.toString(),
+                tolls: isTollsEnabled.toString(), bus: isBusEnabled.toString(), car: isCarEnabled.toString(), train: isTrainEnabled.toString(),
+                walk: isWalkEnabled.toString(), tram: isTramEnabled.toString(), personalBike: isPersonalBikeEnabled.toString()}));
             
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
