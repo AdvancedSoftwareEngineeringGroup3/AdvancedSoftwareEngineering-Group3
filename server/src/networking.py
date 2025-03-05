@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import logging
-from fastapi import FastAPI, Body
-from Database_class import DataBase
+from fastapi import FastAPI, Body, Query
+from src.Database_class import DataBase
 
 
 class Networking:
@@ -66,8 +66,8 @@ class Networking:
 
     # client requests pending friend requests
     def api_fetch_all_friends(self):
-        @self.app.post("/check_requests")
-        async def check_friends_list(user: CurrentUser):
+        @self.app.get("/check_requests")
+        async def check_friends_list(user: str = Query(..., alias="sender")):
             self.logger.info(
                 f"Received request for pending friends from {user}"
             )

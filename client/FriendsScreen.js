@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -18,7 +18,7 @@ export default function FriendsScreen() {
       // send friend request name & username of the person sending friend request
       const payload = {
         receiver: friendRequestName,
-        sender: "Gunjan",
+        sender: "Conor",
       };
 
         const baseUrl = Platform.OS === 'web'
@@ -53,6 +53,51 @@ export default function FriendsScreen() {
       console.error('Error sending friend request:', error);
     }
   };
+
+  const getPending = async () => {
+    try{
+      // send friend request name & username of the person sending friend request
+      //const payload = {
+       // sender: "Conor", // username of the person sending friend request
+      //};
+
+        const baseUrl = Platform.OS === 'web'
+            ? 'http://localhost:8000'
+            : process.env.EXPO_PUBLIC_API_URL;
+        const sender = "Conor"; //Username of the person sending the request
+        console.log(`Sending request to ${baseUrl}/check_requests?sender=${sender}`);
+
+        const response = await fetch(`${baseUrl}/check_requests?sender=${sender}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+      // Check if the response is ok
+      if (response.ok) {
+        // Parse the response as JSON
+        const server_message = await response.json();
+        console.log("Response from Server: ", server_message.message);
+
+        alert(server_message.message);
+        setPendingFriends(server_message.pending_friends);
+      } else {
+        // Log the raw response text for debugging
+        const responseText = await response.text();
+        console.error('Failed to get friend requests:', responseText);
+        alert('Server Error: ', responseText);
+      }
+    } catch (error) {
+      console.error('Error getting pending friend requests:', error);
+    }
+  };
+
+
+  useEffect(() => {
+    getPending();
+  }, []);
+
 
   // Function to accept a friend request
   const acceptFriendRequest = (friend) => {
@@ -107,9 +152,10 @@ export default function FriendsScreen() {
 
 
         {/* Pending Friends List */}
-        {/* <View style={styles.listContainer}>
+        {<View style={styles.listContainer}>
           <Text style={styles.sectionTitle}>Pending Friend Requests</Text>
           <FlatList
+            onPress={() => getPending()}
             data={pendingFriends}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
@@ -124,7 +170,7 @@ export default function FriendsScreen() {
               </View>
             )}
           />
-        </View> */}
+        </View>}
 
         {/* Current Friends List */}
         <View style={styles.listContainer}>
