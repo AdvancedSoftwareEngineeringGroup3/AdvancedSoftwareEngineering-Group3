@@ -1,15 +1,17 @@
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
-from src.wayfinding import router  # Import the API routes
+# from src.wayfinding import router  # Import the API routes
+from wayfinding import router  # Import the API routes
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import logging
 import uvicorn
 import sys
-#from login import Login
-#from weatherApi import weatherAPI
-from src.login import Login
-from src.weatherApi import weatherAPI
-from src.networking import Networking
+from login import Login
+from weatherApi import weatherAPI
+from networking import Networking
+# from src.login import Login
+# from src.weatherApi import weatherAPI
+# from src.networking import Networking
 
 
 class Server:

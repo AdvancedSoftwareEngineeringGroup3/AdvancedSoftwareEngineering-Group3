@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 import logging
 from fastapi import FastAPI, Body
-from .Database_class import DataBase
+from Database_class import DataBase
 
 
 class Networking:
@@ -17,27 +17,21 @@ class Networking:
         self.api_friend_request_response()
         self.api_send_friend_request()
 
+
     # client sends request to server
     def api_send_friend_request(self):
         @self.app.post("/send_request")
-        async def request_data(
-            receiver: str = Body(...),
-            sender: str = Body(...),                           
-                ):
+        async def request_data(request: RequestData):
             
-
-            self.logger.info(
-                f"Received friend request from "
-                f"{request.sender} to {request.receiver}"
-            )
+            self.logger.info(f"Received friend request from {request.sender} to {request.receiver}")
 
             if request.sender == request.receiver:
                 return {"message": "Cannot send request to self"}
-            else:
-                response = self.db_handle_friend_request(
-                    request.sender, request.receiver
-                )
-                return {"message": response}
+        
+            response = self.db_handle_friend_request(request.sender, request.receiver)
+            
+            return {"message": response}
+
 
     def db_handle_friend_request(self, sender: str, receiver: str):
         db = DataBase()
@@ -92,7 +86,7 @@ class Networking:
 
     def api_friend_request_response(self):
         @self.app.post("/request_response")
-        @self.app.post("/request_response")
+        # @self.app.post("/request_response")
         async def answer_friend_request(request: FriendRequestResponse):
             self.logger.info(
                 f"Processing friend request from "
