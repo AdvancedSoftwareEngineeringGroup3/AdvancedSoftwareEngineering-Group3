@@ -17,8 +17,8 @@ def get_routes(
     mode: str = Body(...),
     alternatives: bool = Body(...),
 ):
-    # url = "https://maps.googleapis.com/maps/api/directions/json"
-    url = "https://maps.googleapis.com/maps/directions/v2:computeRoutes"
+    url = "https://maps.googleapis.com/maps/api/directions/json"
+    # url = "https://maps.googleapis.com/maps/directions/v2:computeRoutes"
 
     parameters = {
         "origin": origin,
