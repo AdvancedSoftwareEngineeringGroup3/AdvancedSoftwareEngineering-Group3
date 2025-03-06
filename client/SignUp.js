@@ -4,13 +4,11 @@ import { StyleSheet, View, SafeAreaView, TextInput, Button, TouchableOpacity, Te
 import { useReducedMotion } from 'react-native-reanimated';
 
 
-export default function LoginScreen({ navigation }) {
-  const [serverResponse, setServerResponse] = useState("");
+
+export default function SignUpScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const ref2 = React.useRef(null);
-
-  const passphrase = "jr023uf1(£12g*";
 
   const handleLogin = async () => {
     if (username == '' || password == '') {
@@ -26,9 +24,9 @@ export default function LoginScreen({ navigation }) {
         const baseUrl = Platform.OS === 'web'
           ? 'http://localhost:8000'
           : process.env.EXPO_PUBLIC_API_URL;
-        console.log(`Sending request to ${baseUrl}/login`);
+        console.log(`Sending request to ${baseUrl}/new_url`);
 
-        const response = await fetch(`${baseUrl}/login`, {
+        const response = await fetch(`${baseUrl}/new_url`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -74,12 +72,16 @@ export default function LoginScreen({ navigation }) {
           style={styles.TextInput}
         />
 
-        <TouchableOpacity style={styles.TouchableOpacity} onPress={handleLogin}
+
+        <TouchableOpacity style={styles.TouchableOpacity1} onPress={handleLogin}
           color="#841584">
-          <Text>Log In</Text>
+          <Text>Sign Up</Text>
         </TouchableOpacity>
 
       </SafeAreaView>
+
+
+
     </View>
   );
 }

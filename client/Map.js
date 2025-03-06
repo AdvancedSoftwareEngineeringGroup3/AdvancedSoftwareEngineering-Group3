@@ -128,7 +128,7 @@ export default function MapScreen({ navigation }) {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.loginButton}
-                        onPress={() => navigation.navigate('LoginScreen')}
+                        onPress={() => navigation.navigate('AccountScreen')}
                     >
                         <Text style={styles.buttonText}>Log In</Text>
                     </TouchableOpacity>

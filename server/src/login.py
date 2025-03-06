@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-# May need to be chagned in future with restructure of DB connection
+# May need to be changed in future with restructure of DB connection
 from supabase import create_client, Client
 from passlib.context import CryptContext
 import os
