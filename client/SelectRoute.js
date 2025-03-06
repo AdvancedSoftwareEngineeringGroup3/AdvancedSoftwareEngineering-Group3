@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { decodeRoute, getCurrentLocation, startLocationTracking } from './mapUtils';
 
-export default function DisplayRouteScreen({ route }) {
+export default function SelectRouteScreen({ route }) {
     const { origin, destination, routeData } = route.params;
     const [routes, setRoutes] = useState([]);
     const [location, setLocation] = useState(null);
@@ -34,6 +34,7 @@ export default function DisplayRouteScreen({ route }) {
         if (routeData && routeData.routes && routeData.routes.length > 0) {
             const encodedPolyline = currentRoute.overview_polyline.points;
             decodedPath = decodeRoute(encodedPolyline); // Decode into lat/lng pairs
+            // if this mode is driving, call the speedlimit api, passing decodedPath
             setPolylineCoordinates(decodedPath);
             setRoutes(routeData.routes); // Set the routes state
         }

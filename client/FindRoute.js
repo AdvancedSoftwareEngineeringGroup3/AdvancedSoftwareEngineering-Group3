@@ -48,8 +48,8 @@ export default function FindRouteScreen({ navigation }){
             // await new Promise(resolve => setTimeout(resolve, 3000));
             // setServerResponse("")
 
-            // Navigate to DisplayRouteScreen with the response data
-            navigation.navigate('DisplayRouteScreen', { routeData: data });
+            // Navigate to SelectRouteScreen with the response data
+            navigation.navigate('SelectRouteScreen', { routeData: data });
 
         } catch (error) {
             console.error('Error details:', error);
