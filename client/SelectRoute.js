@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { decodeRoute, getCurrentLocation, startLocationTracking } from './mapUtils';
 
-export default function SelectRouteScreen({ route }) {
+export default function SelectRouteScreen({ navigation, route }) {
     const { origin, destination, routeData } = route.params;
     const [routes, setRoutes] = useState([]);
     const [location, setLocation] = useState(null);
@@ -47,6 +47,7 @@ export default function SelectRouteScreen({ route }) {
         const encodedPolyline = selectedRoute.overview_polyline.points;
         const decodedPath = decodeRoute(encodedPolyline); // Decode into lat/lng pairs
         setPolylineCoordinates(decodedPath);
+        console.log("origin: " + origin + "destination: " + destination)
     };
 
     return (
@@ -88,12 +89,17 @@ export default function SelectRouteScreen({ route }) {
                     <View>
                         {routes.map((route, index) => {
                             return (
-                            <TouchableOpacity key={index} onPress={() => displaySelectedRoute(index)}>
-                                <Text>Route {index + 1}</Text>
-                                <Text>Distance: {route.legs[0].distance.text}</Text>
-                                <Text>Duration: {route.legs[0].duration.text}</Text>
-                            </TouchableOpacity>
-                        )})}
+                                <View key={index} style={styles.routeContainer}>
+                                    <TouchableOpacity onPress={() => displaySelectedRoute(index)} style={styles.routeButton}>
+                                        <Text>Route {index + 1}</Text>
+                                        <Text>Distance: {route.legs[0].distance.text}</Text>
+                                        <Text>Duration: {route.legs[0].duration.text}</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => navigation.navigate('DisplayRouteScreen', { origin, destination, routeData, polylineCoordinates })} style={styles.startButton}>
+                                        <Text>Start Journey</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )})}
                     </View>
                 </>
             ) : (
@@ -106,4 +112,26 @@ export default function SelectRouteScreen({ route }) {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     map: { flex: 1 },
+    routeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
+    routeButton: {
+        flex: 1,
+        marginRight: 10,
+        padding: 10,
+        backgroundColor: 'white',
+        borderRadius: 5,
+    },
+    startButton: {
+        padding: 10,
+        backgroundColor: '#ADD8E6',
+        borderRadius: 5,
+    },
+    error: { color: 'red', textAlign: 'center', margin: 10 },
+    loadingText: { textAlign: 'center', margin: 10 },
 });

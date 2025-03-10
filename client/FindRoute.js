@@ -49,7 +49,7 @@ export default function FindRouteScreen({ navigation }){
             // setServerResponse("")
 
             // Navigate to SelectRouteScreen with the response data
-            navigation.navigate('SelectRouteScreen', { routeData: data });
+            navigation.navigate('SelectRouteScreen', { origin: start, destination, routeData: data });
 
         } catch (error) {
             console.error('Error details:', error);

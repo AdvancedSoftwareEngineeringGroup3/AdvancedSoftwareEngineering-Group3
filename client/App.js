@@ -7,6 +7,7 @@ import WeatherScreen from './Weather';
 import FindRouteScreen from './FindRoute';
 import SelectRouteScreen from './SelectRoute';
 import Dashboard from './SustainabilityDashboard'
+import DisplayRouteScreen from './DisplayRoute';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +20,7 @@ export default function App() {
         <Stack.Screen name="WeatherScreen" component={WeatherScreen} />
         <Stack.Screen name="FindRouteScreen" component={FindRouteScreen} />
         <Stack.Screen name="SelectRouteScreen" component={SelectRouteScreen} />
+        <Stack.Screen name="DisplayRouteScreen" component={DisplayRouteScreen} />
         <Stack.Screen name="Dashboard" component={Dashboard} />
       </Stack.Navigator>
     </NavigationContainer>
