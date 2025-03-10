@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import logging
 from fastapi import FastAPI, Body, Query
 from src.Database_class import DataBase
+# from Database_class import DataBase
 
 
 class Networking:
@@ -44,6 +45,7 @@ class Networking:
                     table_name, receiver, "pending_friends"
                 )
                 if sender not in request_list:
+                    # print(f"Sender: {sender} Receiver: {receiver}")
                     db.append_entry(
                         table_name, sender, receiver, "pending_friends"
                     )
@@ -134,6 +136,49 @@ class Networking:
             return "user not found"
 
 
+def api_friend_remove(self):
+        @self.app.post("/remove_friend")
+        # @self.app.post("/request_response")
+        async def remove_friend(request: FriendRemoval):
+            self.logger.info(
+                f"Removing friend"
+                f"{request.friend} from {request.user}"
+            )
+            return_msg = self.db_remove_friend(
+                request.user, request.friend,
+            )
+
+            return {"message": return_msg}
+
+def db_remove_friend(
+        self, user: str, friend: str
+    ):
+        db = DataBase()
+        db.connect_db()
+        table_name = "testing_table"
+        friend_column = "friends_list"
+        pending_friends_column = "pending_friends"
+
+        # remove from friends list
+        db.remove_from_array(
+            table_name, user, friend_column, friend
+        )
+        if db.search_user(table_name, friend):
+            if db.search_entry(table_name, user, friend_column):
+                db.remove_from_array(
+                    table_name, friend, friend_column, user
+                )
+            else:
+                self.logger.info(f"User {user} not found in {user}")
+
+        db.close_con()
+        self.logger.info(
+            f"Friend {friend} removed from {user}"
+        )
+        return "Friend removed"
+
+
+
 class RequestData(BaseModel):
     sender: str
     receiver: str
@@ -148,6 +193,9 @@ class FriendRequestResponse(BaseModel):
     requester: str
     answer: bool
 
+class FriendRemoval(BaseModel):
+    user: str
+    friend: str
 
 if __name__ == "__main__":
     pass

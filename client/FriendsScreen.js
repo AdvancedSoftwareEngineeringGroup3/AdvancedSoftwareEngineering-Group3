@@ -9,6 +9,8 @@ export default function FriendsScreen() {
   const [pendingFriends, setPendingFriends] = useState([]);
   const [currentFriends, setCurrentFriends] = useState([]);
 
+  let sender_name = "Conor"; //Username of the person sending the request
+
   // friend_list
   // pending_friends
 
@@ -18,7 +20,7 @@ export default function FriendsScreen() {
       // send friend request name & username of the person sending friend request
       const payload = {
         receiver: friendRequestName,
-        sender: "Conor",
+        sender: sender_name, // username of the person sending friend request
       };
 
         const baseUrl = Platform.OS === 'web'
@@ -64,10 +66,9 @@ export default function FriendsScreen() {
         const baseUrl = Platform.OS === 'web'
             ? 'http://localhost:8000'
             : process.env.EXPO_PUBLIC_API_URL;
-        const sender = "Conor"; //Username of the person sending the request
-        console.log(`Sending request to ${baseUrl}/check_requests?sender=${sender}`);
+        console.log(`Sending request to ${baseUrl}/check_requests?sender=${sender_name}`);
 
-        const response = await fetch(`${baseUrl}/check_requests?sender=${sender}`,{
+        const response = await fetch(`${baseUrl}/check_requests?sender=${sender_name}`,{
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -80,8 +81,9 @@ export default function FriendsScreen() {
         const server_message = await response.json();
         console.log("Response from Server: ", server_message.message);
 
-        alert(server_message.message);
+        // alert(server_message.message);
         setPendingFriends(server_message.pending_friends);
+        setCurrentFriends(server_message.friends);
       } else {
         // Log the raw response text for debugging
         const responseText = await response.text();
@@ -94,27 +96,113 @@ export default function FriendsScreen() {
   };
 
 
+  // useEffect(() => {
+  //   getPending();
+  // }, []);
   useEffect(() => {
-    getPending();
-  }, []);
+    const intervalId = setInterval(() => {
+        getPending();
+    }, 5000); // Poll every 5 seconds
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
+}, []);
 
 
   // Function to accept a friend request
-  const acceptFriendRequest = (friend) => {
-    setPendingFriends(pendingFriends.filter((name) => name !== friend));
-    setCurrentFriends([...currentFriends, friend]);
+  const processFriendRequest = async (friend, answer) => {
+    // setCurrentFriends([...currentFriends, friend]);
+
+    try{
+      // send friend request name & username of the person sending friend request
+      const payload = {
+        requester: friend,
+        user: sender_name,
+        answer: answer
+      };
+
+        const baseUrl = Platform.OS === 'web'
+            ? 'http://localhost:8000'
+            : process.env.EXPO_PUBLIC_API_URL;
+        console.log(`Sending request to ${baseUrl}/request_response`);
+
+        const response = await fetch(`${baseUrl}/request_response`,{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+      // Check if the response is ok
+      if (response.ok) {
+        // Parse the response as JSON
+        const server_message = await response.json();
+        console.log("Response from Server: ", server_message.message);
+
+        alert(server_message.message);
+        setPendingFriends(pendingFriends.filter((name) => name !== friend));
+        setCurrentFriends(currentFriends.filter((name) => name !== friend));
+      } else {
+        // Log the raw response text for debugging
+        const responseText = await response.text();
+        console.error('Failed to accept friend request:', responseText);
+        alert('Server Error: ', responseText);
+      }
+    } catch (error) {
+      console.error('Error accepting friend request:', error);
+    }
   };
 
-  // Function to reject a friend request
-  const rejectFriendRequest = (friend) => {
-    setPendingFriends(pendingFriends.filter((name) => name !== friend));
-    
-  };
 
   // Function to cancel a sent friend request
   const cancelFriendRequest = (friend) => {
     setSentFriends(sentFriends.filter((name) => name !== friend));
     
+  };
+
+    // Function to remove an existing friend
+  const removeFriend = async (friend) => {
+    
+
+    try{
+      // send friend request name & username of the person sending friend request
+      const payload = {
+        user: sender_name,    // username of the person removing friend
+        friend: friend        // friend to be removed
+      };
+
+        const baseUrl = Platform.OS === 'web'
+            ? 'http://localhost:8000'
+            : process.env.EXPO_PUBLIC_API_URL;
+        console.log(`Sending request to ${baseUrl}/remove_friend`);
+
+        const response = await fetch(`${baseUrl}/remove_friend`,{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+      // Check if the response is ok
+      if (response.ok) {
+        // Parse the response as JSON
+        const server_message = await response.json();
+        console.log("Response from Server: ", server_message.message);
+
+        alert(server_message.message);
+        setCurrentFriends(currentFriends.filter((name) => name !== friend));
+      } else {
+        // Log the raw response text for debugging
+        const responseText = await response.text();
+        console.error('Failed to send friend request:', responseText);
+        alert('Server Error: ', responseText);
+      }
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+    }
+      
   };
 
   return (
@@ -161,10 +249,10 @@ export default function FriendsScreen() {
             renderItem={({ item }) => (
               <View style={styles.pendingItem}>
                 <Text style={styles.friendRequestName}>{item}</Text>
-                <TouchableOpacity onPress={() => acceptFriendRequest(item)} style={styles.acceptButton}>
+                <TouchableOpacity onPress={() => processFriendRequest(item, true)} style={styles.acceptButton}>
                   <Text style={styles.buttonText}>Accept</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => rejectFriendRequest(item)} style={styles.rejectButton}>
+                <TouchableOpacity onPress={() => processFriendRequest(item, false)} style={styles.rejectButton}>
                   <Text style={styles.buttonText}>Reject</Text>
                 </TouchableOpacity>
               </View>
@@ -181,6 +269,10 @@ export default function FriendsScreen() {
             renderItem={({ item }) => (
               <View style={styles.friendItem}>
                 <Text style={styles.friendRequestName}>{item}</Text>
+                {/*Remove friend*/}
+                <TouchableOpacity onPress={() => removeFriend(item)} style={styles.removeButton}>
+                  <Text style={styles.buttonText}>Remove</Text>
+                </TouchableOpacity>
               </View>
             )}
           />
@@ -256,5 +348,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  removeButton: {
+    backgroundColor: '#E74C3C',
+    padding: 8,
+    borderRadius: 5,
+    marginLeft: 5,
   },
 });
