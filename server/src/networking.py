@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import logging
-from fastapi import FastAPI, Body, Query
+from fastapi import FastAPI, Body, Query, HTTPException
 from src.Database_class import DataBase
 # from Database_class import DataBase
 
@@ -17,6 +17,9 @@ class Networking:
         self.api_fetch_all_friends()
         self.api_friend_request_response()
         self.api_send_friend_request()
+        self.api_friend_remove()
+        self.api_cancel_friend_request()
+
 
 
     # client sends request to server
@@ -38,6 +41,7 @@ class Networking:
         db = DataBase()
         db.connect_db()
         table_name = "testing_table"
+        sentfriends_column = "sent_friends"
 
         if db.search_user(table_name, receiver):
             try:
@@ -48,6 +52,9 @@ class Networking:
                     # print(f"Sender: {sender} Receiver: {receiver}")
                     db.append_entry(
                         table_name, sender, receiver, "pending_friends"
+                    )
+                    db.append_entry(
+                        table_name, receiver, sender, sentfriends_column
                     )
                     self.logger.info("Friend request sent successfully")
                     db.close_con()
@@ -136,7 +143,7 @@ class Networking:
             return "user not found"
 
 
-def api_friend_remove(self):
+    def api_friend_remove(self):
         @self.app.post("/remove_friend")
         # @self.app.post("/request_response")
         async def remove_friend(request: FriendRemoval):
@@ -148,34 +155,91 @@ def api_friend_remove(self):
                 request.user, request.friend,
             )
 
-            return {"message": return_msg}
-
-def db_remove_friend(
-        self, user: str, friend: str
-    ):
-        db = DataBase()
-        db.connect_db()
-        table_name = "testing_table"
-        friend_column = "friends_list"
-        pending_friends_column = "pending_friends"
-
-        # remove from friends list
-        db.remove_from_array(
-            table_name, user, friend_column, friend
-        )
-        if db.search_user(table_name, friend):
-            if db.search_entry(table_name, user, friend_column):
-                db.remove_from_array(
-                    table_name, friend, friend_column, user
-                )
+            if return_msg == "Friend removed":
+                return {"message": "Friend removed successfully"}
             else:
-                self.logger.info(f"User {user} not found in {user}")
+                raise HTTPException(status_code=404, detail="Friend not found")
 
-        db.close_con()
-        self.logger.info(
-            f"Friend {friend} removed from {user}"
-        )
-        return "Friend removed"
+
+    def db_remove_friend(
+            self, user: str, friend: str
+        ):
+            db = DataBase()
+            db.connect_db()
+            table_name = "testing_table"
+            friend_column = "friends_list"
+
+            print(f"Removing {friend} from {user}'s friends list IM IN FUNCTION")
+
+            # remove from friends list
+            db.remove_from_array(
+                table_name, user, friend_column, friend
+            )
+            if db.search_user(table_name, friend):
+                friends = db.search_entry(table_name, friend, friend_column)
+                if user in friends:
+                    db.remove_from_array(
+                        table_name, friend, friend_column, user
+                    )
+                else:
+                    self.logger.info(f"User {user} not found in {friend}'s friends list")
+
+            db.close_con()
+            self.logger.info(
+                f"Friend {friend} removed from {user}"
+            )
+            return "Friend removed"
+    
+
+
+    def api_cancel_friend_request(self):
+        @self.app.post("/cancel_friend_request")
+        # @self.app.post("/request_response")
+        async def cancel_friend_request(request: FriendRemoval):
+            self.logger.info(
+                f"Removing friend"
+                f"{request.friend} from {request.user}"
+            )
+            return_msg = self.db_cancel_friend_request(
+                request.user, request.friend,
+            )
+
+            if return_msg == "Friend Request cancelled":
+                return {"message": "Friend request removed successfully"}
+            else:
+                raise HTTPException(status_code=404, detail="Friend not found")
+
+
+    def db_cancel_friend_request(
+            self, user: str, friend: str
+        ):
+            db = DataBase()
+            db.connect_db()
+            table_name = "testing_table"
+            sent_friend_column = "sent_friends"
+            pending_column = "pending_friends"
+
+            print(f"Removing {friend} from {user}'s friends list IM IN FUNCTION")
+
+            # remove from friends list
+            db.remove_from_array(
+                table_name, user, sent_friend_column, friend
+            )
+            if db.search_user(table_name, friend):
+                friends = db.search_entry(table_name, friend, pending_column)
+                if user in friends:
+                    db.remove_from_array(
+                        table_name, friend, pending_column, user
+                    )
+                else:
+                    self.logger.info(f"User {user} not found in {friend}'s pending friends list")
+
+            db.close_con()
+            self.logger.info(
+                f"Friend request from {friend} removed from {user} sent friends"
+            )
+            return "Friend Request cancelled"
+
 
 
 

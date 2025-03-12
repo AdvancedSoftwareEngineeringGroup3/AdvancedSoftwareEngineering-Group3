@@ -102,7 +102,7 @@ export default function FriendsScreen() {
   useEffect(() => {
     const intervalId = setInterval(() => {
         getPending();
-    }, 5000); // Poll every 5 seconds
+    }, 15000); // Poll every 5 seconds
 
     // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(intervalId);
@@ -156,15 +156,50 @@ export default function FriendsScreen() {
 
 
   // Function to cancel a sent friend request
-  const cancelFriendRequest = (friend) => {
-    setSentFriends(sentFriends.filter((name) => name !== friend));
-    
+  const cancelFriendRequest = async (friend) => {
+
+    try{
+      // send friend request name & username of the person sending friend request
+      const payload = {
+        user: sender_name,    // username of the person removing friend
+        friend: friend        // friend to be removed
+      };
+
+        const baseUrl = Platform.OS === 'web'
+            ? 'http://localhost:8000'
+            : process.env.EXPO_PUBLIC_API_URL;
+        console.log(`Sending request to ${baseUrl}/cancel_friend_request`);
+
+        const response = await fetch(`${baseUrl}/cancel_friend_request`,{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+      // Check if the response is ok
+      if (response.ok) {
+        // Parse the response as JSON
+        const server_message = await response.json();
+        console.log("Response from Server: ", server_message.message);
+
+        alert(server_message.message);
+        setSentFriends(sentFriends.filter((name) => name !== friend));
+      } else {
+        // Log the raw response text for debugging
+        const responseText = await response.text();
+        console.error('Failed to send friend request:', responseText);
+        alert('Server Error: ', responseText);
+      }
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+    }
+      
   };
 
     // Function to remove an existing friend
   const removeFriend = async (friend) => {
-    
-
     try{
       // send friend request name & username of the person sending friend request
       const payload = {
