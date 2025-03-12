@@ -10,23 +10,22 @@ export default function SignUpScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const ref2 = React.useRef(null);
 
-  const handleLogin = async () => {
+  const handleSignup = async () => {
     if (username == '' || password == '') {
-      alert("All fields have to be filled before logging in!")
+      alert("All fields have to be filled before signing up!")
     }
     else {
       console.log('username: ', username)
       console.log('password: ', password)
-      // alert(`Username: ${username}\nPassword: ${password}`)
       navigation.goBack()
 
       try {
         const baseUrl = Platform.OS === 'web'
           ? 'http://localhost:8000'
           : process.env.EXPO_PUBLIC_API_URL;
-        console.log(`Sending request to ${baseUrl}/new_url`);
+        console.log(`Sending request to ${baseUrl}/signup`);
 
-        const response = await fetch(`${baseUrl}/new_url`, {
+        const response = await fetch(`${baseUrl}/signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -73,15 +72,12 @@ export default function SignUpScreen({ navigation }) {
         />
 
 
-        <TouchableOpacity style={styles.TouchableOpacity1} onPress={handleLogin}
+        <TouchableOpacity style={styles.TouchableOpacity1} onPress={handleSignup}
           color="#841584">
           <Text>Sign Up</Text>
         </TouchableOpacity>
 
       </SafeAreaView>
-
-
-
     </View>
   );
 }

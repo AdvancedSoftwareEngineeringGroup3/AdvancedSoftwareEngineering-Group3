@@ -1,12 +1,13 @@
 from pydantic import BaseModel
 
 # May need to be changed in future with restructure of DB connection
-from supabase import create_client, Client
+# from supabase import create_client, Client
 from passlib.context import CryptContext
 import os
 from dotenv import load_dotenv
 import logging
 from fastapi import HTTPException
+from .Database_class import DataBase
 
 
 # Client Side - Check if Username is cached
@@ -28,14 +29,16 @@ class Login:
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
         # Load environment vars
-        load_dotenv()
-        self.supabase_url = os.getenv("SUPABASE_URL")
-        self.supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
+        # load_dotenv()
+        
+        # self.supabase_url = os.getenv("SUPABASE_URL")
+        # self.supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
 
         # Init Supabase Client
-        self.supabase: Client = create_client(
-            self.supabase_url, self.supabase_key
-        )
+        # self.supabase: Client = create_client(
+        # self.supabase_url, self.supabase_key
+        # )
+
         # register login route
         self.handle_login()
 
@@ -47,19 +50,16 @@ class Login:
             )
             try:
                 # Fetch user from DB
-                user = self.get_user_by_username(login.username)
+                user = self.get_user_data(login.username)
 
                 if not user:
-                    self.logger.warning(f"User not fond: {login.username}")
                     return {"message": f'{"Invalid username"}'}
 
-                self.logger.info(f"User data found for {login.username}")
-
                 # Verify password using bcrypt
-                if not self.verify_password(
-                    login.password, user["hashed_password"]
-                ):
-                    return {"message": f'{"Invalid password"}'}
+                # if not self.verify_password(
+                #     login.password, user["hashed_password"]
+                # ):
+                #     return {"message": f'{"Invalid password"}'}
 
                 # return success message
                 return {
@@ -72,29 +72,48 @@ class Login:
                     status_code=500, detail="Internal server error"
                 )
 
-    def get_user_by_username(self, username: str):
-        # Querty sb to find user by username
-        try:
-            response = (
-                self.supabase.table("user_details")
-                .select("*")
-                .eq("username", username)
-                .execute()
-            )
+    def get_user_data(self, username: str):
+        db = DataBase()
+        db.connect_db()
+        table_name = "user_table"
 
-            # print(f"Supabase response: {response}")
+        # check if the user exists
+        # if they don't return None
+        # if they exist, get their password and return it
 
-            data = response.data
-
-            # print(f"DATA AFTER DATA=... {data}")
-
-            if len(data) > 0:
-                return data[0]
-            else:
-                return None
-        except Exception as e:
-            self.logger.error(f"Error querying Database: {str(e)}")
+        if not db.search_user(table_name, username):
+            self.logger.warning(f"User not found: {username}")
+            db.close_con()
             return None
+
+        password = db.search_entry(table_name, username, "password")
+        self.logger.info("User data found: {username}, {password}")
+        db.close_con()
+        return password
+
+    # def get_user_by_username(self, username: str):
+    #     # Querty sb to find user by username
+    #     try:
+    #         response = (
+    #             self.supabase.table("user_details")
+    #             .select("*")
+    #             .eq("username", username)
+    #             .execute()
+    #         )
+
+    #         # print(f"Supabase response: {response}")
+
+    #         data = response.data
+
+    #         # print(f"DATA AFTER DATA=... {data}")
+
+    #         if len(data) > 0:
+    #             return data[0]
+    #         else:
+    #             return None
+    #     except Exception as e:
+    #         self.logger.error(f"Error querying Database: {str(e)}")
+    #         return None
 
     def verify_password(
         self, plain_password: str, hashed_password: str

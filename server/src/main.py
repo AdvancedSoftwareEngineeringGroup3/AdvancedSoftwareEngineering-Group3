@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import logging
 import uvicorn
 import sys
+from src.signup import Signup
 from src.login import Login
 from src.weatherApi import weatherAPI
 from src.Database_class import DataBase
@@ -22,6 +23,7 @@ class Server:
         self.app.include_router(router)
 
         # Instantiate components
+        self.signup_logic = Signup(self.app, self.logger)
         self.login_logic = Login(self.app, self.logger)
         self.preferences_logic = Preferences(self.app, self.logger)
         self.connection_manager = ConnectionManager()
@@ -36,6 +38,9 @@ class Server:
         # Register routes
         self.register_routes()
 
+        # Signup function
+        # self.signup_logic.handle_signup()
+        
         # Login function
         # self.login_logic.handle_login()
 

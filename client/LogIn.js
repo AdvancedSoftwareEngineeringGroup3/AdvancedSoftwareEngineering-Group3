@@ -10,8 +10,6 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const ref2 = React.useRef(null);
 
-  const passphrase = "jr023uf1(£12g*";
-
   const handleLogin = async () => {
     if (username == '' || password == '') {
       alert("All fields have to be filled before logging in!")
@@ -19,7 +17,6 @@ export default function LoginScreen({ navigation }) {
     else {
       console.log('username: ', username)
       console.log('password: ', password)
-      // alert(`Username: ${username}\nPassword: ${password}`)
       navigation.goBack()
 
       try {
@@ -43,6 +40,8 @@ export default function LoginScreen({ navigation }) {
         // Await response and print message from server
         const data = await response.json();
         alert(data.message)
+
+        // if the data is "success", then cache details        
 
         console.log('Server response:', data);
         setServerResponse(data.message);
