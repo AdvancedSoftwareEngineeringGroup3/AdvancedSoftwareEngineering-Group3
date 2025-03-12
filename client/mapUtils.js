@@ -51,7 +51,7 @@ export const startLocationTracking = async (callback) => {
     return await Location.watchPositionAsync(
         {
             accuracy: Location.Accuracy.BestForNavigation,
-            timeInterval: 5000, // Update every 5 seconds
+            timeInterval: 5000, // Update every 5 seconds // apparently android only
             distanceInterval: 5, // Update if device moves 5 meters
         },
         (newLocation) => {

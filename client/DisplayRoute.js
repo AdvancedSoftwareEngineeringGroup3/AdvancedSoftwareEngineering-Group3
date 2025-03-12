@@ -1,31 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
-import { decodeRoute, getCurrentLocation, startLocationTracking } from './mapUtils';
+import { decodeRoute, startLocationTracking } from './mapUtils';
 
 export default function DisplayRouteScreen({ navigation, route }) {
     const { origin, destination, routeData, polylineCoordinates } = route.params;
     const [location, setLocation] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
-    const [currentRoute, setCurrentRoute] = useState(routeData.routes[0]);
 
-    // Get current location
     useEffect(() => {
-        (async () => {
+        const startTracking = async () => {
             try {
-                const initialLocation = await getCurrentLocation();
-                setLocation(initialLocation);
-                console.log(location);
-
-                const locationSubscription = await startLocationTracking(setLocation);
-
-                return () => locationSubscription.remove();
+                await startLocationTracking((currentLocation) => {
+                    setLocation(currentLocation);
+                });
             } catch (error) {
-                setErrorMessage(error.message);
+                console.error('Error starting location tracking:', error);
             }
-        })();
+        };
+
+        startTracking();
     }, []);
-console.log("origin: " + origin)
+
+    // update users location dynamically - DONE
+    // check proximity to polyline coords, " are you here yet"
+    // generate travelled polyline
+    // display next direction
+    // recentre user location on map
+    // exit functionality when destination reached
+
     return (
         <View style={styles.container}>
             {errorMessage ? (
@@ -48,8 +51,8 @@ console.log("origin: " + origin)
                         initialRegion={{
                             latitude: currentRoute.legs[0].start_location.lat,
                             longitude: currentRoute.legs[0].start_location.lng,
-                            latitudeDelta: 0.01,
-                            longitudeDelta: 0.01,
+                            latitudeDelta: 1,
+                            longitudeDelta: 1,
                         }}
                     >
                         <Marker
