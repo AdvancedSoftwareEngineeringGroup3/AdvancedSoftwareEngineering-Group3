@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from server.src.Database_class import DataBase
+from src.Database_class import DataBase
 
 DB_NAME = "test_db"
 DB_USER = "your_user"
@@ -15,7 +15,7 @@ def db():
     return DataBase(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT)
 
 
-@patch("server.Database_class.pg8000.connect")
+@patch("src.Database_class.pg8000.connect")
 def test_connect_db(mock_connect, db):
     """Test database connection"""
     mock_connect.return_value = MagicMock()
