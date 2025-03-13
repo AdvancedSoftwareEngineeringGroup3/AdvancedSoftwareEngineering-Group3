@@ -12,7 +12,7 @@ from src.networking import Networking
 def test_app():
     """
     Create a FastAPI instance and attach the Networking routes
-    for testing. 
+    for testing.
     """
     app = FastAPI()
     logger = logging.getLogger("test_logger")
@@ -62,9 +62,9 @@ def test_send_friend_request_success(test_app):
     assert data["message"] == "Friend request to Bob sent successfully"
     # assert data.message == "Friend request to Bob sent successfully"
 
-    mock_db.search_user.assert_called_once_with("user_table", "Bob")
+    mock_db.search_user.assert_called_once_with("testing_table", "Bob")
     mock_db.search_entry.assert_called_once_with(
-        "user_table", "Bob", "pending_friends"
+        "testing_table", "Bob", "pending_friends"
     )
 
 
@@ -128,16 +128,21 @@ def test_check_requests(test_app):
     with patch("src.networking.DataBase") as mock_db_class:
         mock_db = MagicMock()
 
-        mock_db.search_entry.side_effect = [["Bob", "Charlie"], ["Dave"]]
+        mock_db.search_entry.side_effect = [
+            ["Bob", "Charlie"],
+            ["Dave"],
+            ["Sive"],
+        ]
         mock_db_class.return_value = mock_db
 
         # The endpoint is a POST expecting just the username in the payload
-        response = test_app.post("/check_requests", json={"user": "Alice"})
+        response = test_app.get("/check_requests?sender=Alice")
         data = response.json()
 
         print(f"Response: {data}")
         assert data["friends"] == ["Bob", "Charlie"]
         assert data["pending_friends"] == ["Dave"]
+        assert data["sent_friends"] == ["Sive"]
 
 
 def test_request_response_accepted(test_app):
@@ -163,13 +168,13 @@ def test_request_response_accepted(test_app):
 
     # Check DB calls
     mock_db.remove_from_array.assert_called_once_with(
-        "user_table", "Alice", "pending_friends", "Bob"
+        "testing_table", "Alice", "pending_friends", "Bob"
     )
     mock_db.append_entry.assert_any_call(
-        "user_table", "Bob", "Alice", "friends_list"
+        "testing_table", "Bob", "Alice", "friends_list"
     )
     mock_db.append_entry.assert_any_call(
-        "user_table", "Alice", "Bob", "friends_list"
+        "testing_table", "Alice", "Bob", "friends_list"
     )
 
 
@@ -194,15 +199,17 @@ def test_request_response_rejected(test_app):
 
     # Check DB calls
     mock_db.remove_from_array.assert_called_once_with(
-        "user_table", "Alice", "pending_friends", "Bob"
+        "testing_table", "Alice", "pending_friends", "Bob"
     )
 
     # Make sure no calls were made to append entries for either user
     mock_db.append_entry.assert_not_called()
 
+
 def test_cancel_friend_request_success(test_app):
     """
-    Test for /cancel_friend_request endpoint where the friend request is successfully cancelled.
+    Test for /cancel_friend_request endpoint
+    where the friend request is successfully cancelled.
     """
     with patch("src.networking.DataBase") as mock_db_class:
         mock_db = MagicMock()
@@ -235,7 +242,7 @@ def test_cancel_friend_request_user_not_found(test_app):
 
         response = test_app.post(
             "/cancel_friend_request",
-            json={"user": "Alice", "friend": "GhostUser"},
+            json={"user": "Alice", "friend": "fdjfghdfiogdo"},
         )
 
     assert response.status_code == 404

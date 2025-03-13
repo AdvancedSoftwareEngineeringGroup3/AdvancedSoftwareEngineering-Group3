@@ -3,8 +3,9 @@ from dotenv import load_dotenv
 import logging
 from fastapi import Query, HTTPException
 
-from src.Database_class import DataBase
-# from Database_class import DataBase
+# from src.Database_class import DataBase
+
+from Database_class import DataBase
 
 
 class Networking:
@@ -174,7 +175,7 @@ class Networking:
         table_name = "testing_table"
         friend_column = "friends_list"
 
-        print(f"Removing {friend} from {user}'s friends list IM IN FUNCTION")
+        print(f"Removing {friend} from {user}'s friends list")
 
         # remove from friends list
         db.remove_from_array(table_name, user, friend_column, friend)
@@ -186,6 +187,8 @@ class Networking:
                 self.logger.info(
                     f"User {user} not found in {friend}'s friends list"
                 )
+        else:
+            return f"User {friend} not found"
 
         db.close_con()
         self.logger.info(f"Friend {friend} removed from {user}")
@@ -215,7 +218,7 @@ class Networking:
         sent_friend_column = "sent_friends"
         pending_column = "pending_friends"
 
-        print(f"Removing {friend} from {user}'s friends list IM IN FUNCTION")
+        print(f"Removing {friend} from {user}'s friends list")
 
         # remove from friends list
         db.remove_from_array(table_name, user, sent_friend_column, friend)
@@ -227,6 +230,8 @@ class Networking:
                 self.logger.info(
                     f"User {user} not found in {friend}'s pending friends list"
                 )
+        else:
+            return f"User {friend} not found"
 
         db.close_con()
         self.logger.info(

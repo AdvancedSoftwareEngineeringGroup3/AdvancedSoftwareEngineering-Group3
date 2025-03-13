@@ -120,7 +120,7 @@ def test_append_entry(db):
     db.append_entry(table_name, sender, receiver, column)
     cursor_mock.execute.assert_called_once_with(
         "UPDATE test_table "
-        "SET pending_friends = array_append(pending_friends,'cormac') "
+        "SET pending_friends = array_append(pending_friends, 'cormac') "
         "WHERE username = 'john_doe';"
     )
     cursor_mock.close.assert_called_once()
