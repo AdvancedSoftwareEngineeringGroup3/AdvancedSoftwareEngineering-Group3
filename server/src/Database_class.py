@@ -188,8 +188,11 @@ class DataBase:
         """
         try:
             cursor = self.connection.cursor()
-            # print(f"Appending {sender} to {receiver}'s {column} in {table_name}")
-            query = f"UPDATE {table_name} \nSET {column} = array_append({column},'{sender}') \nWHERE username = '{receiver}';"
+            query = (
+                f"UPDATE {table_name} "
+                f"SET {column} = array_append({column}, '{sender}') "
+                f"WHERE username = '{receiver}';"
+            )
             print(query)
             cursor.execute(query)
             self.connection.commit()
