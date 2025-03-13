@@ -12,7 +12,7 @@ from src.networking import Networking
 def test_app():
     """
     Create a FastAPI instance and attach the Networking routes
-    for testing.
+    for testing. 
     """
     app = FastAPI()
     logger = logging.getLogger("test_logger")
@@ -21,6 +21,8 @@ def test_app():
     net.api_send_friend_request()
     net.api_fetch_all_friends()
     net.api_friend_request_response()
+    net.api_cancel_friend_request()
+    net.api_friend_remove()
 
     return TestClient(app)
 
@@ -197,3 +199,86 @@ def test_request_response_rejected(test_app):
 
     # Make sure no calls were made to append entries for either user
     mock_db.append_entry.assert_not_called()
+
+def test_cancel_friend_request_success(test_app):
+    """
+    Test for /cancel_friend_request endpoint where the friend request is successfully cancelled.
+    """
+    with patch("src.networking.DataBase") as mock_db_class:
+        mock_db = MagicMock()
+        mock_db.search_user.return_value = True
+        mock_db.search_entry.return_value = ["Alice"]
+        mock_db_class.return_value = mock_db
+
+        response = test_app.post(
+            "/cancel_friend_request",
+            json={"user": "Alice", "friend": "Bob"},
+        )
+
+    assert response.json()["message"] == "Friend request removed successfully"
+    mock_db.remove_from_array.assert_any_call(
+        "testing_table", "Alice", "sent_friends", "Bob"
+    )
+    mock_db.remove_from_array.assert_any_call(
+        "testing_table", "Bob", "pending_friends", "Alice"
+    )
+
+
+def test_cancel_friend_request_user_not_found(test_app):
+    """
+    Test for /cancel_friend_request endpoint where the friend is not found.
+    """
+    with patch("src.networking.DataBase") as mock_db_class:
+        mock_db = MagicMock()
+        mock_db.search_user.return_value = False
+        mock_db_class.return_value = mock_db
+
+        response = test_app.post(
+            "/cancel_friend_request",
+            json={"user": "Alice", "friend": "GhostUser"},
+        )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Friend not found"
+
+
+def test_remove_friend_success(test_app):
+    """
+    Test for /remove_friend endpoint where the friend is successfully removed.
+    """
+    with patch("src.networking.DataBase") as mock_db_class:
+        mock_db = MagicMock()
+        mock_db.search_user.return_value = True
+        mock_db.search_entry.return_value = ["Alice"]
+        mock_db_class.return_value = mock_db
+
+        response = test_app.post(
+            "/remove_friend",
+            json={"user": "Alice", "friend": "Bob"},
+        )
+
+    assert response.json()["message"] == "Friend removed successfully"
+    mock_db.remove_from_array.assert_any_call(
+        "testing_table", "Alice", "friends_list", "Bob"
+    )
+    mock_db.remove_from_array.assert_any_call(
+        "testing_table", "Bob", "friends_list", "Alice"
+    )
+
+
+def test_remove_friend_user_not_found(test_app):
+    """
+    Test for /remove_friend endpoint where the friend is not found.
+    """
+    with patch("src.networking.DataBase") as mock_db_class:
+        mock_db = MagicMock()
+        mock_db.search_user.return_value = False
+        mock_db_class.return_value = mock_db
+
+        response = test_app.post(
+            "/remove_friend",
+            json={"user": "Alice", "friend": "GhostUser"},
+        )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Friend not found"
