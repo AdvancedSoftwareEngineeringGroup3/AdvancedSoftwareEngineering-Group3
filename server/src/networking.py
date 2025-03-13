@@ -80,9 +80,9 @@ class Networking:
             self.logger.info(
                 f"Received request for pending friends from {user}"
             )
-            friends, pending_friends = self.db_fetch_all_friends(user)
+            friends, pending_friends, sent_friends = self.db_fetch_all_friends(user)
             self.logger.info("Friends & Pending friends retrieved")
-            return {"friends": friends, "pending_friends": pending_friends}
+            return {"friends": friends, "pending_friends": pending_friends, "sent_friends": sent_friends}
 
     def db_fetch_all_friends(self, user):
         table_name = "testing_table"
@@ -90,8 +90,9 @@ class Networking:
         db.connect_db()
         friends_list = db.search_entry(table_name, user, "friends_list")
         pending_friends = db.search_entry(table_name, user, "pending_friends")
+        sent_friends = db.search_entry(table_name, user, "sent_friends")
         db.close_con()
-        return friends_list, pending_friends
+        return friends_list, pending_friends, sent_friends
 
     def api_friend_request_response(self):
         @self.app.post("/request_response")

@@ -5,9 +5,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 export default function FriendsScreen() {
   const [senderName, setSenderName] = useState('')
   const [friendRequestName, setFriendName] = useState('');
-  const [sentFriends, setSentFriends] = useState([]);
   const [pendingFriends, setPendingFriends] = useState([]);
   const [currentFriends, setCurrentFriends] = useState([]);
+  const [sentFriends, setSentFriends] = useState([]);
 
   let sender_name = "Conor"; //Username of the person sending the request
 
@@ -56,7 +56,7 @@ export default function FriendsScreen() {
     }
   };
 
-  const getPending = async () => {
+  const Poll = async () => {
     try{
       // send friend request name & username of the person sending friend request
       //const payload = {
@@ -84,6 +84,7 @@ export default function FriendsScreen() {
         // alert(server_message.message);
         setPendingFriends(server_message.pending_friends);
         setCurrentFriends(server_message.friends);
+        setSentFriends(server_message.sent_friends);
       } else {
         // Log the raw response text for debugging
         const responseText = await response.text();
@@ -95,14 +96,11 @@ export default function FriendsScreen() {
     }
   };
 
-
-  // useEffect(() => {
-  //   getPending();
-  // }, []);
+  // Poll for friend requests every 5 seconds
   useEffect(() => {
     const intervalId = setInterval(() => {
-        getPending();
-    }, 15000); // Poll every 5 seconds
+        Poll();
+    }, 5000); // Poll every 5 seconds
 
     // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(intervalId);
@@ -278,7 +276,7 @@ export default function FriendsScreen() {
         {<View style={styles.listContainer}>
           <Text style={styles.sectionTitle}>Pending Friend Requests</Text>
           <FlatList
-            onPress={() => getPending()}
+            onPress={() => Poll()}
             data={pendingFriends}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
