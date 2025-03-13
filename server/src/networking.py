@@ -2,10 +2,8 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 import logging
 from fastapi import Query, HTTPException
-
-# from src.Database_class import DataBase
-
 from Database_class import DataBase
+# from src.Database_class import DataBase
 
 
 class Networking:
