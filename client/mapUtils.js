@@ -1,6 +1,21 @@
 import { decode } from '@googlemaps/polyline-codec';
 import * as Location from 'expo-location';
 
+// Convert degrees to radians
+const deg2rad = (deg) => deg * (Math.PI / 180);
+
+// Haversine Formula to calculate distance between two points
+export const haversine = (start, end) => { 
+    const R = 6371; // Radius of the Earth in km
+    const dLat = deg2rad(end.latitude - start.latitude);
+    const dLon = deg2rad(end.longitude - start.longitude);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(start.latitude)) * Math.cos(deg2rad(end.latitude)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c * 1000; // Distance in meters
+}
+
 // Extract routes func
 export const extractRoutes = async (route, origin = "", destination = "", mode = 'walking') => {
     try {
