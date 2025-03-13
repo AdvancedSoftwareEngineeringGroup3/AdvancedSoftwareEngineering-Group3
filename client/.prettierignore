@@ -1,0 +1,9 @@
+node_modules
+__mocks__
+expo
+coverage
+*.env
+package-lock.json
+package.json
+*.md
+*.bat

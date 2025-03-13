@@ -10,6 +10,10 @@ permissions:
   contents: read
 
 jobs:
+
+  # TODO: Add linting step
+
+
   test:
     name: Run Frontend Tests (Jest)
     runs-on: ubuntu-latest

@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  extends: ['airbnb', 'prettier'],
+  extends: ['airbnb', 'airbnb/hooks', 'prettier'],
   plugins: ['react', 'react-hooks', 'import', 'jsx-a11y', 'prettier'],
   parserOptions: {
     ecmaVersion: 2021,
