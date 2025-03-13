@@ -5,8 +5,6 @@ from fastapi import FastAPI
 import logging
 from src.networking import Networking
 
-# from src.Database_class import DataBase
-
 
 @pytest.fixture
 def test_app():
