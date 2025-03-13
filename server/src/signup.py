@@ -15,6 +15,8 @@ class Signup:
         self.app = api
         self.logger = logger
 
+        # load_dotenv()
+
         # register signup route
         self.handle_signup()
 
@@ -33,11 +35,11 @@ class Signup:
                 # return "user successfully signed up"
 
             try:
-                if not self.signup_user(signup_data.username, signup_data.password):
-                    return {"message": f'{"Username already found"}'}
+                if not self.signup_user(signup.username, signup.password):
+                    return {"message": "Username already found"}
                 
                 return {
-                    "message": f"Signup successful for user: {signup_data.username}"
+                    "message": f"Signup successful for user: {signup.username}"
                 }
                 
             except Exception as e:
@@ -51,7 +53,8 @@ class Signup:
         db.connect_db()
         table_name = "user_table"
 
-        if not db.search_user(table_name, username):
+        # If the user is not found, return False
+        if db.search_user(table_name, username):
             self.logger.warning(f"User {username} already exists")
             db.close_con()
             return False

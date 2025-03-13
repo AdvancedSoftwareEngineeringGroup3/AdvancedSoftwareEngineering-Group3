@@ -50,10 +50,10 @@ class Login:
             )
             try:
                 # Fetch user from DB
-                user = self.get_user_data(login.username)
+                user = self.get_user_data(login.username, login.password)
 
                 if not user:
-                    return {"message": f'{"Invalid username"}'}
+                    return {"message": f'{"Invalid username or password"}'}
 
                 # Verify password using bcrypt
                 # if not self.verify_password(
@@ -72,7 +72,7 @@ class Login:
                     status_code=500, detail="Internal server error"
                 )
 
-    def get_user_data(self, username: str):
+    def get_user_data(self, username: str, password: str):
         db = DataBase()
         db.connect_db()
         table_name = "user_table"
@@ -85,9 +85,13 @@ class Login:
             self.logger.warning(f"User not found: {username}")
             db.close_con()
             return None
+        
+        if db.search_entry(table_name, username, "password") != password:
+            self.logger.warning(f"Password does not match: {password}")
+            db.close_con()
+            return None
 
-        password = db.search_entry(table_name, username, "password")
-        self.logger.info("User data found: {username}, {password}")
+        self.logger.info(f"User data found: {username}, {password}")
         db.close_con()
         return password
 
