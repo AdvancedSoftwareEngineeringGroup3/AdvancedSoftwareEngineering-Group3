@@ -2,42 +2,33 @@ import * as React from 'react';
 import { useState, useRef } from 'react';
 import { StyleSheet, View, SafeAreaView, TextInput, Button, TouchableOpacity, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
-import { handleLogin, handleSignup } from "./accountUtils";
 
 
-export default function LoginScreen({ navigation }) {
-  const [serverResponse, setServerResponse] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const ref2 = React.useRef(null);
+export default function AccountScreen({ navigation }) {
+
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 
       <SafeAreaView style={styles.container}>
-        <TextInput
-          placeholder="Username"
-          value={username}
-          onChangeText={(text) => setUsername(text)}
-          style={styles.TextInput}
-          onSubmitEditing={() => ref2.current.focus()}
-        />
+        
 
-        <TextInput
-          ref={ref2}
-          placeholder="Password"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          secureTextEntry
-          style={styles.TextInput}
-        />
-
-        <TouchableOpacity style={styles.TouchableOpacity} onPress={() => handleLogin(username, password, setServerResponse, navigation)}
+        <TouchableOpacity style={styles.TouchableOpacity1} onPress={() => navigation.navigate('LoginScreen')}
           color="#841584">
           <Text>Log In</Text>
         </TouchableOpacity>
 
-      </SafeAreaView>
+        <TouchableOpacity style={styles.TouchableOpacity2} onPress={() => navigation.navigate('SignUpScreen')}
+          color="#841584">
+          <Text>Sign Up</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.TouchableOpacity3} onPress={() => navigation.navigate('Map')}
+          color="#841584">
+          <Text>Continue as Guest</Text>
+        </TouchableOpacity>
+
+        </SafeAreaView>
     </View>
   );
 }
@@ -63,10 +54,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
   },
-  TouchableOpacity: {
+  TouchableOpacity1: {
     alignItems: 'center',
     left: '0%',
-    top: '5%',
+    top: '20%',
     backgroundColor: '#007bff',
     paddingVertical: 10,
     paddingHorizontal: 40,
@@ -77,10 +68,24 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-  TouchableOpacity1: {
+  TouchableOpacity2: {
     alignItems: 'center',
     left: '0%',
-    top: '5%',
+    top: '30%',
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  TouchableOpacity3: {
+    alignItems: 'center',
+    left: '0%',
+    top: '40%',
     backgroundColor: '#007bff',
     paddingVertical: 10,
     paddingHorizontal: 40,

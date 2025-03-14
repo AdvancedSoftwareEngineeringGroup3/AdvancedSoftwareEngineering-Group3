@@ -15,8 +15,10 @@ export const retrieveData = async (key) => {
   try {
     const value = await AsyncStorage.getItem(JSON.stringify(key));
     if (value !== null) {
-      console.log(value);
-      return value != null ? JSON.parse(value) : null;
+      console.log(`Retrieved data: ${value}`);
+      return JSON.parse(value);
+    } else {
+        return null;
     }
   } catch (error) {
     console.error('Error retrieving data from cache')

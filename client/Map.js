@@ -86,7 +86,7 @@ export default function MapScreen({ navigation }) {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.loginButton}
-                        onPress={() => navigation.navigate('LoginScreen')}
+                        onPress={() => navigation.navigate('AccountScreen')}
                     >
 
                         <Text style={styles.buttonText}>Log In</Text>
@@ -123,6 +123,15 @@ export default function MapScreen({ navigation }) {
                     >
                         <Text style={styles.buttonText}>Weather</Text>
                     </TouchableOpacity>
+
+                     {/* todo: Need to make new changes to the preferences logic */}
+                    {/* <TouchableOpacity
+                        style={styles.PreferencesButton}
+                        onPress={() => navigation.navigate('PreferencesScreen')}
+                    >
+                        <Text style={styles.buttonText}>User Preferences</Text>
+                    </TouchableOpacity> */}
+
                 </>
             ) : (
                 <Text style={styles.loadingText}>Fetching your location...</Text>
@@ -176,6 +185,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         left: '70%',
         top: '0%',
+        backgroundColor: '#007bff',
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    PreferencesButton: {
+        position: 'absolute',
+        alignItems: 'center',
+        left: '0%',
+        top: '10%',
         backgroundColor: '#007bff',
         paddingVertical: 10,
         paddingHorizontal: 40,
