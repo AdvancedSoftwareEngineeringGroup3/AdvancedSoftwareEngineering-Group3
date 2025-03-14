@@ -18,6 +18,7 @@ def get_routes(
     alternatives: bool = Body(...),
 ):
     url = "https://maps.googleapis.com/maps/api/directions/json"
+    # url = "https://maps.googleapis.com/maps/directions/v2:computeRoutes"
 
     parameters = {
         "origin": origin,
@@ -26,6 +27,10 @@ def get_routes(
         "alternatives": str(alternatives).lower(),
         "key": GOOGLE_MAPS_API_KEY,
     }
+    # if mode == driving
+    # parse response ... routes
+    # get speed limit for each step of leg
+    # retrurn list of limits for each step of each leg
 
     response = requests.get(url, params=parameters)
     return response.json()  # Forward full response to the client

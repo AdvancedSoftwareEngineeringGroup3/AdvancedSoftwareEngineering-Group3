@@ -30,44 +30,6 @@ export default function MapScreen({ navigation }) {
         return () => socket.close();
     }, []);
 
-    // Location Setup
-    // useEffect(() => {
-    //     (async () => {
-    //         const { status } = await Location.requestForegroundPermissionsAsync();
-    //         if (status !== 'granted') {
-    //             setErrorMessage('Permission to access location was denied.');
-    //             return;
-    //         }
-
-    //         const currentLocation = await Location.getCurrentPositionAsync({
-    //             accuracy: Location.Accuracy.BestForNavigation,
-    //         });
-    //         setLocation(currentLocation.coords);
-
-    //         // Track location updates
-    //         const locationSubscription = await Location.watchPositionAsync(
-    //             {
-    //                 accuracy: Location.Accuracy.BestForNavigation,
-    //                 timeInterval: 5000,
-    //                 distanceInterval: 5,
-    //             },
-    //             (newLocation) => {
-    //                 setLocation(newLocation.coords);
-    //                 if (mapRef.current) {
-    //                     mapRef.current.animateToRegion({
-    //                         latitude: newLocation.coords.latitude,
-    //                         longitude: newLocation.coords.longitude,
-    //                         latitudeDelta: 0.01,
-    //                         longitudeDelta: 0.01,
-    //                     }, 1000);
-    //                 }
-    //             }
-    //         );
-
-    //         return () => locationSubscription.remove();
-    //     })();
-    // }, []);
-
     useEffect(() => {
         (async () => {
             try {
@@ -116,11 +78,7 @@ export default function MapScreen({ navigation }) {
                             coordinate={location}
                             title="Your Location"
                             description="Real-time location"
-                        />
-                        <Marker
-                            coordinate={{ latitude: 53.3498, longitude: -6.2603 }}
-                            title="Dublin"
-                            description="Marker description"
+                            icon={require('./assets/location-circle.png')}
                         />
                     </MapView>
                     <TouchableOpacity style={styles.sendButton} onPress={sendLocation}>
@@ -130,6 +88,7 @@ export default function MapScreen({ navigation }) {
                         style={styles.loginButton}
                         onPress={() => navigation.navigate('AccountScreen')}
                     >
+
                         <Text style={styles.buttonText}>Log In</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -144,6 +103,14 @@ export default function MapScreen({ navigation }) {
                     >
                         <Text style={styles.buttonText}>Find Route</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.friendScreenButton}
+                        onPress={() => navigation.navigate('FriendsScreen')}
+                    >
+                        <Text style={styles.buttonText}>Friends UI</Text>
+                    </TouchableOpacity>
+
+            
                     <TouchableOpacity
                         style={styles.dashboardButton}
                         onPress={() => navigation.navigate('Dashboard')}
@@ -232,6 +199,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         left: '0%',
         top: '10%',
+        backgroundColor: '#007bff',
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+        elevation: 5,
+    },
+
+    friendScreenButton: {
+        position: 'absolute',
+        alignItems: 'center',
+        left: '70%',
+        top: '50%',
         backgroundColor: '#007bff',
         paddingVertical: 10,
         paddingHorizontal: 40,

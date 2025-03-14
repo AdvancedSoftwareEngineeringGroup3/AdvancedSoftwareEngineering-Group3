@@ -197,13 +197,12 @@ class DataBase:
         """
         try:
             cursor = self.connection.cursor()
-
             query = (
                 f"UPDATE {table_name} "
-                f"SET {column} = array_append({column},'{sender}') "
+                f"SET {column} = array_append({column}, '{sender}') "
                 f"WHERE username = '{receiver}';"
             )
-
+            print(query)
             cursor.execute(query)
             self.connection.commit()
         except Exception as e:

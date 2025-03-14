@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
-from src.wayfinding import router  # Import the API routes
+
+# from src.wayfinding import router  # Import the API routes
+from wayfinding import router  # Import the API routes
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import logging
@@ -10,6 +12,8 @@ from src.login import Login
 from src.weatherApi import weatherAPI
 from src.Database_class import DataBase
 from src.preferences import Preferences
+from src.networking import Networking
+
 
 
 class Server:
@@ -28,6 +32,7 @@ class Server:
         self.preferences_logic = Preferences(self.app, self.logger)
         self.connection_manager = ConnectionManager()
         self.weather_api = weatherAPI()
+        self.networking = Networking(self.app, self.logger)
 
         # Configure CORS
         self.configure_cors()
