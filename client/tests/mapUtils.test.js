@@ -1,7 +1,17 @@
-import { extractRoutes, requestLocationPermission, getCurrentLocation, startLocationTracking, decodeRoute } from '../mapUtils.js'; // Update with the correct path
+import { extractRoutes, requestLocationPermission, getCurrentLocation, startLocationTracking, decodeRoute, haversine } from '../mapUtils.js'; // Update with the correct path
 import response from './response.json'; // Update with the correct path
 import { decode } from '@googlemaps/polyline-codec';
 import * as Location from 'expo-location';
+
+// Test that Haversine function returns the correct distance between two points
+describe('Haversine Formula', () => {
+    it('should return the correct distance between two points', () => {
+        const start = { latitude: 40.7128, longitude: -74.0060 };
+        const end = { latitude: 34.0522, longitude: -118.2437 };
+        const distance = haversine(start, end);
+        expect(distance).toBeCloseTo(3935746.254609722, 0);
+    });
+});
 
 // Mock polyline decoder
 jest.mock('@googlemaps/polyline-codec', () => ({
