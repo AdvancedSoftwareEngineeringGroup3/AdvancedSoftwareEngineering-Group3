@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 
-export default function WeatherScreen({ navigation }) {
+export default function WeatherScreen() {
   const [serverResponse, setServerResponse] = useState('');
 
   const fetchFromServer = async () => {
@@ -31,7 +31,7 @@ export default function WeatherScreen({ navigation }) {
       const data = await response.json();
       console.log('Server response:', data);
       setServerResponse('Data has been queried successfully!');
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await Promise((resolve) => setTimeout(resolve, 3000));
       setServerResponse('');
     } catch (error) {
       console.error('Error details:', error);

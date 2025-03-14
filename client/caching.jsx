@@ -18,6 +18,7 @@ export const retrieveData = async (key) => {
     return null;
   } catch (error) {
     console.error('Error retrieving data from cache');
+    return null;
   }
 };
 

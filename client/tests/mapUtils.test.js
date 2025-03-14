@@ -1,14 +1,12 @@
 import { decode } from '@googlemaps/polyline-codec';
 import * as Location from 'expo-location';
 import {
-  extractRoutes,
   requestLocationPermission,
   getCurrentLocation,
   startLocationTracking,
   decodeRoute,
   haversine,
 } from '../mapUtils'; // Update with the correct path
-import response from './response.json'; // Update with the correct path
 
 // Test that Haversine function returns the correct distance between two points
 describe('Haversine Formula', () => {
@@ -22,7 +20,7 @@ describe('Haversine Formula', () => {
 
 // Mock polyline decoder
 jest.mock('@googlemaps/polyline-codec', () => ({
-  decode: jest.fn((polyline) => [
+  decode: jest.fn(() => [
     [0, 0],
     [1, 1],
   ]), // Mock polyline decoding

@@ -61,7 +61,7 @@ export const handleSignup = async (
   setServerResponse,
   navigation,
 ) => {
-  if (username == '' || password == '') {
+  if (username === '' || password === '') {
     alert('All fields have to be filled before signing up!');
   } else {
     console.log('username: ', username);
@@ -91,7 +91,7 @@ export const handleSignup = async (
       const data = await response.json();
       alert(data.message);
 
-      if (data.message == `Signup successful for user: ${username}`) {
+      if (data.message === `Signup successful for user: ${username}`) {
         if (retrieveData('username') !== null) {
           await removeData('username');
           await updateData('username', username);

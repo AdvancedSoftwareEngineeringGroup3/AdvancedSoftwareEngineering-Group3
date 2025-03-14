@@ -11,7 +11,7 @@ import {
 import { handleSignup } from './accountUtils';
 
 export default function SignUpScreen({ navigation }) {
-  const [ setServerResponse] = useState('');
+  const [setServerResponse] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const ref2 = React.useRef(null);
