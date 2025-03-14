@@ -6,10 +6,8 @@ import { decodeRoute, haversine, startLocationTracking, getCurrentLocation } fro
 export default function DisplayRouteScreen({ navigation, route }) { // route is a prop passed by the navigator, hence why that is used instead of other variable names
     const { origin, destination, routeData, polylineCoordinates } = route.params;
     const [location, setLocation] = useState(null);
-    const [errorMessage, setErrorMessage] = useState('');
     const [travelledPolyline, setTravelledPolyline] = useState([]);
     const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
-    const [stepInstructions, setStepInstructions] = useState('');
     const [devMode, setDevMode] = useState(false);
 
     useEffect(() => {
@@ -46,17 +44,13 @@ export default function DisplayRouteScreen({ navigation, route }) { // route is 
 
         const nextCoordinate = polylineCoordinates[currentPolylineIndex];
         const distance = haversine(currentLocation, nextCoordinate);
-        // console.log('Distance:', distance);
 
-        if (distance < 50) { // Assuming 10 meters as the proximity threshold
+        if (distance < 50) { // Assuming 50 meters as the proximity threshold
             setTravelledPolyline([...travelledPolyline, nextCoordinate]);
             setCurrentPolylineIndex(currentPolylineIndex + 1);
-            // direction instructions for user
-            // setStepInstructions(routeData.legs[0].steps[currentPolylineIndex].html_instructions);
 
             if (currentPolylineIndex + 1 >= polylineCoordinates.length) {
                 Alert.alert('Destination reached', 'You have reached your destination.');
-                // Exit functionality or navigate to another screen
                 navigation.navigate('Map');
             }
         }
@@ -64,9 +58,7 @@ export default function DisplayRouteScreen({ navigation, route }) { // route is 
 
     return (
         <View style={styles.container}>
-            {errorMessage ? (
-                <Text style={styles.error}>{errorMessage}</Text>
-            ) : location && routeData ? (
+            {location && routeData ? (
                 <>
                     <View style={styles.infoContainer}>
                         <View style={styles.routeInfoContainer}>
