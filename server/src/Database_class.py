@@ -132,12 +132,11 @@ class DataBase:
         """
         try:
             cursor = self.connection.cursor()
-
-            # TODO: check if username needs to be made dynamic
-            query = f"UPDATE {table_name} "
-            f"SET {column} = '{data}' "
-            f"WHERE username = '{user}';"
-
+            query = (
+                f"UPDATE {table_name} "
+                f"SET {column} = '{data}' "
+                f"WHERE username = '{user}';"
+            )
             cursor.execute(query)
         except Exception as e:
             self.connection.rollback()
@@ -156,11 +155,10 @@ class DataBase:
         try:
             records = None
             cursor = self.connection.cursor()
-
-            query = f"""SELECT {column}
-            FROM {table_name}
-            WHERE username = '{user}';"""
-
+            query = (
+                f"SELECT {column} FROM {table_name} "
+                f"WHERE username = '{user}';"
+            )
             cursor.execute(query)
             records = cursor.fetchall()
 
@@ -190,9 +188,12 @@ class DataBase:
         """
         try:
             cursor = self.connection.cursor()
-            query = f"UPDATE {table_name} "
-            f"SET {column} = array_append({column},'{sender}') "
-            f"WHERE username = '{receiver}';"
+            query = (
+                f"UPDATE {table_name} "
+                f"SET {column} = array_append({column}, '{sender}') "
+                f"WHERE username = '{receiver}';"
+            )
+            print(query)
             cursor.execute(query)
             self.connection.commit()
         except Exception as e:
@@ -218,11 +219,13 @@ class DataBase:
         """
         try:
             cursor = self.connection.cursor()
+
             query = (
                 f"UPDATE {table_name} "
                 f"SET {column} = ARRAY_REMOVE({column}, '{value_to_remove}')"
                 f"WHERE username = '{user}';"
             )
+
             cursor.execute(query)
             self.connection.commit()
 
@@ -245,7 +248,9 @@ class DataBase:
         """
         try:
             cursor = self.connection.cursor()
+
             query = f"SELECT * FROM {tablename};"
+
             cursor.execute(query)
             records = cursor.fetchall()
 
@@ -281,6 +286,7 @@ class DataBase:
                 f"SELECT username FROM {table_name} "
                 f"WHERE username = '{user}';"
             )
+
             cursor.execute(query)
             record = list(cursor.fetchall())
 

@@ -88,6 +88,7 @@ export default function MapScreen({ navigation }) {
                         style={styles.loginButton}
                         onPress={() => navigation.navigate('LoginScreen')}
                     >
+
                         <Text style={styles.buttonText}>Log In</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -102,6 +103,14 @@ export default function MapScreen({ navigation }) {
                     >
                         <Text style={styles.buttonText}>Find Route</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.friendScreenButton}
+                        onPress={() => navigation.navigate('FriendsScreen')}
+                    >
+                        <Text style={styles.buttonText}>Friends UI</Text>
+                    </TouchableOpacity>
+
+            
                     <TouchableOpacity
                         style={styles.dashboardButton}
                         onPress={() => navigation.navigate('Dashboard')}
@@ -167,6 +176,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         left: '70%',
         top: '0%',
+        backgroundColor: '#007bff',
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+        elevation: 5,
+    },
+
+    friendScreenButton: {
+        position: 'absolute',
+        alignItems: 'center',
+        left: '70%',
+        top: '50%',
         backgroundColor: '#007bff',
         paddingVertical: 10,
         paddingHorizontal: 40,
