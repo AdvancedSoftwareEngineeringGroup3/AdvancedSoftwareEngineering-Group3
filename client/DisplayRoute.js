@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Alert, TouchableOpacity, Switch } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { decodeRoute, haversine, startLocationTracking, getCurrentLocation } from './mapUtils';
 
@@ -9,9 +9,8 @@ export default function DisplayRouteScreen({ navigation, route }) { // route is 
     const [errorMessage, setErrorMessage] = useState('');
     const [travelledPolyline, setTravelledPolyline] = useState([]);
     const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
-    const [devMode, setDevMode] = useState(true);
     const [stepInstructions, setStepInstructions] = useState('');
-
+    const [devMode, setDevMode] = useState(false);
 
     useEffect(() => {
         if (devMode) {
@@ -68,19 +67,25 @@ export default function DisplayRouteScreen({ navigation, route }) { // route is 
                 <Text style={styles.error}>{errorMessage}</Text>
             ) : location && routeData ? (
                 <>
-                    <View>
-                        <Text style={styles.routeInfo}>
-                            Route from {origin} to {destination}
-                        </Text>
-                        <Text style={styles.routeInfo}>
-                            Distance: {routeData.legs[0].distance.text}
-                        </Text>
-                        <Text style={styles.routeInfo}>
-                            Duration: {routeData.legs[0].duration.text}
-                        </Text>
-                        <Text style={styles.routeInfo}>
-                            {stepInstructions}
-                        </Text>
+                    <View style={styles.infoContainer}>
+                        <View style={styles.routeInfoContainer}>
+                            <Text style={styles.routeInfo}>
+                                Route from {origin} to {destination}
+                            </Text>
+                            <Text style={styles.routeInfo}>
+                                Distance: {routeData.legs[0].distance.text}
+                            </Text>
+                            <Text style={styles.routeInfo}>
+                                Duration: {routeData.legs[0].duration.text}
+                            </Text>
+                        </View>
+                        <View style={styles.devModeContainer}>
+                            <Text style={styles.devModeText}>Dev Mode</Text>
+                            <Switch
+                                value={devMode}
+                                onValueChange={(value) => setDevMode(value)}
+                            />
+                        </View>
                     </View>
                     <MapView
                         style={styles.map}
@@ -148,7 +153,7 @@ export default function DisplayRouteScreen({ navigation, route }) { // route is 
 const styles = StyleSheet.create({
     container: { flex: 1 },
     map: { flex: 1 },
-    routeInfo: { margin: 10, fontSize: 16 },
+    routeInfo: { fontSize: 16 },
     error: { color: 'red', textAlign: 'center', margin: 10 },
     loadingText: { textAlign: 'center', margin: 10 },
     dpadContainer: {
@@ -166,5 +171,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#ADD8E6',
         borderRadius: 5,
         margin: 5,
+    },
+    infoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        margin: 10,
+    },
+    routeInfoContainer: {
+        flex: 1,
+    },
+    devModeContainer: {
+        alignItems: 'center',
+    },
+    devModeText: {
+        fontSize: 16,
+        marginBottom: 5,
     },
 });
