@@ -19,6 +19,7 @@ from .Database_class import DataBase
 # verifies the user already exists
 # Sign-up checks if user does not exist, if not, add them to the database
 
+
 class Login:
 
     def __init__(self, api, logger: logging.Logger):

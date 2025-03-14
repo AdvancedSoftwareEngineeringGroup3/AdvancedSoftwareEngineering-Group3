@@ -19,6 +19,7 @@ def test_app():
 
     return TestClient(app)
 
+
 # def test_save_user_preferences(test_app):
 #     """
 #     Test for /setPreferences endpoint to ensure user preferences
