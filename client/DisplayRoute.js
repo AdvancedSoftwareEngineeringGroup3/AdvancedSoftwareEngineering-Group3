@@ -51,6 +51,7 @@ export default function DisplayRouteScreen({ navigation, route }) { // route is 
         if (distance < 50) { // Assuming 10 meters as the proximity threshold
             setTravelledPolyline([...travelledPolyline, nextCoordinate]);
             setCurrentPolylineIndex(currentPolylineIndex + 1);
+            // direction instructions for user
             // setStepInstructions(routeData.legs[0].steps[currentPolylineIndex].html_instructions);
 
             if (currentPolylineIndex + 1 >= polylineCoordinates.length) {
