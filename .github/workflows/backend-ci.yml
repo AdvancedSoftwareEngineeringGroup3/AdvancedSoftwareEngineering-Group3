@@ -17,6 +17,10 @@ jobs:
     name: Lint Python Code (PEP8)
     runs-on: ubuntu-latest
   
+    defaults:
+      run:
+        working-directory: ./server
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,17 +32,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd server
           python -m pip install --upgrade pip
           pip install flake8 black
-      - name: Run Black (Formatting Check)
+      
+      - name: Run Black (Auto Formatting)
         run: |
-          cd server
-          black --check --diff src/ tests/
+          black src/ tests/
+      
       - name: Run flake8 (Linting)
         run: |
-          cd server
           flake8 src/ tests/
+
   test:
     name: Run Backend Tests
     runs-on: ubuntu-latest
