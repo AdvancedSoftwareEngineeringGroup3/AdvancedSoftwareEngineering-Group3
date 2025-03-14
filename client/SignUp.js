@@ -5,11 +5,12 @@ import { useReducedMotion } from 'react-native-reanimated';
 import { handleLogin, handleSignup } from "./accountUtils";
 
 
-export default function LoginScreen({ navigation }) {
+export default function SignUpScreen({ navigation }) {
   const [serverResponse, setServerResponse] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const ref2 = React.useRef(null);
+  
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -32,9 +33,10 @@ export default function LoginScreen({ navigation }) {
           style={styles.TextInput}
         />
 
-        <TouchableOpacity style={styles.TouchableOpacity} onPress={() => handleLogin(username, password, setServerResponse, navigation)}
+
+        <TouchableOpacity style={styles.TouchableOpacity1} onPress={() => handleSignup(username, password, setServerResponse, navigation)}
           color="#841584">
-          <Text>Log In</Text>
+          <Text>Sign Up</Text>
         </TouchableOpacity>
 
       </SafeAreaView>

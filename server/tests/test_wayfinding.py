@@ -25,7 +25,7 @@ def test_calculate_route_missing_params():
 def test_check_transport_modes():
 
     origin = "Tara Street"
-    destination = "Ashbourne Meath"
+    destination = "Leopardstown Valley"
     mode = "Walking"
     alternatives = "true"
     modes = ["driving", "walking", "transit", "bicycling"]

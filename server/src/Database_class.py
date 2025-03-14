@@ -34,6 +34,7 @@ class DataBase:
                 password=self.DB_PASSWORD,
                 port=self.DB_PORT,
             )
+            self.connection.autocommit = True
             print("Connection successful!")
 
         except Exception as e:
@@ -67,12 +68,12 @@ class DataBase:
             self.connection.rollback()
             print("An error occurred:", e)
 
-    def add_entry(self, table_name: str, table_data: dict[str, str]) -> None:
+    def add_entry(self, table_name: str, table_data: dict[str, any]) -> None:
         """Add row to database with new entry
 
         Args:
             table name (str): name of table to be queried
-            table data (str, str): keys are columns, values are user data
+            table data (str, any): keys are columns, values are user data
         """
         try:
             cursor = self.connection.cursor()
@@ -88,12 +89,19 @@ class DataBase:
 
             # Insert entry values for each column
             for value in table_data.values():
-                if "ARRAY" in value:
+                if isinstance(value, bool):
+                    query += f"""{value},"""
+                elif isinstance(value, (int, float)):
+                    query += f"""{value},"""
+                elif isinstance(value, str) and "ARRAY" in value:
                     query += f"""{value},"""
                 else:
                     query += f"""'{value}',"""
             query = query[0:-1]
             query += ");"
+
+            # self.logger.info(f"Query: {query}")
+            print(f"Query: {query}")
 
             cursor.execute(query)
         except Exception as e:
@@ -188,13 +196,12 @@ class DataBase:
         """
         try:
             cursor = self.connection.cursor()
-
             query = (
                 f"UPDATE {table_name} "
-                f"SET {column} = array_append({column},'{sender}') "
+                f"SET {column} = array_append({column}, '{sender}') "
                 f"WHERE username = '{receiver}';"
             )
-
+            print(query)
             cursor.execute(query)
             self.connection.commit()
         except Exception as e:
