@@ -1,20 +1,23 @@
 import * as React from 'react';
-import { useState, useRef } from 'react';
-import { StyleSheet, View, SafeAreaView, TextInput, Button, TouchableOpacity, Text, KeyboardAvoidingView, Platform } from 'react-native';
-import { useReducedMotion } from 'react-native-reanimated';
-import { handleLogin, handleSignup } from "./accountUtils";
-
+import { useState } from 'react';
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  TextInput,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
+import { handleSignup } from './accountUtils';
 
 export default function SignUpScreen({ navigation }) {
-  const [serverResponse, setServerResponse] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [ setServerResponse] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const ref2 = React.useRef(null);
-  
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-
       <SafeAreaView style={styles.container}>
         <TextInput
           placeholder="Username"
@@ -33,12 +36,15 @@ export default function SignUpScreen({ navigation }) {
           style={styles.TextInput}
         />
 
-
-        <TouchableOpacity style={styles.TouchableOpacity1} onPress={() => handleSignup(username, password, setServerResponse, navigation)}
-          color="#841584">
+        <TouchableOpacity
+          style={styles.TouchableOpacity1}
+          onPress={() =>
+            handleSignup(username, password, setServerResponse, navigation)
+          }
+          color="#841584"
+        >
           <Text>Sign Up</Text>
         </TouchableOpacity>
-
       </SafeAreaView>
     </View>
   );
@@ -46,12 +52,12 @@ export default function SignUpScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 10,
     paddingHorizontal: 45,
     top: '-20%',
-    //marginBottom: -150,
+    // marginBottom: -150,
   },
   TextInput: {
     width: 100,

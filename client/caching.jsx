@@ -2,12 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const storeData = async (key, data) => {
   try {
-    await AsyncStorage.setItem(
-    JSON.stringify(key),
-    JSON.stringify(data),
-    );
+    await AsyncStorage.setItem(JSON.stringify(key), JSON.stringify(data));
   } catch (error) {
-  console.error('Error storing data in cache');
+    console.error('Error storing data in cache');
   }
 };
 
@@ -17,11 +14,10 @@ export const retrieveData = async (key) => {
     if (value !== null) {
       console.log(`Retrieved data: ${value}`);
       return JSON.parse(value);
-    } else {
-        return null;
     }
+    return null;
   } catch (error) {
-    console.error('Error retrieving data from cache')
+    console.error('Error retrieving data from cache');
   }
 };
 
@@ -30,16 +26,13 @@ export const removeData = async (key) => {
     await AsyncStorage.removeItem(JSON.stringify(key));
     console.log('Removed successfully');
   } catch {
-    console.error('Error removing data from cache')
+    console.error('Error removing data from cache');
   }
 };
 
 export const updateData = async (key, changedData) => {
   try {
-    AsyncStorage.mergeItem(
-      JSON.stringify(key),
-      JSON.stringify(changedData)
-    );
+    AsyncStorage.mergeItem(JSON.stringify(key), JSON.stringify(changedData));
   } catch (error) {
     console.error('Error updating data in cache');
   }

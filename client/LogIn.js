@@ -1,19 +1,23 @@
 import * as React from 'react';
-import { useState, useRef } from 'react';
-import { StyleSheet, View, SafeAreaView, TextInput, Button, TouchableOpacity, Text, KeyboardAvoidingView, Platform } from 'react-native';
-import { useReducedMotion } from 'react-native-reanimated';
-import { handleLogin, handleSignup } from "./accountUtils";
-
+import { useState } from 'react';
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  TextInput,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
+import { handleLogin } from './accountUtils';
 
 export default function LoginScreen({ navigation }) {
-  const [serverResponse, setServerResponse] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [setServerResponse] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const ref2 = React.useRef(null);
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-
       <SafeAreaView style={styles.container}>
         <TextInput
           placeholder="Username"
@@ -32,11 +36,15 @@ export default function LoginScreen({ navigation }) {
           style={styles.TextInput}
         />
 
-        <TouchableOpacity style={styles.TouchableOpacity} onPress={() => handleLogin(username, password, setServerResponse, navigation)}
-          color="#841584">
+        <TouchableOpacity
+          style={styles.TouchableOpacity}
+          onPress={() =>
+            handleLogin(username, password, setServerResponse, navigation)
+          }
+          color="#841584"
+        >
           <Text>Log In</Text>
         </TouchableOpacity>
-
       </SafeAreaView>
     </View>
   );
@@ -44,12 +52,12 @@ export default function LoginScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 10,
     paddingHorizontal: 45,
     top: '-20%',
-    //marginBottom: -150,
+    // marginBottom: -150,
   },
   TextInput: {
     width: 100,
