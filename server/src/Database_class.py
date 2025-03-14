@@ -1,7 +1,6 @@
 import pg8000
 from dotenv import load_dotenv
 import os
-import logging
 
 # Load environment variables from .env file
 load_dotenv()
@@ -100,10 +99,10 @@ class DataBase:
                     query += f"""'{value}',"""
             query = query[0:-1]
             query += ");"
-            
-            #self.logger.info(f"Query: {query}")
+
+            # self.logger.info(f"Query: {query}")
             print(f"Query: {query}")
-            
+
             cursor.execute(query)
         except Exception as e:
             self.connection.rollback()

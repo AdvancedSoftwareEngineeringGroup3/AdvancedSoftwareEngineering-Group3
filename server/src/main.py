@@ -10,10 +10,8 @@ import sys
 from src.signup import Signup
 from src.login import Login
 from src.weatherApi import weatherAPI
-from src.Database_class import DataBase
 from src.preferences import Preferences
 from src.networking import Networking
-
 
 
 class Server:
@@ -45,7 +43,7 @@ class Server:
 
         # Signup function
         # self.signup_logic.handle_signup()
-        
+
         # Login function
         # self.login_logic.handle_login()
 
@@ -110,7 +108,7 @@ class Server:
             except Exception as e:
                 self.logger.error(f"Error hitting weather endpoint: {e}")
                 raise
-            
+
         @self.app.websocket("/ws/location")
         async def websocket_endpoint(websocket: WebSocket):
             await self.connection_manager.connect(websocket)

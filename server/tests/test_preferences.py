@@ -1,9 +1,9 @@
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
 from fastapi import FastAPI
 import logging
 from src.preferences import Preferences
+
 
 @pytest.fixture
 def test_app():
@@ -16,7 +16,7 @@ def test_app():
     pref = Preferences(api=app, logger=logger)
 
     pref.set_Preferences()
-   
+
     return TestClient(app)
 
 # def test_save_user_preferences(test_app):
@@ -37,7 +37,7 @@ def test_app():
 #         # mock_db.search_entry.return_value = []
 
 #         mock_db.add_entry.return_value = []
-        
+
 
 #         mock_db_class.return_value = mock_db
 
@@ -55,7 +55,7 @@ def test_app():
 #             "tram": False,
 #             "personalBike": True
 #         }
-        
+
 #         # Send test request
 #         response = test_app.post(
 #             "/setPreferences", json=user_preferences
@@ -71,5 +71,5 @@ def test_app():
 #     assert data["message"] == "Successfully saved user preferences"
 #     # assert data.message == "Friend request to Bob sent successfully"
 
-#     mock_db.add_entry.assert_called_once_with("user_personalized_settings", user_preferences)
-    
+#     mock_db.add_entry.assert_called_once_with("user_personalized_settings",
+#                                                user_preferences)

@@ -3,8 +3,6 @@ from pydantic import BaseModel
 # May need to be changed in future with restructure of DB connection
 # from supabase import create_client, Client
 from passlib.context import CryptContext
-import os
-from dotenv import load_dotenv
 import logging
 from fastapi import HTTPException
 from .Database_class import DataBase
@@ -17,9 +15,9 @@ from .Database_class import DataBase
 # If it is cached, don't prompt with buttons
 
 # Server Side - Two endpoints for Login and Sign-up
-# Login checks for username and password in db, verifies the user already exists
+# Login checks for username and password in db,
+# verifies the user already exists
 # Sign-up checks if user does not exist, if not, add them to the database
-
 
 class Login:
 
@@ -30,7 +28,7 @@ class Login:
 
         # Load environment vars
         # load_dotenv()
-        
+
         # self.supabase_url = os.getenv("SUPABASE_URL")
         # self.supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
 
@@ -85,7 +83,7 @@ class Login:
             self.logger.warning(f"User not found: {username}")
             db.close_con()
             return None
-        
+
         if db.search_entry(table_name, username, "password") != password:
             self.logger.warning(f"Password does not match: {password}")
             db.close_con()
