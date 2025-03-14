@@ -124,12 +124,13 @@ export default function MapScreen({ navigation }) {
                         <Text style={styles.buttonText}>Weather</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity
+                     {/* todo: Need to make new changes to the preferences logic */}
+                    {/* <TouchableOpacity
                         style={styles.PreferencesButton}
                         onPress={() => navigation.navigate('PreferencesScreen')}
                     >
                         <Text style={styles.buttonText}>User Preferences</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                 </>
             ) : (
