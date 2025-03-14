@@ -41,6 +41,7 @@ class Preferences:
         
         
 class userPersonalizedSettings(BaseModel):
+    username: str = Body(...)
     bike: bool = Body(...)
     privateVehicle: bool = Body(...)
     accessibility: bool = Body(...)
@@ -56,7 +57,7 @@ class userPersonalizedSettings(BaseModel):
 
     def request_into_dictionary(self):
         return {
-            "username": "cormac", # hardcoded username for now
+            "username": self.username, # hardcoded username for now
             "bike": self.bike,
             "private_vehicle": self.privateVehicle,
             "accessibility": self.accessibility,

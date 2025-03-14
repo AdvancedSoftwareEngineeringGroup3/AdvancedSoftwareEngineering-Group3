@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { useState, useRef } from 'react';
 import { StyleSheet, View, SafeAreaView, TextInput, Button, Switch, TouchableOpacity, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { storeData, retrieveData, removeData, updateData } from "./caching";
 
 export default function PreferencesScreen({ navigation }) {
-
-    const [username, setUsername] = useState("");
 
     const [isBikeEnabled, setIsBikeEnabled] = useState(false);
     const [isPrivateVehicleEnabled, setIsPrivateVehicleEnabled] = useState(false);
@@ -37,19 +36,23 @@ export default function PreferencesScreen({ navigation }) {
               ? 'http://localhost:8000'
               : process.env.EXPO_PUBLIC_API_URL;
             console.log(`Sending request to ${baseUrl}/setPreferences`);
-      
+
+            // set username
+            const cachedUsername = await retrieveData("username");
+            // setUsername(cachedusername);
+            
             const response = await fetch(`${baseUrl}/setPreferences`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({bike: isBikeEnabled, privateVehicle: isPrivateVehicleEnabled,
+              body: JSON.stringify({username: cachedUsername, bike: isBikeEnabled, privateVehicle: isPrivateVehicleEnabled,
                                     accessibility: isAccessibilityEnabled, motorways: isMotorwaysEnabled,
                                     tolls: isTollsEnabled, bus: isBusEnabled, car: isCarEnabled, train: isTrainEnabled,
                                     walk: isWalkEnabled, tram: isTramEnabled, personalBike: isPersonalBikeEnabled}),
             });
 
-            console.log(JSON.stringify({bike: isBikeEnabled.toString(), privateVehicle: isPrivateVehicleEnabled.toString(),
+            console.log(JSON.stringify({username: cachedUsername, bike: isBikeEnabled.toString(), privateVehicle: isPrivateVehicleEnabled.toString(),
                 accessibility: isAccessibilityEnabled.toString(), motorways: isMotorwaysEnabled.toString(),
                 tolls: isTollsEnabled.toString(), bus: isBusEnabled.toString(), car: isCarEnabled.toString(), train: isTrainEnabled.toString(),
                 walk: isWalkEnabled.toString(), tram: isTramEnabled.toString(), personalBike: isPersonalBikeEnabled.toString()}));

@@ -12,7 +12,7 @@ export const handleLogin = async (username, password, setServerResponse, navigat
     else {
         console.log('username: ', username)
         console.log('password: ', password)
-        navigation.goBack()
+        navigation.navigate("Map")
 
         try {
             const baseUrl = Platform.OS === 'web'
@@ -36,9 +36,12 @@ export const handleLogin = async (username, password, setServerResponse, navigat
             const data = await response.json();
             alert(data.message)
 
-            if (data.message == `Login successful for user: ${username}`) {
+            if (retrieveData("username") !== null) {
                 await removeData("username");
                 await updateData("username", username);
+            }
+            else {
+                await storeData("username", username)
             }
 
             // if the data is "success", then cache details        
@@ -60,7 +63,7 @@ export const handleSignup = async (username, password, setServerResponse, naviga
     else {
         console.log('username: ', username)
         console.log('password: ', password)
-        navigation.goBack()
+        navigation.navigate("Map")
 
         try {
             const baseUrl = Platform.OS === 'web'
@@ -85,8 +88,13 @@ export const handleSignup = async (username, password, setServerResponse, naviga
             alert(data.message)
 
             if (data.message == `Signup successful for user: ${username}`) {
-                await removeData("username");
-                await updateData("username", username);
+                if (retrieveData("username") !== null) {
+                    await removeData("username");
+                    await updateData("username", username);
+                }
+                else {
+                    await storeData("username", username)
+                }
             }
 
             console.log('Server response:', data);
