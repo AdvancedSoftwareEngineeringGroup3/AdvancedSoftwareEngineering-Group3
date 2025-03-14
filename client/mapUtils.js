@@ -14,18 +14,11 @@ export const haversine = (start, end) => {
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c * 1000; // Distance in meters
-}
+};
 
 // Extract routes func
 export const extractRoutes = async (route, origin = "", destination = "", mode = 'walking') => {
     try {
-        // const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/wayfinding/get_routes`, {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify({ origin, destination, mode, alternatives: false })
-        // });
-
-        // const data = await response.json();
         data = route
 
         return data && data.routes ? data.routes.map(route => decode(route.overview_polyline.points)) : [];

@@ -95,7 +95,8 @@ export default function SelectRouteScreen({ navigation, route }) {
                                         <Text>Distance: {route.legs[0].distance.text}</Text>
                                         <Text>Duration: {route.legs[0].duration.text}</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => navigation.navigate('DisplayRouteScreen', { origin, destination, routeData, polylineCoordinates })} style={styles.startButton}>
+                                    {/* routeData needs to rename the route variable because that is what react navigator calls its properties */}
+                                    <TouchableOpacity onPress={() => navigation.navigate('DisplayRouteScreen', { origin, destination, routeData: route, polylineCoordinates })} style={styles.startButton}>
                                         <Text>Start Journey</Text>
                                     </TouchableOpacity>
                                 </View>
