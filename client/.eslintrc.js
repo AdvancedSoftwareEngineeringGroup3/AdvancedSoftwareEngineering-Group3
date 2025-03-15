@@ -24,5 +24,6 @@ module.exports = {
       { extensions: ['.js', '.jsx', '.tsx'] },
     ],
     'react/prop-types': 'off',
+    'no-console': ['warn', { allow: ['warn', 'error'] }],
   },
 };

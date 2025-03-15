@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -20,26 +20,31 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
   const [devMode, setDevMode] = useState(false);
 
-  const checkProximityAndUpdate = (currentLocation) => {
-    if (currentPolylineIndex >= polylineCoordinates.length) return;
+  const checkProximityAndUpdate = useCallback(
+    (currentLocation) => {
+      if (currentPolylineIndex >= polylineCoordinates.length) return;
 
-    const nextCoordinate = polylineCoordinates[currentPolylineIndex];
-    const distance = haversine(currentLocation, nextCoordinate);
+      const nextCoordinate = polylineCoordinates[currentPolylineIndex];
+      const distance = haversine(currentLocation, nextCoordinate);
 
-    if (distance < 50) {
-      // Assuming 50 meters as the proximity threshold
-      setTravelledPolyline([...travelledPolyline, nextCoordinate]);
-      setCurrentPolylineIndex(currentPolylineIndex + 1);
+      if (distance < 50) {
+        // Assuming 50 meters as the proximity threshold
+        setTravelledPolyline((prev) => [...prev, nextCoordinate]);
+        setCurrentPolylineIndex((prev) => prev + 1);
+        // setTravelledPolyline([...travelledPolyline, nextCoordinate]);
+        // setCurrentPolylineIndex(currentPolylineIndex + 1);
 
-      if (currentPolylineIndex + 1 >= polylineCoordinates.length) {
-        Alert.alert(
-          'Destination reached',
-          'You have reached your destination.',
-        );
-        navigation.navigate('Map');
+        if (currentPolylineIndex + 1 >= polylineCoordinates.length) {
+          Alert.alert(
+            'Destination reached',
+            'You have reached your destination.',
+          );
+          navigation.navigate('Map');
+        }
       }
-    }
-  };
+    },
+    [currentPolylineIndex, polylineCoordinates, navigation],
+  );
 
   useEffect(() => {
     if (devMode) {
@@ -61,7 +66,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
     };
 
     startTracking();
-  }, []);
+  }, [devMode, polylineCoordinates, checkProximityAndUpdate]);
 
   // Call checkProximityAndUpdate and update setlocation on latitude / longitude button click
   const devMove = ({ delLat = 0, delLng = 0 }) => {
