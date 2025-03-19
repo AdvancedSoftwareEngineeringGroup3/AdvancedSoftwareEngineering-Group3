@@ -1,15 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  Platform,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { getCurrentLocation, startLocationTracking } from './mapUtils';
+import { getCurrentLocation, startLocationTracking } from './utils/mapUtils';
 import locationCircleIcon from './assets/location-circle.png';
+import MapStyles from './components/styles/Map.styles';
 
 export default function MapScreen({ navigation }) {
   const [webSocket, setWebSocket] = useState(null);
@@ -84,7 +78,7 @@ export default function MapScreen({ navigation }) {
 
   const renderContent = () => {
     if (errorMessage) {
-      return <Text style={styles.error}>{errorMessage}</Text>;
+      return <Text style={MapStyles.error}>{errorMessage}</Text>;
     }
 
     if (location) {
@@ -92,7 +86,7 @@ export default function MapScreen({ navigation }) {
         <>
           <MapView
             ref={mapRef}
-            style={styles.map}
+            style={MapStyles.map}
             initialRegion={{
               latitude: location.latitude,
               longitude: location.longitude,
@@ -107,62 +101,62 @@ export default function MapScreen({ navigation }) {
               icon={locationCircleIcon}
             />
           </MapView>
-          <TouchableOpacity style={styles.sendButton} onPress={sendLocation}>
-            <Text style={styles.buttonText}>Send Location</Text>
+          <TouchableOpacity style={MapStyles.sendButton} onPress={sendLocation}>
+            <Text style={MapStyles.buttonText}>Send Location</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.loginButton}
+            style={MapStyles.loginButton}
             onPress={() => navigation.navigate('AccountScreen')}
           >
-            <Text style={styles.buttonText}>Log In</Text>
+            <Text style={MapStyles.buttonText}>Log In</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.findRouteButton}
+            style={MapStyles.findRouteButton}
             onPress={() => navigation.navigate('FindRouteScreen')}
           >
-            <Text style={styles.buttonText}>Find Route</Text>
+            <Text style={MapStyles.buttonText}>Find Route</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.findRouteButton}
+            style={MapStyles.findRouteButton}
             onPress={() => navigation.navigate('FindRouteScreen')}
           >
-            <Text style={styles.buttonText}>Find Route</Text>
+            <Text style={MapStyles.buttonText}>Find Route</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.friendScreenButton}
+            style={MapStyles.friendScreenButton}
             onPress={() => navigation.navigate('FriendsScreen')}
           >
-            <Text style={styles.buttonText}>Friends UI</Text>
+            <Text style={MapStyles.buttonText}>Friends UI</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.dashboardButton}
+            style={MapStyles.dashboardButton}
             onPress={() => navigation.navigate('Dashboard')}
           >
-            <Text style={styles.buttonText}>Sustainability Dashboard</Text>
+            <Text style={MapStyles.buttonText}>Sustainability Dashboard</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.weatherButton}
+            style={MapStyles.weatherButton}
             onPress={() => navigation.navigate('WeatherScreen')}
           >
-            <Text style={styles.buttonText}>Weather</Text>
+            <Text style={MapStyles.buttonText}>Weather</Text>
           </TouchableOpacity>
 
           {/* todo: Need to make new changes to the preferences logic */}
           {/* <TouchableOpacity
-                        style={styles.PreferencesButton}
+                        style={MapStyles.PreferencesButton}
                         onPress={() => navigation.navigate('PreferencesScreen')}
                     >
-                        <Text style={styles.buttonText}>User Preferences</Text>
+                        <Text style={MapStyles.buttonText}>User Preferences</Text>
                     </TouchableOpacity> */}
         </>
       );
     }
 
-    return <Text style={styles.loadingText}>Fetching your location...</Text>;
+    return <Text style={MapStyles.loadingText}>Fetching your location...</Text>;
   };
 
-  return <View style={styles.container}>{renderContent()}</View>;
+  return <View style={MapStyles.container}>{renderContent()}</View>;
 }
 
 // const styles = StyleSheet.create({
@@ -180,133 +174,3 @@ export default function MapScreen({ navigation }) {
 //     error: { flex: 1, textAlign: 'center', fontSize: 18, color: 'red' },
 //     loadingText: { flex: 1, textAlign: 'center', fontSize: 18 },
 // });
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    ...(Platform.OS === 'web' ? { height: '100vh' } : {}),
-  },
-  map: {
-    flex: 1,
-    minHeight: 300,
-  },
-  sendButton: {
-    position: 'absolute',
-    bottom: 15,
-    left: '80%',
-    transform: [{ translateX: -50 }],
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  loginButton: {
-    position: 'absolute',
-    alignItems: 'center',
-    left: '70%',
-    top: '0%',
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  PreferencesButton: {
-    position: 'absolute',
-    alignItems: 'center',
-    left: '0%',
-    top: '10%',
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 5,
-  },
-
-  friendScreenButton: {
-    position: 'absolute',
-    alignItems: 'center',
-    left: '70%',
-    top: '50%',
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  weatherButton: {
-    position: 'absolute',
-    alignItems: 'center',
-    left: '0%',
-    top: '0%',
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  findRouteButton: {
-    position: 'absolute',
-    alignItems: 'center',
-    left: '34%',
-    top: '0%',
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 35,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  dashboardButton: {
-    position: 'absolute',
-    alignItems: 'center',
-    left: '0%',
-    top: '93%',
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  error: {
-    flex: 1,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    fontSize: 18,
-    color: 'red',
-  },
-  loadingText: {
-    flex: 1,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    fontSize: 18,
-  },
-});

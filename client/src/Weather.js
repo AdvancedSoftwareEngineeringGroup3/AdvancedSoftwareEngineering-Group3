@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { useState } from 'react';
 import {
-  StyleSheet,
   View,
   SafeAreaView,
   TouchableOpacity,
   Text,
   Platform,
 } from 'react-native';
+import buttonStyles from './components/common/button';
+import containerStyles from './components/common/commonContainer';
 
 export default function WeatherScreen() {
   const [serverResponse, setServerResponse] = useState('');
@@ -40,42 +41,18 @@ export default function WeatherScreen() {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={containerStyles.container}>
         <TouchableOpacity
-          style={styles.TouchableOpacity}
+          style={buttonStyles.button}
           onPress={fetchFromServer}
           color="#841584"
         >
           <Text>Weather Data</Text>
         </TouchableOpacity>
       </SafeAreaView>
-      <View style={styles.container}>
-        <Text style={styles.response}>{serverResponse}</Text>
+      <View style={containerStyles.container}>
+        <Text>{serverResponse}</Text>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 45,
-    top: '-20%',
-  },
-  TouchableOpacity: {
-    alignItems: 'center',
-    left: '0%',
-    top: '5%',
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 5,
-  },
-});

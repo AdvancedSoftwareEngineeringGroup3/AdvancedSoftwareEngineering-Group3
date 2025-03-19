@@ -1,6 +1,11 @@
 import mockAsyncStorage from '@react-native-async-storage/async-storage/jest/async-storage-mock';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { storeData, retrieveData, removeData, updateData } from './caching';
+import {
+  storeData,
+  retrieveData,
+  removeData,
+  updateData,
+} from '../src/caching';
 
 jest.mock('@react-native-async-storage/async-storage', () => mockAsyncStorage);
 

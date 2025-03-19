@@ -1,43 +1,4 @@
-import * as React from 'react';
-import {
-  StyleSheet,
-  View,
-  SafeAreaView,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
-
-export default function AccountScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <SafeAreaView style={styles.container}>
-        <TouchableOpacity
-          style={styles.TouchableOpacity1}
-          onPress={() => navigation.navigate('LoginScreen')}
-          color="#841584"
-        >
-          <Text>Log In</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.TouchableOpacity2}
-          onPress={() => navigation.navigate('SignUpScreen')}
-          color="#841584"
-        >
-          <Text>Sign Up</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.TouchableOpacity3}
-          onPress={() => navigation.navigate('Map')}
-          color="#841584"
-        >
-          <Text>Continue as Guest</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
-    </View>
-  );
-}
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -108,3 +69,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default styles;

@@ -1,17 +1,17 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import LoginScreen from './LogIn';
-import MapScreen from './Map';
-import WeatherScreen from './Weather';
-import FindRouteScreen from './FindRoute';
-import SelectRouteScreen from './SelectRoute';
-import Dashboard from './SustainabilityDashboard';
-import PreferencesScreen from './Preferences';
-import AccountScreen from './AccountScreen';
-import SignUpScreen from './SignUp';
-import DisplayRouteScreen from './DisplayRoute';
-import FriendsScreen from './FriendsScreen';
+import LoginScreen from './src/LogIn';
+import MapScreen from './src/Map';
+import WeatherScreen from './src/Weather';
+import FindRouteScreen from './src/FindRoute';
+import SelectRouteScreen from './src/SelectRoute';
+import Dashboard from './src/SustainabilityDashboard';
+import PreferencesScreen from './src/Preferences';
+import AccountScreen from './src/AccountScreen';
+import SignUpScreen from './src/SignUp';
+import DisplayRouteScreen from './src/DisplayRoute';
+import FriendsScreen from './src/FriendsScreen';
 
 const Stack = createNativeStackNavigator();
 

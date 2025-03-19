@@ -6,7 +6,7 @@ import {
   startLocationTracking,
   decodeRoute,
   haversine,
-} from '../mapUtils'; // Update with the correct path
+} from '../src/utils/mapUtils'; // Update with the correct path
 
 // Test that Haversine function returns the correct distance between two points
 describe('Haversine Formula', () => {

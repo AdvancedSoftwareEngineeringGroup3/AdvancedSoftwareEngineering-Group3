@@ -1,5 +1,6 @@
 import { LineChart, PieChart } from 'react-native-chart-kit';
-import { StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
+import susDashboardStyles from './components/styles/SustainabilityDashboard.styles';
 
 // Dummy pie chart data
 const data = [
@@ -104,55 +105,24 @@ export default function Dashboard({ navigation }) {
         absolute
       />
       <LineChart
-        style={styles.lineChart}
+        style={susDashboardStyles.lineChart}
         data={lineGraphData}
         width={370}
         height={220}
         chartConfig={chartConfig}
       />
       <TouchableOpacity
-        style={styles.monthButton}
+        style={susDashboardStyles.monthButton}
         onPress={switchTimeframe('m')}
       >
-        <Text style={styles.buttonText}>Month</Text>
+        <Text style={susDashboardStyles.buttonText}>Month</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.yearButton}
+        style={susDashboardStyles.yearButton}
         onPress={switchTimeframe('y')}
       >
-        <Text style={styles.buttonText}>Year</Text>
+        <Text style={susDashboardStyles.buttonText}>Year</Text>
       </TouchableOpacity>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  lineChart: {
-    position: 'absolute',
-    bottom: 40,
-    right: '0%',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  monthButton: {
-    position: 'absolute',
-    bottom: 15,
-    left: '80%',
-    transform: [{ translateX: -50 }],
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  yearButton: {
-    position: 'absolute',
-    bottom: 15,
-    left: '20%',
-    transform: [{ translateX: -50 }],
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-});

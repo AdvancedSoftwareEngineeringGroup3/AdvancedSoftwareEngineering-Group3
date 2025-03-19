@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
 import {
-  StyleSheet,
   View,
   SafeAreaView,
   Switch,
@@ -9,6 +8,8 @@ import {
   Text,
   Platform,
 } from 'react-native';
+import buttonStyles from './components/common/button';
+import containerStyles from './components/common/commonContainer';
 
 // eslint-disable-next-line no-unused-vars
 import { storeData, retrieveData, removeData, updateData } from './caching';
@@ -108,8 +109,8 @@ export default function PreferencesScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.switchContainer}>
+      <SafeAreaView style={containerStyles.container}>
+        <View style={containerStyles.switchContainer}>
           <Text> Bike </Text>
           <Switch
             // trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -118,7 +119,7 @@ export default function PreferencesScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.switchContainer}>
+        <View style={containerStyles.switchContainer}>
           <Text> Private Vehicle </Text>
           <Switch
             // trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -127,7 +128,7 @@ export default function PreferencesScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.switchContainer}>
+        <View style={containerStyles.switchContainer}>
           <Text> Accessibility </Text>
           <Switch
             // trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -136,7 +137,7 @@ export default function PreferencesScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.switchContainer}>
+        <View style={containerStyles.switchContainer}>
           <Text> Motorways </Text>
           <Switch
             // trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -145,7 +146,7 @@ export default function PreferencesScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.switchContainer}>
+        <View style={containerStyles.switchContainer}>
           <Text> tolls </Text>
           <Switch
             // trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -154,7 +155,7 @@ export default function PreferencesScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.switchContainer}>
+        <View style={containerStyles.switchContainer}>
           <Text> Bus </Text>
           <Switch
             // trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -163,7 +164,7 @@ export default function PreferencesScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.switchContainer}>
+        <View style={containerStyles.switchContainer}>
           <Text> Car </Text>
           <Switch
             // trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -172,7 +173,7 @@ export default function PreferencesScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.switchContainer}>
+        <View style={containerStyles.switchContainer}>
           <Text> train </Text>
           <Switch
             // trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -181,7 +182,7 @@ export default function PreferencesScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.switchContainer}>
+        <View style={containerStyles.switchContainer}>
           <Text> Walk </Text>
           <Switch
             // trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -190,7 +191,7 @@ export default function PreferencesScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.switchContainer}>
+        <View style={containerStyles.switchContainer}>
           <Text> Tram </Text>
           <Switch
             // trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -199,7 +200,7 @@ export default function PreferencesScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.switchContainer}>
+        <View style={containerStyles.switchContainer}>
           <Text> I own a Bike </Text>
           <Switch
             // trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -209,7 +210,7 @@ export default function PreferencesScreen({ navigation }) {
         </View>
 
         <TouchableOpacity
-          style={styles.TouchableOpacity}
+          style={buttonStyles.button}
           onPress={savePreferences}
           color="#841584"
         >
@@ -219,33 +220,3 @@ export default function PreferencesScreen({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 45,
-    top: '-8%',
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  TouchableOpacity: {
-    alignItems: 'center',
-    left: '0%',
-    top: '5%',
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 5,
-  },
-});

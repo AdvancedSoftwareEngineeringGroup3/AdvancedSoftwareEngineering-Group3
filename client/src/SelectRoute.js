@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import {
   decodeRoute,
   getCurrentLocation,
   startLocationTracking,
-} from './mapUtils';
+} from './utils/mapUtils';
 import locationCircleIcon from './assets/location-circle.png';
+import selectRouteStyles from './components/styles/SelectRoute.styles';
 
 export default function SelectRouteScreen({ navigation, route }) {
   const { origin, destination, routeData } = route.params;
@@ -57,12 +58,14 @@ export default function SelectRouteScreen({ navigation, route }) {
   };
 
   return (
-    <View style={styles.containter}>
-      {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+    <View style={selectRouteStyles.containter}>
+      {errorMessage && (
+        <Text style={selectRouteStyles.error}>{errorMessage}</Text>
+      )}
       {!errorMessage && location && (
         <>
           <MapView
-            style={styles.map}
+            style={selectRouteStyles.map}
             initialRegion={{
               latitude:
                 routes.length > 0
@@ -101,10 +104,10 @@ export default function SelectRouteScreen({ navigation, route }) {
             {routes.map((routeOption, index) => {
               const uniquekey = `${routeOption.summary}-${routeOption.overview_polyline.points}`;
               return (
-                <View key={uniquekey} style={styles.routeContainer}>
+                <View key={uniquekey} style={selectRouteStyles.routeContainer}>
                   <TouchableOpacity
                     onPress={() => displaySelectedRoute(index)}
-                    style={styles.routeButton}
+                    style={selectRouteStyles.routeButton}
                   >
                     <Text>Route {index + 1}</Text>
                     <Text>Distance: {routeOption.legs[0].distance.text}</Text>
@@ -120,7 +123,7 @@ export default function SelectRouteScreen({ navigation, route }) {
                         polylineCoordinates,
                       })
                     }
-                    style={styles.startButton}
+                    style={selectRouteStyles.startButton}
                   >
                     <Text>Start Journey</Text>
                   </TouchableOpacity>
@@ -131,35 +134,8 @@ export default function SelectRouteScreen({ navigation, route }) {
         </>
       )}
       {!errorMessage && !location && (
-        <Text style={styles.loadingText}>Loading...</Text>
+        <Text style={selectRouteStyles.loadingText}>Loading...</Text>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  map: { flex: 1 },
-  routeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  routeButton: {
-    flex: 1,
-    marginRight: 10,
-    padding: 10,
-    backgroundColor: 'white',
-    borderRadius: 5,
-  },
-  startButton: {
-    padding: 10,
-    backgroundColor: '#ADD8E6',
-    borderRadius: 5,
-  },
-  error: { color: 'red', textAlign: 'center', margin: 10 },
-  loadingText: { textAlign: 'center', margin: 10 },
-});

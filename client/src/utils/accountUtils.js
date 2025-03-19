@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { storeData, retrieveData, removeData, updateData } from './caching';
+import { storeData, retrieveData, removeData, updateData } from '../caching';
 
 export const handleLogin = async (
   username,

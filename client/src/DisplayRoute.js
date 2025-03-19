@@ -1,14 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Alert,
-  TouchableOpacity,
-  Switch,
-} from 'react-native';
+import { View, Text, Alert, TouchableOpacity, Switch } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
-import { haversine, startLocationTracking } from './mapUtils';
+import { haversine, startLocationTracking } from './utils/mapUtils';
+import displayRouteStyles from './components/styles/DisplayRoute.styles';
 
 import locationCircleIcon from './assets/location-circle.png';
 
@@ -80,23 +74,23 @@ export default function DisplayRouteScreen({ navigation, route }) {
   // Check proximity to the next coordinate in the polyline
 
   return (
-    <View style={styles.container}>
+    <View style={displayRouteStyles.container}>
       {location && routeData ? (
         <>
-          <View style={styles.infoContainer}>
-            <View style={styles.routeInfoContainer}>
-              <Text style={styles.routeInfo}>
+          <View style={displayRouteStyles.infoContainer}>
+            <View style={displayRouteStyles.routeInfoContainer}>
+              <Text style={displayRouteStyles.routeInfo}>
                 Route from {origin} to {destination}
               </Text>
-              <Text style={styles.routeInfo}>
+              <Text style={displayRouteStyles.routeInfo}>
                 Distance: {routeData.legs[0].distance.text}
               </Text>
-              <Text style={styles.routeInfo}>
+              <Text style={displayRouteStyles.routeInfo}>
                 Duration: {routeData.legs[0].duration.text}
               </Text>
             </View>
-            <View style={styles.devModeContainer}>
-              <Text style={styles.devModeText}>Dev Mode</Text>
+            <View style={displayRouteStyles.devModeContainer}>
+              <Text style={displayRouteStyles.devModeText}>Dev Mode</Text>
               <Switch
                 value={devMode}
                 onValueChange={(value) => setDevMode(value)}
@@ -104,7 +98,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
             </View>
           </View>
           <MapView
-            style={styles.map}
+            style={displayRouteStyles.map}
             initialRegion={{
               latitude: routeData.legs[0].start_location.lat,
               longitude: routeData.legs[0].start_location.lng,
@@ -140,30 +134,30 @@ export default function DisplayRouteScreen({ navigation, route }) {
             )}
           </MapView>
           {devMode && (
-            <View style={styles.dpadContainer}>
+            <View style={displayRouteStyles.dpadContainer}>
               <TouchableOpacity
                 onPress={() => devMove({ delLat: 0.0003 })}
-                style={styles.dpadButton}
+                style={displayRouteStyles.dpadButton}
               >
                 <Text>lat +</Text>
               </TouchableOpacity>
-              <View style={styles.dpadRow}>
+              <View style={displayRouteStyles.dpadRow}>
                 <TouchableOpacity
                   onPress={() => devMove({ delLng: -0.0004 })}
-                  style={styles.dpadButton}
+                  style={displayRouteStyles.dpadButton}
                 >
                   <Text>long -</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => devMove({ delLng: 0.0004 })}
-                  style={styles.dpadButton}
+                  style={displayRouteStyles.dpadButton}
                 >
                   <Text>long +</Text>
                 </TouchableOpacity>
               </View>
               <TouchableOpacity
                 onPress={() => devMove({ delLat: -0.0003 })}
-                style={styles.dpadButton}
+                style={displayRouteStyles.dpadButton}
               >
                 <Text>lat -</Text>
               </TouchableOpacity>
@@ -171,48 +165,10 @@ export default function DisplayRouteScreen({ navigation, route }) {
           )}
         </>
       ) : (
-        <Text style={styles.loadingText}>Fetching your location...</Text>
+        <Text style={displayRouteStyles.loadingText}>
+          Fetching your location...
+        </Text>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  map: { flex: 1 },
-  routeInfo: { fontSize: 16 },
-  error: { color: 'red', textAlign: 'center', margin: 10 },
-  loadingText: { textAlign: 'center', margin: 10 },
-  dpadContainer: {
-    position: 'absolute',
-    bottom: 20,
-    left: '50%',
-    transform: [{ translateX: -50 }],
-    alignItems: 'center',
-  },
-  dpadRow: {
-    flexDirection: 'row',
-  },
-  dpadButton: {
-    padding: 10,
-    backgroundColor: '#ADD8E6',
-    borderRadius: 5,
-    margin: 5,
-  },
-  infoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    margin: 10,
-  },
-  routeInfoContainer: {
-    flex: 1,
-  },
-  devModeContainer: {
-    alignItems: 'center',
-  },
-  devModeText: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-});
