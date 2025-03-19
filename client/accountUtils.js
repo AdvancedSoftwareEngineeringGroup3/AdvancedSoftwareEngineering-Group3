@@ -35,13 +35,15 @@ export const handleLogin = async (username, password, setServerResponse, navigat
             // Await response and print message from server
             const data = await response.json();
             alert(data.message)
-
-            if (retrieveData("username") !== null) {
-                await removeData("username");
-                await updateData("username", username);
-            }
-            else {
-                await storeData("username", username)
+            
+            if (data.message === `Login successful for user: ${username}`) {
+                if (retrieveData("username") !== null) {
+                    await removeData("username");
+                    await updateData("username", username);
+                }
+                else {
+                    await storeData("username", username)
+                }
             }
 
             // if the data is "success", then cache details        
@@ -87,7 +89,7 @@ export const handleSignup = async (username, password, setServerResponse, naviga
             const data = await response.json();
             alert(data.message)
 
-            if (data.message == `Signup successful for user: ${username}`) {
+            if (data.message === `Signup successful for user: ${username}`) {
                 if (retrieveData("username") !== null) {
                     await removeData("username");
                     await updateData("username", username);
