@@ -1,10 +1,14 @@
 import * as React from 'react';
 import { useState, useRef } from 'react';
-import { StyleSheet, View, SafeAreaView, TextInput, Button, TouchableOpacity, Text, KeyboardAvoidingView, Platform } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
+import { Platform } from 'react-native';
+import { StyleSheet, View, SafeAreaView, TextInput, Button, TouchableOpacity, Text, KeyboardAvoidingView } from 'react-native';
+import Picker from 'react-native-picker-select';
+import ActionSheet from 'react-native-actionsheet';
 
 export default function FindRouteScreen({ navigation }){
 
+    const pickerRef = useRef();
+    const actionSheetRef = useRef();
     const [start, setStartPoint] = useState("");
     const [destination, setDestinationPoint] = useState("");
     const ref2 = React.useRef(null);
@@ -62,6 +66,10 @@ export default function FindRouteScreen({ navigation }){
         {label: 'Transit', value: 'transit'}
     ];
 
+    const handlePickerSelect = (value) => {
+        setSelectedMode(value);
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <TextInput
@@ -77,15 +85,39 @@ export default function FindRouteScreen({ navigation }){
                 onChangeText={(text) => setDestinationPoint(text)}
                 onSubmitEditing={() => alert(`Route Entered`)}
             />
-
-                <Text style={styles.label}>Select an option:</Text>
-                <RNPickerSelect
-                onValueChange={(value) => setSelectedMode(value)}
-                items={modeDropdownData}
-                placeholder={{ label: "Choose an option...", value: null }}
-                />
-                {selectedMode && <Text style={styles.selected}>Selected: {selectedMode}</Text>}
-
+            
+            <Text style={styles.label}>Select an option:</Text>
+            {Platform.OS === 'android' ? (
+                <TouchableOpacity onPress={() => pickerRef.current.togglePicker()}>
+                    <Picker
+                        ref={pickerRef}
+                        onValueChange={handlePickerSelect}
+                        items={modeDropdownData}
+                        placeholder={{ label: "Choose an option...", value: null }}
+                        useNativeAndroidPickerStyle={false}
+                        style={pickerSelectStyles}
+                        doneText="Done"
+                    />
+                </TouchableOpacity>
+            ) : (
+                <>
+                    <TouchableOpacity onPress={() => actionSheetRef.current.show()}>
+                        <Text style={styles.label}>Choose an option...</Text>
+                    </TouchableOpacity>
+                    <ActionSheet
+                        ref={actionSheetRef}
+                        title={'Select Mode'}
+                        options={modeDropdownData.map(item => item.label).concat('Cancel')}
+                        cancelButtonIndex={modeDropdownData.length}
+                        onPress={(index) => {
+                            if (index !== modeDropdownData.length) {
+                                handlePickerSelect(modeDropdownData[index].value);
+                            }
+                        }}
+                    />
+                </>
+            )}
+            {selectedMode && <Text style={styles.selected}>Selected: {selectedMode}</Text>}
 
             <TouchableOpacity style={styles.TouchableOpacity}
                 onPress={isFormValid ? fetchRoutes : null}
@@ -105,6 +137,45 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
-    
+    input: {
+        width: '100%',
+        padding: 10,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 4,
+        marginBottom: 10,
+    },
+    label: {
+        marginBottom: 10,
+    },
+    selected: {
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    TouchableOpacity: {
+        padding: 10,
+        backgroundColor: '#841584',
+        borderRadius: 5,
+    },
+    disabledButton: {
+        backgroundColor: '#ccc',
+    },
+});
 
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        color: 'black',
+        paddingTop: 13,
+        paddingHorizontal: 10,
+        paddingBottom: 12,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 4,
+        backgroundColor: 'white',
+        width: '100%',
+    },
+    inputAndroid: {
+        color: 'black',
+        width: '80%',
+    },
 });
