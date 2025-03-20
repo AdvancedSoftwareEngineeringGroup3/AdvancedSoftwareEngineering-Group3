@@ -30,6 +30,8 @@ class Signup:
 
             # return "user successfully signed up"
 
+            print("Getting to signup endpoint!")
+
             try:
                 if not self.signup_user(signup.username, signup.password):
                     return {"message": "Username already found"}

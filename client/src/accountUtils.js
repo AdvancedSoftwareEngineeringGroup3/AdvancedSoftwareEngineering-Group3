@@ -1,7 +1,4 @@
-import * as React from 'react';
-import { useState, useRef } from 'react';
-import { StyleSheet, View, SafeAreaView, TextInput, Button, TouchableOpacity, Text, KeyboardAvoidingView, Platform } from 'react-native';
-import { useReducedMotion } from 'react-native-reanimated';
+import { Platform } from 'react-native';
 import { storeData, retrieveData, removeData, updateData } from "./caching";
 
 export const postConnection = async (url, payload) => {
