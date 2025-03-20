@@ -6,7 +6,6 @@ import { handleLogin, handleSignup } from "./accountUtils";
 
 
 export default function SignUpScreen({ navigation }) {
-  const [serverResponse, setServerResponse] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const ref2 = React.useRef(null);
@@ -34,7 +33,7 @@ export default function SignUpScreen({ navigation }) {
         />
 
 
-        <TouchableOpacity style={styles.TouchableOpacity1} onPress={() => handleSignup(username, password, setServerResponse, navigation)}
+        <TouchableOpacity style={styles.TouchableOpacity1} onPress={() => handleSignup(username, password, navigation)}
           color="#841584">
           <Text>Sign Up</Text>
         </TouchableOpacity>

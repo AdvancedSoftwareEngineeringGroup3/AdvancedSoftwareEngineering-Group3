@@ -4,8 +4,35 @@ import { StyleSheet, View, SafeAreaView, TextInput, Button, TouchableOpacity, Te
 import { useReducedMotion } from 'react-native-reanimated';
 import { storeData, retrieveData, removeData, updateData } from "./caching";
 
+export const postConnection = async (url, payload) => {
+    try {
+        const baseUrl = Platform.OS === 'web'
+            ? 'http://localhost:8000'
+            : process.env.EXPO_PUBLIC_API_URL;
+        console.log(`Sending request to ${baseUrl}/${url}`);
 
-export const handleLogin = async (username, password, setServerResponse, navigation) => {
+        const response = await fetch(`${baseUrl}/${url}`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        alert(data.message);
+
+        return data;
+    } catch (error) {
+        console.error('Error details:', error);
+    }
+}
+
+export const handleLogin = async (username, password, navigation) => {
     if (username == '' || password == '') {
         alert("All fields have to be filled before logging in!")
     }
@@ -14,51 +41,30 @@ export const handleLogin = async (username, password, setServerResponse, navigat
         console.log('password: ', password)
         navigation.navigate("Map")
 
-        try {
-            const baseUrl = Platform.OS === 'web'
-                ? 'http://localhost:8000'
-                : process.env.EXPO_PUBLIC_API_URL;
-            console.log(`Sending request to ${baseUrl}/login`);
-
-            const response = await fetch(`${baseUrl}/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username: username, password: password }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+        url = "login"
+        payload = { username: username, password: password }
+        
+        // Await response and print message from server
+        const data = await postConnection(url, payload);
+        alert(data.message)
+        
+        if (data.message === `Login successful for user: ${username}`) {
+            if (retrieveData("username") !== null) {
+                await removeData("username");
+                await updateData("username", username);
             }
-
-            // Await response and print message from server
-            const data = await response.json();
-            alert(data.message)
-            
-            if (data.message === `Login successful for user: ${username}`) {
-                if (retrieveData("username") !== null) {
-                    await removeData("username");
-                    await updateData("username", username);
-                }
-                else {
-                    await storeData("username", username)
-                }
+            else {
+                await storeData("username", username)
             }
-
-            // if the data is "success", then cache details        
-
-            console.log('Server response:', data);
-            setServerResponse(data.message);
-        } catch (error) {
-            console.error('Error details:', error);
-            setServerResponse(`Error: ${error.message}`);
         }
+
+        // if the data is "success", then cache details
+        console.log('Server response:', data);
     }
 };
 
 
-export const handleSignup = async (username, password, setServerResponse, navigation) => {
+export const handleSignup = async (username, password, navigation) => {
     if (username == '' || password == '') {
         alert("All fields have to be filled before signing up!")
     }
@@ -67,43 +73,23 @@ export const handleSignup = async (username, password, setServerResponse, naviga
         console.log('password: ', password)
         navigation.navigate("Map")
 
-        try {
-            const baseUrl = Platform.OS === 'web'
-                ? 'http://localhost:8000'
-                : process.env.EXPO_PUBLIC_API_URL;
-            console.log(`Sending request to ${baseUrl}/signup`);
+        url = "signup"
+        payload = { username: username, password: password }
 
-            const response = await fetch(`${baseUrl}/signup`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username: username, password: password }),
-            });
+        // Await response and print message from server
+        const data = await postConnection(url, payload);
+        alert(data.message)
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+        if (data.message === `Signup successful for user: ${username}`) {
+            if (retrieveData("username") !== null) {
+                await removeData("username");
+                await updateData("username", username);
             }
-
-            // Await response and print message from server
-            const data = await response.json();
-            alert(data.message)
-
-            if (data.message === `Signup successful for user: ${username}`) {
-                if (retrieveData("username") !== null) {
-                    await removeData("username");
-                    await updateData("username", username);
-                }
-                else {
-                    await storeData("username", username)
-                }
+            else {
+                await storeData("username", username);
             }
-
-            console.log('Server response:', data);
-            setServerResponse(data.message);
-        } catch (error) {
-            console.error('Error details:', error);
-            setServerResponse(`Error: ${error.message}`);
         }
+
+        console.log('Server response:', data);
     }
 };

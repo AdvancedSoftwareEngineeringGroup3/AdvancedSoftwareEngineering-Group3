@@ -15,8 +15,6 @@ export default function FindRouteScreen({ navigation }){
 
     const[selectedMode, setSelectedMode] = useState(null);
 
-    const [serverResponse, setServerResponse] = useState('');
-
     const isFormValid = start.trim() !== '' && destination.trim() !== '';
 
     const fetchRoutes = async () => {
@@ -47,10 +45,6 @@ export default function FindRouteScreen({ navigation }){
 
             const data = await response.json();
             console.log('Server response:', data);
-
-            setServerResponse("Data has been queried successfully!")
-            // await new Promise(resolve => setTimeout(resolve, 3000));
-            // setServerResponse("")
 
             // Navigate to SelectRouteScreen with the response data
             navigation.navigate('SelectRouteScreen', { origin: start, destination, routeData: data });
