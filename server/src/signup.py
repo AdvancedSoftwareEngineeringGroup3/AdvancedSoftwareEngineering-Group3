@@ -11,8 +11,6 @@ class Signup:
         self.app = api
         self.logger = logger
 
-        # load_dotenv()
-
         # register signup route
         self.handle_signup()
 
@@ -22,15 +20,6 @@ class Signup:
             self.logger.info(
                 f"Received signup attempt: {signup.username} {signup.password}"
             )
-            # try:
-            # If username is already in database
-            # return "username already exists"
-            # Else
-            # Add the username and password to the database
-
-            # return "user successfully signed up"
-
-            print("Getting to signup endpoint!")
 
             try:
                 if not self.signup_user(signup.username, signup.password):
