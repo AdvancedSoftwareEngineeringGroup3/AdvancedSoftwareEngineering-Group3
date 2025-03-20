@@ -45,3 +45,5 @@ def calc_scores(emissions_difference: float) -> float:
         return -1
 
     return round(emissions_difference / 100, 2)
+
+

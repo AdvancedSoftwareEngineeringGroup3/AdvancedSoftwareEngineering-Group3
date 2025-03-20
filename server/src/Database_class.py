@@ -308,6 +308,36 @@ class DataBase:
             cursor.close()
 
 
+    def return_user_row(self, table_name: str, user: str):
+
+        try:
+            cursor = self.connection.cursor()
+
+            query = (
+                f"SELECT * FROM {table_name} "
+                f"WHERE username = '{user}';"
+            )
+
+            cursor.execute(query)
+            record = cursor.fetchone()
+
+            column_names = [desc[0] for desc in cursor.description]
+
+            # Combine column names and values into a dictionary
+            if record:
+                result = dict(zip(column_names, record))
+                return result
+            else:
+                return None  # Return None if no record is found
+
+        except Exception as e:
+            print("An error occurred:", e)
+            self.connection.rollback()
+            return None
+        finally:
+            cursor.close()
+
+
 def main():
     # Initialise database class
     db = DataBase()
@@ -344,6 +374,11 @@ def main():
 
     result = db.search_entry(table_name, "Conor", "pending_friends")
     print(result)
+
+    table = "monthly_distance"
+    username = "Cormac"
+    cormac_result = db.return_user_row(table, username)
+    print(cormac_result)
 
     # db.add_entry(table_name, {"username": "Keith",
     # "password": "strong password"})
