@@ -102,9 +102,8 @@ export default function SelectRouteScreen({ navigation, route }) {
           </MapView>
           <View>
             {routes.map((routeOption, index) => {
-              const uniquekey = `${routeOption.summary}-${routeOption.overview_polyline.points}`;
               return (
-                <View key={uniquekey} style={selectRouteStyles.routeContainer}>
+                <View key={index} style={selectRouteStyles.routeContainer}>
                   <TouchableOpacity
                     onPress={() => displaySelectedRoute(index)}
                     style={selectRouteStyles.routeButton}

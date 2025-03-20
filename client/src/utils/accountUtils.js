@@ -4,7 +4,6 @@ import { storeData, retrieveData, removeData, updateData } from '../caching';
 export const handleLogin = async (
   username,
   password,
-  setServerResponse,
   navigation,
 ) => {
   if (username === '' || password === '') {
@@ -47,10 +46,8 @@ export const handleLogin = async (
       // if the data is "success", then cache details
 
       console.log('Server response:', data);
-      setServerResponse(data.message);
     } catch (error) {
       console.error('Error details:', error);
-      setServerResponse(`Error: ${error.message}`);
     }
   }
 };
@@ -58,7 +55,6 @@ export const handleLogin = async (
 export const handleSignup = async (
   username,
   password,
-  setServerResponse,
   navigation,
 ) => {
   if (username === '' || password === '') {
@@ -101,10 +97,8 @@ export const handleSignup = async (
       }
 
       console.log('Server response:', data);
-      setServerResponse(data.message);
     } catch (error) {
       console.error('Error details:', error);
-      setServerResponse(`Error: ${error.message}`);
     }
   }
 };

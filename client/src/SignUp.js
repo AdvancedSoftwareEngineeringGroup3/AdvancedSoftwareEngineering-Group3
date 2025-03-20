@@ -13,7 +13,6 @@ import textInputStyles from './components/common/textInput';
 import containerStyles from './components/common/commonContainer';
 
 export default function SignUpScreen({ navigation }) {
-  const [setServerResponse] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const ref2 = React.useRef(null);
@@ -41,7 +40,7 @@ export default function SignUpScreen({ navigation }) {
         <TouchableOpacity
           style={buttonStyles.button}
           onPress={() =>
-            handleSignup(username, password, setServerResponse, navigation)
+            handleSignup(username, password, navigation)
           }
           color="#841584"
         >

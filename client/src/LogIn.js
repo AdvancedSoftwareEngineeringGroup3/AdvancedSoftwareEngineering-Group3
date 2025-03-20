@@ -11,7 +11,6 @@ import { handleLogin } from './utils/accountUtils';
 import styles from './components/styles/Login.styles';
 
 export default function LoginScreen({ navigation }) {
-  const [setServerResponse] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const ref2 = React.useRef(null);
@@ -39,7 +38,7 @@ export default function LoginScreen({ navigation }) {
         <TouchableOpacity
           style={styles.TouchableOpacity}
           onPress={() =>
-            handleLogin(username, password, setServerResponse, navigation)
+            handleLogin(username, password, navigation)
           }
           color="#841584"
         >
