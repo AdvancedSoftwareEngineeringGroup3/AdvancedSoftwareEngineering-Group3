@@ -10,6 +10,32 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    name: Run Linting (ESLint & Prettier)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./client  # Removes need for cd client when running linting
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4  
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: |
+        npm install
+      
+      # For code quality, unused vars etc.
+    - name: Run ESLint
+      run: |
+        npm run lint 
+
   test:
     name: Run Frontend Tests (Jest)
     runs-on: ubuntu-latest

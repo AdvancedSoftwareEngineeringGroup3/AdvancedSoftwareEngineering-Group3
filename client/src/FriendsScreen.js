@@ -1,48 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  FlatList,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import styles from './components/styles/FriendsScreen.styles';
 
 export default function FriendsScreen() {
-  const [senderName, setSenderName] = useState('')
   const [friendRequestName, setFriendName] = useState('');
   const [pendingFriends, setPendingFriends] = useState([]);
   const [currentFriends, setCurrentFriends] = useState([]);
   const [sentFriends, setSentFriends] = useState([]);
 
-  let sender_name = "Conor"; //Username of the person sending the request
+  // Commented for future use
+  //  const [senderName, setSenderName] = useState('');
+
+  const senderName = 'Conor'; // Username of the person sending the request
 
   // friend_list
   // pending_friends
 
   // Function to send a friend request
   const sendFriendRequest = async () => {
-    try{
+    try {
       // send friend request name & username of the person sending friend request
       const payload = {
         receiver: friendRequestName,
-        sender: sender_name, // username of the person sending friend request
+        sender: senderName, // username of the person sending friend request
       };
 
-        const baseUrl = Platform.OS === 'web'
-            ? 'http://localhost:8000'
-            : process.env.EXPO_PUBLIC_API_URL;
-        console.log(`Sending request to ${baseUrl}/send_request`);
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
+      console.log(`Sending request to ${baseUrl}/send_request`);
 
-        const response = await fetch(`${baseUrl}/send_request`,{
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
+      const response = await fetch(`${baseUrl}/send_request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
       // Check if the response is ok
       if (response.ok) {
         // Parse the response as JSON
-        const server_message = await response.json();
-        console.log("Response from Server: ", server_message.message);
+        const serverMessage = await response.json();
+        console.log('Response from Server: ', serverMessage.message);
 
-        alert(server_message.message);
+        alert(serverMessage.message);
         setSentFriends([...sentFriends, friendRequestName.trim()]);
         setFriendName('');
       } else {
@@ -57,34 +69,40 @@ export default function FriendsScreen() {
   };
 
   const Poll = async () => {
-    try{
+    try {
       // send friend request name & username of the person sending friend request
-      //const payload = {
-       // sender: "Conor", // username of the person sending friend request
-      //};
+      // const payload = {
+      // sender: "Conor", // username of the person sending friend request
+      // };
 
-        const baseUrl = Platform.OS === 'web'
-            ? 'http://localhost:8000'
-            : process.env.EXPO_PUBLIC_API_URL;
-        console.log(`Sending request to ${baseUrl}/check_requests?sender=${sender_name}`);
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
+      console.log(
+        `Sending request to ${baseUrl}/check_requests?sender=${senderName}`,
+      );
 
-        const response = await fetch(`${baseUrl}/check_requests?sender=${sender_name}`,{
+      const response = await fetch(
+        `${baseUrl}/check_requests?sender=${senderName}`,
+        {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
-        });
+        },
+      );
 
       // Check if the response is ok
       if (response.ok) {
         // Parse the response as JSON
-        const server_message = await response.json();
-        console.log("Response from Server: ", server_message.message);
+        const serverMessage = await response.json();
+        console.log('Response from Server: ', serverMessage.message);
 
         // alert(server_message.message);
-        setPendingFriends(server_message.pending_friends);
-        setCurrentFriends(server_message.friends);
-        setSentFriends(server_message.sent_friends);
+        setPendingFriends(serverMessage.pending_friends);
+        setCurrentFriends(serverMessage.friends);
+        setSentFriends(serverMessage.sent_friends);
       } else {
         // Log the raw response text for debugging
         const responseText = await response.text();
@@ -99,46 +117,46 @@ export default function FriendsScreen() {
   // Poll for friend requests every 5 seconds
   useEffect(() => {
     const intervalId = setInterval(() => {
-        Poll();
+      Poll();
     }, 5000); // Poll every 5 seconds
 
     // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(intervalId);
-}, []);
-
+  }, []);
 
   // Function to accept a friend request
   const processFriendRequest = async (friend, answer) => {
     // setCurrentFriends([...currentFriends, friend]);
 
-    try{
+    try {
       // send friend request name & username of the person sending friend request
       const payload = {
         requester: friend,
-        user: sender_name,
-        answer: answer
+        user: senderName,
+        answer,
       };
 
-        const baseUrl = Platform.OS === 'web'
-            ? 'http://localhost:8000'
-            : process.env.EXPO_PUBLIC_API_URL;
-        console.log(`Sending request to ${baseUrl}/request_response`);
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
+      console.log(`Sending request to ${baseUrl}/request_response`);
 
-        const response = await fetch(`${baseUrl}/request_response`,{
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
+      const response = await fetch(`${baseUrl}/request_response`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
       // Check if the response is ok
       if (response.ok) {
         // Parse the response as JSON
-        const server_message = await response.json();
-        console.log("Response from Server: ", server_message.message);
+        const serverMessage = await response.json();
+        console.log('Response from Server: ', serverMessage.message);
 
-        alert(server_message.message);
+        alert(serverMessage.message);
         setPendingFriends(pendingFriends.filter((name) => name !== friend));
         setCurrentFriends(currentFriends.filter((name) => name !== friend));
       } else {
@@ -152,37 +170,36 @@ export default function FriendsScreen() {
     }
   };
 
-
   // Function to cancel a sent friend request
   const cancelFriendRequest = async (friend) => {
-
-    try{
+    try {
       // send friend request name & username of the person sending friend request
       const payload = {
-        user: sender_name,    // username of the person removing friend
-        friend: friend        // friend to be removed
+        user: senderName, // username of the person removing friend
+        friend, // friend to be removed
       };
 
-        const baseUrl = Platform.OS === 'web'
-            ? 'http://localhost:8000'
-            : process.env.EXPO_PUBLIC_API_URL;
-        console.log(`Sending request to ${baseUrl}/cancel_friend_request`);
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
+      console.log(`Sending request to ${baseUrl}/cancel_friend_request`);
 
-        const response = await fetch(`${baseUrl}/cancel_friend_request`,{
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
+      const response = await fetch(`${baseUrl}/cancel_friend_request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
       // Check if the response is ok
       if (response.ok) {
         // Parse the response as JSON
-        const server_message = await response.json();
-        console.log("Response from Server: ", server_message.message);
+        const serverMessage = await response.json();
+        console.log('Response from Server: ', serverMessage.message);
 
-        alert(server_message.message);
+        alert(serverMessage.message);
         setSentFriends(sentFriends.filter((name) => name !== friend));
       } else {
         // Log the raw response text for debugging
@@ -193,38 +210,38 @@ export default function FriendsScreen() {
     } catch (error) {
       console.error('Error sending friend request:', error);
     }
-      
   };
 
-    // Function to remove an existing friend
+  // Function to remove an existing friend
   const removeFriend = async (friend) => {
-    try{
+    try {
       // send friend request name & username of the person sending friend request
       const payload = {
-        user: sender_name,    // username of the person removing friend
-        friend: friend        // friend to be removed
+        user: senderName, // username of the person removing friend
+        friend, // friend to be removed
       };
 
-        const baseUrl = Platform.OS === 'web'
-            ? 'http://localhost:8000'
-            : process.env.EXPO_PUBLIC_API_URL;
-        console.log(`Sending request to ${baseUrl}/remove_friend`);
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
+      console.log(`Sending request to ${baseUrl}/remove_friend`);
 
-        const response = await fetch(`${baseUrl}/remove_friend`,{
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
+      const response = await fetch(`${baseUrl}/remove_friend`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
       // Check if the response is ok
       if (response.ok) {
         // Parse the response as JSON
-        const server_message = await response.json();
-        console.log("Response from Server: ", server_message.message);
+        const serverMessage = await response.json();
+        console.log('Response from Server: ', serverMessage.message);
 
-        alert(server_message.message);
+        alert(serverMessage.message);
         setCurrentFriends(currentFriends.filter((name) => name !== friend));
       } else {
         // Log the raw response text for debugging
@@ -235,7 +252,6 @@ export default function FriendsScreen() {
     } catch (error) {
       console.error('Error sending friend request:', error);
     }
-      
   };
 
   return (
@@ -252,7 +268,6 @@ export default function FriendsScreen() {
           <Button title="Send Request" onPress={sendFriendRequest} />
         </View>
 
-
         {/* Sent Friend Requests */}
         <View style={styles.listContainer}>
           <Text style={styles.sectionTitle}>Sent Friend Requests</Text>
@@ -262,8 +277,11 @@ export default function FriendsScreen() {
             renderItem={({ item }) => (
               <View style={styles.pendingItem}>
                 <Text style={styles.friendRequestName}>{item}</Text>
-                {/*Cancel friend request*/}
-                <TouchableOpacity onPress={() => cancelFriendRequest(item)} style={styles.cancelButton}>
+                {/* Cancel friend request */}
+                <TouchableOpacity
+                  onPress={() => cancelFriendRequest(item)}
+                  style={styles.cancelButton}
+                >
                   <Text style={styles.buttonText}>Cancel</Text>
                 </TouchableOpacity>
               </View>
@@ -271,9 +289,8 @@ export default function FriendsScreen() {
           />
         </View>
 
-
         {/* Pending Friends List */}
-        {<View style={styles.listContainer}>
+        <View style={styles.listContainer}>
           <Text style={styles.sectionTitle}>Pending Friend Requests</Text>
           <FlatList
             onPress={() => Poll()}
@@ -282,16 +299,22 @@ export default function FriendsScreen() {
             renderItem={({ item }) => (
               <View style={styles.pendingItem}>
                 <Text style={styles.friendRequestName}>{item}</Text>
-                <TouchableOpacity onPress={() => processFriendRequest(item, true)} style={styles.acceptButton}>
+                <TouchableOpacity
+                  onPress={() => processFriendRequest(item, true)}
+                  style={styles.acceptButton}
+                >
                   <Text style={styles.buttonText}>Accept</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => processFriendRequest(item, false)} style={styles.rejectButton}>
+                <TouchableOpacity
+                  onPress={() => processFriendRequest(item, false)}
+                  style={styles.rejectButton}
+                >
                   <Text style={styles.buttonText}>Reject</Text>
                 </TouchableOpacity>
               </View>
             )}
           />
-        </View>}
+        </View>
 
         {/* Current Friends List */}
         <View style={styles.listContainer}>
@@ -302,8 +325,11 @@ export default function FriendsScreen() {
             renderItem={({ item }) => (
               <View style={styles.friendItem}>
                 <Text style={styles.friendRequestName}>{item}</Text>
-                {/*Remove friend*/}
-                <TouchableOpacity onPress={() => removeFriend(item)} style={styles.removeButton}>
+                {/* Remove friend */}
+                <TouchableOpacity
+                  onPress={() => removeFriend(item)}
+                  style={styles.removeButton}
+                >
                   <Text style={styles.buttonText}>Remove</Text>
                 </TouchableOpacity>
               </View>
@@ -313,79 +339,4 @@ export default function FriendsScreen() {
       </View>
     </GestureHandlerRootView>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
-    marginRight: 10,
-  },
-  listContainer: {
-    flex: 1,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  pendingItem: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 5,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  friendItem: {
-    backgroundColor: '#d1f0d1',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 5,
-  },
-  friendRequestName: {
-    fontSize: 16,
-  },
-  acceptButton: {
-    backgroundColor: '#4CAF50',
-    padding: 8,
-    borderRadius: 5,
-    marginLeft: 5,
-  },
-  rejectButton: {
-    backgroundColor: '#E74C3C',
-    padding: 8,
-    borderRadius: 5,
-    marginLeft: 5,
-  },
-  cancelButton: {
-    backgroundColor: '#E74C3C',
-    padding: 8,
-    borderRadius: 5,
-    marginLeft: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  removeButton: {
-    backgroundColor: '#E74C3C',
-    padding: 8,
-    borderRadius: 5,
-    marginLeft: 5,
-  },
-});
+}

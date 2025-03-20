@@ -1,46 +1,13 @@
-import * as React from 'react';
-import { useState, useRef } from 'react';
-import { StyleSheet, View, SafeAreaView, TextInput, Button, TouchableOpacity, Text, KeyboardAvoidingView, Platform } from 'react-native';
-import { useReducedMotion } from 'react-native-reanimated';
-
-
-export default function AccountScreen({ navigation }) {
-
-
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-
-      <SafeAreaView style={styles.container}>
-        
-
-        <TouchableOpacity style={styles.TouchableOpacity1} onPress={() => navigation.navigate('LoginScreen')}
-          color="#841584">
-          <Text>Log In</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.TouchableOpacity2} onPress={() => navigation.navigate('SignUpScreen')}
-          color="#841584">
-          <Text>Sign Up</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.TouchableOpacity3} onPress={() => navigation.navigate('Map')}
-          color="#841584">
-          <Text>Continue as Guest</Text>
-        </TouchableOpacity>
-
-        </SafeAreaView>
-    </View>
-  );
-}
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 10,
     paddingHorizontal: 45,
     top: '-20%',
-    //marginBottom: -150,
+    // marginBottom: -150,
   },
   TextInput: {
     width: 100,
@@ -102,3 +69,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default styles;

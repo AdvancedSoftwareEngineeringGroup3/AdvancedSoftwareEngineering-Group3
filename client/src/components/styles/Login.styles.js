@@ -1,0 +1,59 @@
+import { StyleSheet } from 'react-native';
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 45,
+    top: '-20%',
+    // marginBottom: -150,
+  },
+  TextInput: {
+    width: 100,
+    height: 50,
+    backgroundColor: '#fff',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+  },
+  TouchableOpacity: {
+    alignItems: 'center',
+    left: '0%',
+    top: '5%',
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  TouchableOpacity1: {
+    alignItems: 'center',
+    left: '0%',
+    top: '5%',
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  TouchableOpacityText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+});
+
+export default styles;
