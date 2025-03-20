@@ -101,34 +101,35 @@ export default function SelectRouteScreen({ navigation, route }) {
             )}
           </MapView>
           <View>
-            {routes.map((routeOption, index) => {
-              return (
-                <View key={index} style={selectRouteStyles.routeContainer}>
-                  <TouchableOpacity
-                    onPress={() => displaySelectedRoute(index)}
-                    style={selectRouteStyles.routeButton}
-                  >
-                    <Text>Route {index + 1}</Text>
-                    <Text>Distance: {routeOption.legs[0].distance.text}</Text>
-                    <Text>Duration: {routeOption.legs[0].duration.text}</Text>
-                  </TouchableOpacity>
-                  {/* routeData needs to rename the route variable because that is what react navigator calls its properties */}
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate('DisplayRouteScreen', {
-                        origin,
-                        destination,
-                        routeData: routeOption,
-                        polylineCoordinates,
-                      })
-                    }
-                    style={selectRouteStyles.startButton}
-                  >
-                    <Text>Start Journey</Text>
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
+            {routes.map((routeOption, index) => (
+              <View
+                key={index} // eslint-disable-line react/no-array-index-key
+                style={selectRouteStyles.routeContainer}
+              >
+                <TouchableOpacity
+                  onPress={() => displaySelectedRoute(index)}
+                  style={selectRouteStyles.routeButton}
+                >
+                  <Text>Route {index + 1}</Text>
+                  <Text>Distance: {routeOption.legs[0].distance.text}</Text>
+                  <Text>Duration: {routeOption.legs[0].duration.text}</Text>
+                </TouchableOpacity>
+                {/* routeData needs to rename the route variable because that is what react navigator calls its properties */}
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('DisplayRouteScreen', {
+                      origin,
+                      destination,
+                      routeData: routeOption,
+                      polylineCoordinates,
+                    })
+                  }
+                  style={selectRouteStyles.startButton}
+                >
+                  <Text>Start Journey</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
           </View>
         </>
       )}

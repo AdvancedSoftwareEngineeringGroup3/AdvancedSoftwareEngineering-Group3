@@ -1,11 +1,7 @@
 import { Platform } from 'react-native';
 import { storeData, retrieveData, removeData, updateData } from '../caching';
 
-export const handleLogin = async (
-  username,
-  password,
-  navigation,
-) => {
+export const handleLogin = async (username, password, navigation) => {
   if (username === '' || password === '') {
     alert('All fields have to be filled before logging in!');
   } else {
@@ -52,11 +48,7 @@ export const handleLogin = async (
   }
 };
 
-export const handleSignup = async (
-  username,
-  password,
-  navigation,
-) => {
+export const handleSignup = async (username, password, navigation) => {
   if (username === '' || password === '') {
     alert('All fields have to be filled before signing up!');
   } else {

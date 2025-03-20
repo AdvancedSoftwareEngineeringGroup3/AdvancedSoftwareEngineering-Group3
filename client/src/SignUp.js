@@ -39,9 +39,7 @@ export default function SignUpScreen({ navigation }) {
 
         <TouchableOpacity
           style={buttonStyles.button}
-          onPress={() =>
-            handleSignup(username, password, navigation)
-          }
+          onPress={() => handleSignup(username, password, navigation)}
           color="#841584"
         >
           <Text style={buttonStyles.buttonText}>Sign Up</Text>

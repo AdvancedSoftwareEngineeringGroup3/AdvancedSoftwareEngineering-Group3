@@ -37,9 +37,7 @@ export default function LoginScreen({ navigation }) {
 
         <TouchableOpacity
           style={styles.TouchableOpacity}
-          onPress={() =>
-            handleLogin(username, password, navigation)
-          }
+          onPress={() => handleLogin(username, password, navigation)}
           color="#841584"
         >
           <Text style={styles.TouchableOpacityText}>Log In</Text>
