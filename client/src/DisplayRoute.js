@@ -56,10 +56,6 @@ export default function DisplayRouteScreen({ navigation, route }) {
   }, []);
 
   useEffect(() => {
-    if (devMode) {
-      // Set initial location to the first coordinate in the polyline
-      setLocation(polylineCoordinates[0]);
-    }
     // Start tracking location
     const startTracking = async () => {
       try {
@@ -88,6 +84,14 @@ export default function DisplayRouteScreen({ navigation, route }) {
     checkProximityAndUpdate(newLocation);
   };
 
+  const toggleDevMode = (value) => {
+    setDevMode(value);
+    if(value) {
+      // Set initial location to the first coordinate in the polyline
+      setLocation(polylineCoordinates[0]);
+    }
+  };
+
   // Check proximity to the next coordinate in the polyline
 
   return (
@@ -110,7 +114,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
               <Text style={displayRouteStyles.devModeText}>Dev Mode</Text>
               <Switch
                 value={devMode}
-                onValueChange={(value) => setDevMode(value)}
+                onValueChange={(value) => toggleDevMode(value)}
               />
             </View>
           </View>
