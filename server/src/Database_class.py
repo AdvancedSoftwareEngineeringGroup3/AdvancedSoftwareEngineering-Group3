@@ -1,6 +1,7 @@
 import pg8000
 from dotenv import load_dotenv
 import os
+#import src.sustainability as sus
 
 # Load environment variables from .env file
 load_dotenv()
@@ -363,22 +364,23 @@ def main():
 
     # Connect to db
     db.connect_db()
-    db.create_table(table_name, table_info)
-    db.add_entry(table_name, table_data)
+    # db.create_table(table_name, table_info)
+    # db.add_entry(table_name, table_data)
 
-    result = db.search_entry(table_name, "Conor", "pending_friends")
-    print(result)
+    # result = db.search_entry(table_name, "Conor", "pending_friends")
+    # print(result)
 
-    db.append_entry(table_name, "keith", "Conor", "pending_friends")
-    db.append_entry(table_name, "siobhan", "Conor", "pending_friends")
+    # db.append_entry(table_name, "keith", "Conor", "pending_friends")
+    # db.append_entry(table_name, "siobhan", "Conor", "pending_friends")
 
-    result = db.search_entry(table_name, "Conor", "pending_friends")
-    print(result)
+    # result = db.search_entry(table_name, "Conor", "pending_friends")
+    # print(result)
 
     table = "monthly_distance"
     username = "Cormac"
     cormac_result = db.return_user_row(table, username)
-    print(cormac_result)
+    print(f"print db row: {cormac_result}")
+#    print(f"print emissions: {sus.calc_emissions_savings(cormac_result)}")
 
     # db.add_entry(table_name, {"username": "Keith",
     # "password": "strong password"})

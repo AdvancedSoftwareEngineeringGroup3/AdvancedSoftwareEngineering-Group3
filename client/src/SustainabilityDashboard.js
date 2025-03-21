@@ -1,6 +1,26 @@
 import { LineChart, PieChart } from 'react-native-chart-kit';
-import { TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity, Text, Platform } from 'react-native';
 import susDashboardStyles from './components/styles/SustainabilityDashboard.styles';
+import { useEffect, useState } from 'react';
+
+const configurePieChartData = (emissionsSavings) => {
+  // Defien colors for types
+  const colors = {
+    train: '#6689c6',
+    bus: '#e0ac2b',
+    walk: '#9a6fb0',
+    car: '#a53253',
+  };
+
+  // Map emissions savings JSON to PieChart data
+  return Object.keys(emissionsSavings).map((key) => ({
+    name: key.charAt(0).toUpperCase() + key.slice(1),
+    emissions: emissionsSavings[key],
+    color: colors[key] || '#cccccc', // default color
+    legendFontColor: '#7F7F7F',
+    legendFOntSize: 15,
+  }));
+}
 
 // Dummy pie chart data
 const data = [
@@ -80,6 +100,17 @@ const chartConfig = {
 
 // eslint-disable-next-line no-unused-vars
 export default function Dashboard({ navigation }) {
+  const [monthlyEmissionsSavings, setMonthlyEmissionsSavings]  = useState([]);
+  const [savingsPieChartData, setPieChartData] = useState([]);
+
+  // test name
+  const senderName = 'Cormac'
+
+
+  useEffect(() => {
+    getSustainabilityStats();
+  }, []);
+
   // this needs to be updated reactively, perhaps using usestate
   let lineGraphData = yearDataLineGraph;
 
@@ -91,10 +122,50 @@ export default function Dashboard({ navigation }) {
     }
   };
 
+  const getSustainabilityStats = async () =>{
+    try {
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
+      console.log(
+        `Sending request to ${baseUrl}/get_sus_stats?sender=${senderName}`,
+      );
+
+      const response = await fetch(
+        `${baseUrl}/get_sus_stats?sender=${senderName}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (response.ok) {
+        const serverMessage = await response.json();
+        console.log("Response from Server: ", serverMessage.message);
+
+        savingsPieChartData = configurePieChartData(serverMessage.emissions_savings);
+
+        setMonthlyEmissionsSavings(savingsPieChartData);
+        setPieChartData(savingsPieChartData);
+      }
+      else{
+        const responseText = await response.text();
+        console.error("Failed to get monthly emissions: ", responseText);
+        alert("Server error: ", error);
+      }
+
+    } catch (error){
+      console.error("Error getting sustainability stats: ", error)
+    }
+  };
+
   return (
     <>
       <PieChart
-        data={data}
+        data={savingsPieChartData}
         width={370}
         height={240}
         chartConfig={chartConfig}
