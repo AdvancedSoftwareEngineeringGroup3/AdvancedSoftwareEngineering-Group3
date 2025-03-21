@@ -1,9 +1,10 @@
 import { postConnection } from "../src/utils/accountUtils";
 
 global.fetch = jest.fn();
+global.alert = jest.fn();
 
 jest.mock('react-native', () => ({
-  Platform: { OS: 'ios' }, // Mock Platform to avoid runtime issues
+  Platform: { OS: 'android' }, // Mock Platform to avoid runtime issues
 }));
 
 describe("postConnection", () => {

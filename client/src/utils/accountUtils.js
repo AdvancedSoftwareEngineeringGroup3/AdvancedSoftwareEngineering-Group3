@@ -26,6 +26,7 @@ export const postConnection = async (url, payload, customBaseUrl=null) => {
         return data;
     } catch (error) {
         console.error('Error details:', error);
+        throw error;
     }
 };
 
