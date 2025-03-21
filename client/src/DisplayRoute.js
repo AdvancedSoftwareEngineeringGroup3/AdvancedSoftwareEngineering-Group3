@@ -56,10 +56,11 @@ export default function DisplayRouteScreen({ navigation, route }) {
   }, []);
 
   useEffect(() => {
+    let locationSubscription;
     // Start tracking location
     const startTracking = async () => {
       try {
-        await startLocationTracking((currentLocation) => {
+        locationSubscription = await startLocationTracking((currentLocation) => {
           if (!devMode) {
             setLocation(currentLocation);
             checkProximityAndUpdate(currentLocation);
@@ -69,8 +70,14 @@ export default function DisplayRouteScreen({ navigation, route }) {
         console.error('Error starting location tracking:', error);
       }
     };
-
-    startTracking();
+    if (!devMode){
+      startTracking();
+    }
+    return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
+    };
   }, [devMode, checkProximityAndUpdate]);
 
   // Call checkProximityAndUpdate and update setlocation on latitude / longitude button click
