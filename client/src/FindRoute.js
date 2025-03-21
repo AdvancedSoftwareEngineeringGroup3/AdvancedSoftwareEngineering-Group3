@@ -53,7 +53,7 @@ export default function FindRouteScreen({ navigation }) {
       }
 
       const data = await response.json();
-      console.log('Server response:', data);
+      // console.log('Server response:', data);
 
       // Navigate to SelectRouteScreen with the response data
       navigation.navigate('SelectRouteScreen', {

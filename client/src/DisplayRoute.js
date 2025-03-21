@@ -13,6 +13,18 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const [travelledPolyline, setTravelledPolyline] = useState([]);
   const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
   const [devMode, setDevMode] = useState(false);
+  const [stepData, setStepData] = useState([]);
+
+  const getStepData = () => {
+    routeData.legs[0].steps.map((step) =>
+      setStepData(
+        stepData.push({
+          html_instructions: step.html_instructions,
+          start_location: step.start_location,
+        }),
+      ),
+    );
+  };
 
   const checkProximityAndUpdate = useCallback(
     (currentLocation) => {
@@ -25,8 +37,6 @@ export default function DisplayRouteScreen({ navigation, route }) {
         // Assuming 50 meters as the proximity threshold
         setTravelledPolyline((prev) => [...prev, nextCoordinate]);
         setCurrentPolylineIndex((prev) => prev + 1);
-        // setTravelledPolyline([...travelledPolyline, nextCoordinate]);
-        // setCurrentPolylineIndex(currentPolylineIndex + 1);
 
         if (currentPolylineIndex + 1 >= polylineCoordinates.length) {
           Alert.alert(
@@ -41,6 +51,11 @@ export default function DisplayRouteScreen({ navigation, route }) {
   );
 
   useEffect(() => {
+    getStepData();
+    console.log(stepData);
+  }, []);
+
+  useEffect(() => {
     if (devMode) {
       // Set initial location to the first coordinate in the polyline
       setLocation(polylineCoordinates[0]);
@@ -51,8 +66,8 @@ export default function DisplayRouteScreen({ navigation, route }) {
         await startLocationTracking((currentLocation) => {
           if (!devMode) {
             setLocation(currentLocation);
+            checkProximityAndUpdate(currentLocation);
           }
-          checkProximityAndUpdate(currentLocation);
         });
       } catch (error) {
         console.error('Error starting location tracking:', error);
@@ -60,15 +75,17 @@ export default function DisplayRouteScreen({ navigation, route }) {
     };
 
     startTracking();
-  }, [devMode, polylineCoordinates, checkProximityAndUpdate]);
+  }, [devMode, checkProximityAndUpdate]);
 
   // Call checkProximityAndUpdate and update setlocation on latitude / longitude button click
   const devMove = ({ delLat = 0, delLng = 0 }) => {
-    setLocation({
+    const newLocation = {
       latitude: location.latitude + delLat,
       longitude: location.longitude + delLng,
-    });
-    checkProximityAndUpdate(location);
+    };
+
+    setLocation(newLocation);
+    checkProximityAndUpdate(newLocation);
   };
 
   // Check proximity to the next coordinate in the polyline
