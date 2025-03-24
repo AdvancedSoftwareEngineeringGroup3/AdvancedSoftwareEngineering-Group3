@@ -3,7 +3,8 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
 from fastapi import FastAPI
 import logging
-from src.login import Login, LoginDetails
+from src.login import Login
+
 
 @pytest.fixture
 def test_app():
@@ -13,8 +14,9 @@ def test_app():
     """
     app = FastAPI()
     logger = logging.getLogger("test_logger")
-    login = Login(api=app, logger=logger)
+    login = Login(api=app, logger=logger)  # noqa: F841
     return TestClient(app)
+
 
 def test_login_success(test_app):
     """
@@ -34,6 +36,7 @@ def test_login_success(test_app):
     assert response.status_code == 200
     assert response.json()["message"] == "Login successful for user: testuser"
 
+
 def test_login_invalid_user(test_app):
     """
     Test for /login endpoint where the username is invalid.
@@ -50,6 +53,7 @@ def test_login_invalid_user(test_app):
 
     assert response.status_code == 200
     assert response.json()["message"] == "Invalid username or password"
+
 
 def test_login_invalid_password(test_app):
     """
@@ -68,6 +72,7 @@ def test_login_invalid_password(test_app):
 
     assert response.status_code == 200
     assert response.json()["message"] == "Invalid username or password"
+
 
 def test_login_internal_server_error(test_app):
     """

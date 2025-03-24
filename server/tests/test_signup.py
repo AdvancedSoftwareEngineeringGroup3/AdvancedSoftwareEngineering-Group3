@@ -3,7 +3,8 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
 from fastapi import FastAPI
 import logging
-from src.signup import Signup, SignupDetails
+from src.signup import Signup
+
 
 @pytest.fixture
 def test_app():
@@ -13,8 +14,9 @@ def test_app():
     """
     app = FastAPI()
     logger = logging.getLogger("test_logger")
-    signup = Signup(api=app, logger=logger)
+    signup = Signup(api=app, logger=logger)  # noqa: F841
     return TestClient(app)
+
 
 def test_signup_success(test_app):
     """
@@ -33,6 +35,7 @@ def test_signup_success(test_app):
     assert response.status_code == 200
     assert response.json()["message"] == "Signup successful for user: newuser"
 
+
 def test_signup_user_already_exists(test_app):
     """
     Test for /signup endpoint where the username already exists.
@@ -49,6 +52,7 @@ def test_signup_user_already_exists(test_app):
 
     assert response.status_code == 200
     assert response.json()["message"] == "Username already found"
+
 
 def test_signup_internal_server_error(test_app):
     """

@@ -1,7 +1,7 @@
 import pg8000
 from dotenv import load_dotenv
 import os
-from typing import Dict 
+from typing import Dict
 
 # Load environment variables from .env file
 load_dotenv()
