@@ -2,7 +2,7 @@ from enum import Enum
 import logging
 from fastapi import Query, HTTPException
 from dotenv import load_dotenv
-from src.Database_class import DataBase
+from .Database_class import DataBase
 
 class VehicleEnum(Enum):
     Bus = "bus"
@@ -17,6 +17,8 @@ class Sustainability:
         self.app = api
         self.logger = logger
 
+        self.vehicle_types = ["bus", "car", "luas", "train", "bike", "walk"]
+
         load_dotenv()
         # Register Endpoints
         self.api_get_sus_stats()
@@ -29,6 +31,7 @@ class Sustainability:
                 f"Received request for sustainability statistics from {user}"
             )
             emissions_savings = self.db_fetch_sus_stats(user)
+            self.logger.info(f"Emissions savings: {emissions_savings}")
 
             if emissions_savings is None:
                 raise HTTPException(
@@ -48,18 +51,23 @@ class Sustainability:
         db.connect_db()
 
         if db.search_user(table_name, user):
-            db.close_con()
+            self.logger.info("Found user")
+            self.logger.info("connection closed, getting monthly distances")
             monthly_distances = db.return_user_row(table_name, user)
+            self.logger.info(f"monthly distances: {monthly_distances}")
+            
+            db.close_con()
             return self.calc_emissions_savings(monthly_distances)
 
         else:
+
             db.close_con()
             return None
 
         
 
 
-    def calc_emissions(distance: float, vehicle_type: VehicleEnum) -> float:
+    def calc_emissions(self, distance: float, vehicle_type: str) -> float:
         """EF = E/A # EF => E = A * EF = emmisiions factor, E = total emissions,
         A = activity level (km travelled)
 
@@ -91,7 +99,7 @@ class Sustainability:
         return emissions
 
 
-    def calc_scores(emissions_difference: float) -> float:
+    def calc_scores(self, emissions_difference: float) -> float:
         if emissions_difference < 0:
             return -1
 
@@ -99,20 +107,32 @@ class Sustainability:
 
 
     def calc_emissions_savings(self, monthly_distances):
+        emissions_dif = {
+            "bike": 0,
+            "luas": 0,
+            "train": 0,
+            "bus": 0,
+            "walk": 0,
+        }
 
-        emissions_dif = {"bike" : 0,
-                        "luas" : 0,
-                        "train" : 0,
-                        "bus": 0,
-                        "walk" : 0,
-                        }
-        
-        for type in VehicleEnum:
-            if type == VehicleEnum.Car:
+        for vehicle_type in self.vehicle_types:
+            if vehicle_type == "car" or vehicle_type == "total" or vehicle_type == "username":
+                continue
+
+            if vehicle_type not in monthly_distances:
+                self.logger.error(f"Key '{vehicle_type}' not found in monthly_distances")
                 continue
             
-            # car emissions using distance travelled by transport type - transport type emissions
-            emissions_dif[type.value] = self.calc_emissions(monthly_distances[type.value], VehicleEnum.Car.value) - self.calc_emissions(monthly_distances[type.value], type.value)
+            # self.logger.log(msg=f"current vehicle type: {vehicle_type}")
+            print(f"current vehicle type: {vehicle_type}")
 
+            car_emissions = self.calc_emissions(
+                monthly_distances[vehicle_type], "car"
+            )
+            transport_emissions = self.calc_emissions(
+                monthly_distances[vehicle_type], vehicle_type
+            )
+
+            emissions_dif[vehicle_type] = car_emissions - transport_emissions
 
         return emissions_dif

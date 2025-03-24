@@ -1,7 +1,7 @@
 import pg8000
 from dotenv import load_dotenv
 import os
-#import src.sustainability as sus
+# from src.sustainability import Sustainability
 
 # Load environment variables from .env file
 load_dotenv()
@@ -380,6 +380,11 @@ def main():
     username = "Cormac"
     cormac_result = db.return_user_row(table, username)
     print(f"print db row: {cormac_result}")
+
+    sus = Sustainability()
+    calc_emissions = sus.db_fetch_sus_stats("Cormac")
+    print(calc_emissions)
+
 #    print(f"print emissions: {sus.calc_emissions_savings(cormac_result)}")
 
     # db.add_entry(table_name, {"username": "Keith",

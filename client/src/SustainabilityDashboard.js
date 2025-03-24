@@ -101,7 +101,7 @@ const chartConfig = {
 // eslint-disable-next-line no-unused-vars
 export default function Dashboard({ navigation }) {
   const [monthlyEmissionsSavings, setMonthlyEmissionsSavings]  = useState([]);
-  const [savingsPieChartData, setPieChartData] = useState([]);
+  [savingsPieChartData, setPieChartData] = useState([]);
 
   // test name
   const senderName = 'Cormac'

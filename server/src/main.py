@@ -11,7 +11,7 @@ from src.wayfinding import router  # Import the API routes
 from src.weatherApi import weatherAPI
 from src.preferences import Preferences
 from src.networking import Networking
-
+from src.sustainability import Sustainability
 
 class Server:
     def __init__(self):
@@ -30,6 +30,7 @@ class Server:
         self.connection_manager = ConnectionManager()
         self.weather_api = weatherAPI()
         self.networking = Networking(self.app, self.logger)
+        self.sustainability = Sustainability(self.app, self.logger)
 
         # Configure CORS
         self.configure_cors()
