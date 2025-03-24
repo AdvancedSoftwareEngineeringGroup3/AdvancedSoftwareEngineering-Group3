@@ -34,7 +34,7 @@ export const postConnection = async (url, payload, customBaseUrl = null) => {
 };
 
 export const handleLogin = async (username, password, navigation) => {
-  if (username == '' || password == '') {
+  if (username === '' || password === '') {
     alert('All fields have to be filled before logging in!');
   } else {
     console.log('username: ', username);
@@ -65,7 +65,7 @@ export const handleLogin = async (username, password, navigation) => {
 };
 
 export const handleSignup = async (username, password, navigation) => {
-  if (username == '' || password == '') {
+  if (username === '' || password === '') {
     alert('All fields have to be filled before signing up!');
   } else {
     console.log('username: ', username);
