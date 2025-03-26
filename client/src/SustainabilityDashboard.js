@@ -1,8 +1,10 @@
 import { LineChart, PieChart } from 'react-native-chart-kit';
-import { TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity, Text, View, Image } from 'react-native';
 import susDashboardStyles from './components/styles/SustainabilityDashboard.styles';
+import fullbloom from './components/SVG/fullbloom.png';
 
 // Dummy pie chart data
+const sustainabilityScore = '75';
 const data = [
   {
     name: 'Bus',
@@ -92,11 +94,17 @@ export default function Dashboard({ navigation }) {
   };
 
   return (
-    <>
+    <View style={susDashboardStyles.container}>
+      <View style={susDashboardStyles.scoreContainer}>
+        <Text style={susDashboardStyles.scoreText}>
+          Sustainability Score: {sustainabilityScore}
+        </Text>
+        <Image source={fullbloom} style={susDashboardStyles.image} />
+      </View>
       <PieChart
         data={data}
-        width={370}
-        height={240}
+        width={370} // Ensure this is a number
+        height={240} // Ensure this is a number
         chartConfig={chartConfig}
         accessor="emissions"
         backgroundColor="transparent"
@@ -107,22 +115,22 @@ export default function Dashboard({ navigation }) {
       <LineChart
         style={susDashboardStyles.lineChart}
         data={lineGraphData}
-        width={370}
-        height={220}
+        width={370} // Ensure this is a number
+        height={220} // Ensure this is a number
         chartConfig={chartConfig}
       />
       <TouchableOpacity
         style={susDashboardStyles.monthButton}
-        onPress={switchTimeframe('m')}
+        onPress={() => switchTimeframe('m')}
       >
         <Text style={susDashboardStyles.buttonText}>Month</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={susDashboardStyles.yearButton}
-        onPress={switchTimeframe('y')}
+        onPress={() => switchTimeframe('y')}
       >
         <Text style={susDashboardStyles.buttonText}>Year</Text>
       </TouchableOpacity>
-    </>
+    </View>
   );
 }

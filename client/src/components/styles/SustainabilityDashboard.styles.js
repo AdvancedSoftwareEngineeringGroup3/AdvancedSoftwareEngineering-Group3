@@ -1,6 +1,21 @@
 import { StyleSheet } from 'react-native';
 
 const susDashboardStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  scoreContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  scoreText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
   lineChart: {
     position: 'absolute',
     bottom: 40,
@@ -8,6 +23,11 @@ const susDashboardStyles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
+  },
+  image: {
+    width: 300, 
+    height: 400, 
+    resizeMode: 'contain', 
   },
   monthButton: {
     position: 'absolute',
@@ -28,6 +48,10 @@ const susDashboardStyles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 
