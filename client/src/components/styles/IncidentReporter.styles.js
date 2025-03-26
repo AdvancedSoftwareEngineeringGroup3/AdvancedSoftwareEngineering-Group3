@@ -1,0 +1,133 @@
+import { StyleSheet, Platform } from 'react-native';
+
+const styles = StyleSheet.create({
+  reportButton: {
+    position: 'absolute',
+    right: 16,
+    bottom: Platform.OS === 'ios' ? 100 : 80,
+    backgroundColor: '#FF4500',
+    borderRadius: 30,
+    padding: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 10,
+  },
+  reportButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'black',
+    zIndex: 100,
+  },
+  container: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: height * 0.7,
+    zIndex: 101,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 10,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  closeButton: {
+    padding: 8,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    color: '#007AFF',
+  },
+  submitButton: {
+    padding: 8,
+  },
+  submitButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#007AFF',
+  },
+  incidentList: {
+    flex: 1,
+  },
+  incidentItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  incidentIconContainer: {
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+    borderRadius: 25,
+    backgroundColor: '#F5F5F5',
+  },
+  incidentIcon: {
+    width: 30,
+    height: 30,
+  },
+  incidentTextContainer: {
+    flex: 1,
+  },
+  incidentTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  incidentDescription: {
+    fontSize: 14,
+    color: '#666',
+  },
+  commentContainer: {
+    flex: 1,
+    padding: 16,
+  },
+  commentLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#333',
+  },
+  commentInput: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    fontSize: 16,
+    textAlignVertical: 'top',
+    backgroundColor: '#F9F9F9',
+  },
+});

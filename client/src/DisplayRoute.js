@@ -8,7 +8,6 @@ import locationCircleIcon from './assets/location-circle.png';
 
 export default function DisplayRouteScreen({ navigation, route }) {
   // route is a prop passed by the navigator, hence why that is used instead of other variable names
-  // 
   const { origin, destination, routeData, polylineCoordinates } = route.params;
   const [location, setLocation] = useState(null);
   const [travelledPolyline, setTravelledPolyline] = useState([]);
