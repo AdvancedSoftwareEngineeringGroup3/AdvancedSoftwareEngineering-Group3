@@ -11,48 +11,76 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const { origin, destination, routeData, polylineCoordinates } = route.params;
   const [location, setLocation] = useState(null);
   const [travelledPolyline, setTravelledPolyline] = useState([]);
-  const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
+  const [remainingPolyline, setRemainingPolyline] = useState(polylineCoordinates);
   const [devMode, setDevMode] = useState(false);
   const [stepData, setStepData] = useState([]);
+  const [innerStepData, setInnerStepData] = useState([]);
 
+
+  function removeHtmlTags(instruction) {
+    return instruction.replace(/<\/?[^>]+(>|$)/g, "");
+  }
+
+  // TODO: ADD COMMENTS***
+  // rename to indicate polyline
   const getStepData = () => {
-    routeData.legs[0].steps.map((step) =>
-      setStepData(
-        stepData.push({
-          html_instructions: step.html_instructions,
+    routeData.legs[0].steps.map((step) => {
+      let temp = stepData;
+      temp.push({
+          html_instructions: removeHtmlTags(step.html_instructions),
           start_location: step.start_location,
-        }),
-      ),
-    );
+        });
+      setStepData(temp);
+    });
   };
+
+  // rename to indicate instructions
+  const getInnerStepData = () => {
+    routeData.legs[0].steps.map((step) =>{
+      if(step.travel_mode !== 'TRANSIT') {
+        step.steps.map((innerStep) => {
+          let temp = innerStepData;
+          temp.push({
+            html_instructions: removeHtmlTags(innerStep.html_instructions),
+            start_location: innerStep.start_location,
+          });
+          setInnerStepData(temp);
+        })
+      }
+    });
+  };
+
 
   const checkProximityAndUpdate = useCallback(
     (currentLocation) => {
-      if (currentPolylineIndex >= polylineCoordinates.length) return;
-
-      const nextCoordinate = polylineCoordinates[currentPolylineIndex];
-      const distance = haversine(currentLocation, nextCoordinate);
-
-      if (distance < 50) {
+      for(let i = 0; i < remainingPolyline.length; i++) {
+        const distance = haversine(currentLocation, remainingPolyline[i]);
+        
         // Assuming 50 meters as the proximity threshold
-        setTravelledPolyline((prev) => [...prev, nextCoordinate]);
-        setCurrentPolylineIndex((prev) => prev + 1);
-
-        if (currentPolylineIndex + 1 >= polylineCoordinates.length) {
-          Alert.alert(
-            'Destination reached',
-            'You have reached your destination.',
-          );
-          navigation.navigate('Map');
+        if (distance < 50) {
+          setTravelledPolyline((prev) => [...prev, ...remainingPolyline.slice(0, i)]);
+          setRemainingPolyline((prev) => prev.slice(i));
+          
+          if (remainingPolyline.length == 1) {
+            Alert.alert(
+              'Destination reached',
+              'You have reached your destination.',
+            );
+            //  TODO: maybe navigate to sustainability
+            navigation.navigate('Map');
+          }
+          break;
         }
       }
     },
-    [currentPolylineIndex, polylineCoordinates, navigation],
+    [remainingPolyline, navigation],
   );
 
   useEffect(() => {
     getStepData();
     console.log(stepData);
+    getInnerStepData();
+    console.log(innerStepData);
   }, []);
 
   useEffect(() => {
