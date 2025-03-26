@@ -4,6 +4,8 @@ import MapView, { Polyline, Marker } from 'react-native-maps';
 import { haversine, startLocationTracking } from './utils/mapUtils';
 import displayRouteStyles from './components/styles/DisplayRoute.styles';
 
+import IncidentReporter from './IncidentReporter';
+
 import locationCircleIcon from './assets/location-circle.png';
 
 export default function DisplayRouteScreen({ navigation, route }) {
@@ -13,6 +15,17 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const [travelledPolyline, setTravelledPolyline] = useState([]);
   const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
   const [devMode, setDevMode] = useState(false);
+
+  const handleIncidentSubmit = (incidentData) => {
+    // Here you would process the incident data
+    console.log('Incident reported:', incidentData);
+
+    // Example: Send to your API
+    // api.reportIncident(incidentData);
+
+    // Example: Update local state to show on map
+    // setMapIncidents(prev => [...prev, incidentData]);
+  };
 
   const checkProximityAndUpdate = useCallback(
     (currentLocation) => {
@@ -169,6 +182,8 @@ export default function DisplayRouteScreen({ navigation, route }) {
           Fetching your location...
         </Text>
       )}
+
+      <IncidentReporter onSubmitIncident={handleIncidentSubmit} />
     </View>
   );
 }
