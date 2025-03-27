@@ -15,12 +15,12 @@ import styles from './components/styles/IncidentReporter.styles';
 
 // Mock icons - replace with your actual icons
 const ICONS = {
-  accident: require('../assets/accident.png'), // replace with your path
-  police: require('../assets/police.png'),
-  hazard: require('../assets/hazard.png'),
-  traffic: require('../assets/traffic.png'),
-  construction: require('../assets/construction.png'),
-  closure: require('../assets/closure.png'),
+  accident: require('./assets/accident.png'),
+  police: require('./assets/police.png'),
+  hazard: require('./assets/hazard.png'),
+  traffic: require('./assets/traffic.png'),
+  construction: require('./assets/construction.png'),
+  closure: require('./assets/closure.png'),
 };
 
 // Incident types with titles and descriptions
@@ -35,6 +35,10 @@ const INCIDENT_TYPES = [
 
 const { width, height } = Dimensions.get('window');
 
+// Modal dimensions (partial screen size)
+const MODAL_WIDTH = width * 0.7;
+const MODAL_HEIGHT = height * 0.6;
+
 function IncidentReporter({ onSubmitIncident }) {
   // State management
   const [isVisible, setIsVisible] = useState(false);
@@ -43,7 +47,7 @@ function IncidentReporter({ onSubmitIncident }) {
   const [isCommentView, setIsCommentView] = useState(false);
 
   // Animation values
-  const slideAnim = useRef(new Animated.Value(height)).current;
+  const slideAnim = useRef(new Animated.Value(MODAL_HEIGHT + 50)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   // Open the incident reporter
@@ -71,7 +75,7 @@ function IncidentReporter({ onSubmitIncident }) {
   const closeReporter = () => {
     Animated.parallel([
       Animated.timing(slideAnim, {
-        toValue: height,
+        toValue: MODAL_HEIGHT + 50,
         duration: 300,
         useNativeDriver: true,
       }),
@@ -130,9 +134,18 @@ function IncidentReporter({ onSubmitIncident }) {
 
   return (
     <>
-      {/* Backdrop/overlay */}
+      {/* Backdrop/overlay - now positioned only behind the modal */}
       <TouchableWithoutFeedback onPress={closeReporter}>
-        <Animated.View style={[styles.backdrop, { opacity: fadeAnim }]} />
+        <Animated.View 
+          style={[
+            styles.backdrop, 
+            { 
+              opacity: fadeAnim,
+              bottom: 20,  // Match the modal's bottom position
+              left: 20     // Match the modal's left position
+            }
+          ]} 
+        />
       </TouchableWithoutFeedback>
 
       {/* Sliding panel */}
