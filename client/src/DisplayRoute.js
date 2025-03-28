@@ -19,13 +19,8 @@ export default function DisplayRouteScreen({ navigation, route }) {
 
   useEffect(() => {
     getStepData();
-    // console.log(stepData);
     setDetailedStepData([]);
-    // if (routeData.legs[0].steps)
-    //   setDetailedStepData(stepData);
     getDetailedStepData();
-
-    // console.log(detailedStepData);
   }, []);
 
   useEffect(() => {
@@ -57,8 +52,8 @@ export default function DisplayRouteScreen({ navigation, route }) {
     return instruction.replace(/<\/?[^>]+(>|$)/g, "");
   }
 
-  // TODO: ADD COMMENTS***
-  // rename to indicate polyline
+  // TODO: ADD COMMENTS
+  // TODO: rename to indicate polyline
   const getStepData = () => {
     routeData.legs[0].steps.map((step) => {
       let temp = stepData;
@@ -70,7 +65,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
     });
   };
 
-  // rename to indicate instructions
+  // TODO: rename to indicate instructions
   const getDetailedStepData = () => {
     routeData.legs[0].steps.map((step) => {
       if (step.travel_mode !== 'TRANSIT' && step.steps) {
@@ -119,21 +114,12 @@ export default function DisplayRouteScreen({ navigation, route }) {
             //  TODO: maybe navigate to sustainability
             navigation.navigate('Map');
           } else {
-            // console.log("DetailedstepData: ", detailedStepData);
             for (let i = 0; i < detailedStepData.length; i++) {
-              // print("instruction: ", instruction);
-              // print("detailedStepData: ", detailedStepData);
-              // print("instruction_location: ", detailedStepData[i].start_location);
               let instructionLocation = { latitude: detailedStepData[i].start_location.lat, longitude: detailedStepData[i].start_location.lng };
               const instructionDistance = haversine(currentLocation, instructionLocation);
-              // console.log("current Instruction: " , currentInstruction)
               if (instructionDistance < 50) {
                 setCurrentInstruction(detailedStepData[i].html_instructions);
-                console.log("detailedstepdata instruction: ", detailedStepData[0].html_instructions);
-                console.log("detailedstepdata instruction (i): ", detailedStepData[i].html_instructions);
                 setDetailedStepData((prev) => prev.slice(i));
-                
-                // console.log("current instruction:" , currentInstruction);
               }
             }
           }
