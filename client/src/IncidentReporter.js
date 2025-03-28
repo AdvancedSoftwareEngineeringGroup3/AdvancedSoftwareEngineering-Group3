@@ -12,15 +12,23 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './components/styles/IncidentReporter.styles';
+import { getCurrentLocation } from './utils/mapUtils';
 
-// Mock icons - replace with your actual icons
+// Incident icons
+import accidentIcon from './assets/accident.png';
+import policeIcon from './assets/police.png';
+import hazardIcon from './assets/hazard.png';
+import trafficIcon from './assets/traffic.png';
+import constructionIcon from './assets/construction.png';
+import closureIcon from './assets/closure.png';
+
 const ICONS = {
-  accident: require('./assets/accident.png'),
-  police: require('./assets/police.png'),
-  hazard: require('./assets/hazard.png'),
-  traffic: require('./assets/traffic.png'),
-  construction: require('./assets/construction.png'),
-  closure: require('./assets/closure.png'),
+  accident: accidentIcon,
+  police: policeIcon,
+  hazard: hazardIcon,
+  traffic: trafficIcon,
+  construction: constructionIcon,
+  closure: closureIcon,
 };
 
 // Incident types with titles and descriptions
@@ -101,7 +109,8 @@ function IncidentReporter({ onSubmitIncident }) {
   };
 
   // Submit the incident report
-  const submitIncident = () => {
+  const submitIncident = async () => {
+    const location = await getCurrentLocation();
     if (selectedIncident) {
       onSubmitIncident({
         type: selectedIncident.id,
@@ -110,8 +119,8 @@ function IncidentReporter({ onSubmitIncident }) {
         timestamp: new Date().toISOString(),
         location: {
           // You'd get these from your map/location services
-          latitude: 0,
-          longitude: 0,
+          latitude: location.latitude,
+          longitude: location.longitude,
         },
       });
 
@@ -136,15 +145,15 @@ function IncidentReporter({ onSubmitIncident }) {
     <>
       {/* Backdrop/overlay - now positioned only behind the modal */}
       <TouchableWithoutFeedback onPress={closeReporter}>
-        <Animated.View 
+        <Animated.View
           style={[
-            styles.backdrop, 
-            { 
+            styles.backdrop,
+            {
               opacity: fadeAnim,
-              bottom: 20,  // Match the modal's bottom position
-              left: 20     // Match the modal's left position
-            }
-          ]} 
+              bottom: 20, // Match the modal's bottom position
+              left: 20, // Match the modal's left position
+            },
+          ]}
         />
       </TouchableWithoutFeedback>
 

@@ -5,6 +5,7 @@ import { haversine, startLocationTracking } from './utils/mapUtils';
 import displayRouteStyles from './components/styles/DisplayRoute.styles';
 
 import IncidentReporter from './IncidentReporter';
+import { postIncident } from './utils/incidentReporterUtils';
 
 import locationCircleIcon from './assets/location-circle.png';
 
@@ -16,12 +17,13 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
   const [devMode, setDevMode] = useState(false);
 
-  const handleIncidentSubmit = (incidentData) => {
+  const handleIncidentSubmit = async (incidentData) => {
     // Here you would process the incident data
     console.log('Incident reported:', incidentData);
 
     // Example: Send to your API
-    // api.reportIncident(incidentData);
+    const data = await postIncident(incidentData);
+    console.log('Response:', data);
 
     // Example: Update local state to show on map
     // setMapIncidents(prev => [...prev, incidentData]);

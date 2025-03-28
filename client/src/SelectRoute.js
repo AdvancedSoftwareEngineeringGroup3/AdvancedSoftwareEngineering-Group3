@@ -23,7 +23,7 @@ export default function SelectRouteScreen({ navigation, route }) {
       try {
         const initialLocation = await getCurrentLocation();
         setLocation(initialLocation);
-        console.log(location);
+        // console.log(location);
 
         const locationSubscription = await startLocationTracking(setLocation);
 
