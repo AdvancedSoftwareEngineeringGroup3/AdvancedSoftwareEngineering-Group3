@@ -30,10 +30,13 @@ class Sustainability:
             self.logger.info(
                 f"Received request for sustainability statistics from {user}"
             )
-            emissions_savings = self.db_fetch_sus_stats(user)
-            self.logger.info(f"Emissions savings: {emissions_savings}")
+            emissions_savings = self.db_fetch_month_sus_stats(user)
+            current_year_emissions = self.db_fetch_year_sus_stats(user)
 
-            if emissions_savings is None:
+            self.logger.info(f"Emissions savings: {emissions_savings}")
+            self.logger.info(f"Year emissions: {current_year_emissions}")
+
+            if emissions_savings is None or current_year_emissions is None:
                 raise HTTPException(
                     status_code=404, detail=f"User '{user}' not found"
                 )
@@ -41,11 +44,9 @@ class Sustainability:
             self.logger.info("Sustainability stats retrieved")
 
             # Return emissions_savings as JSON
-            return {"emissions_savings": emissions_savings}
+            return {"emissions_savings": emissions_savings, "current_year_emissions": current_year_emissions}
 
-
-    def db_fetch_sus_stats(self, user):
-
+    def db_fetch_month_sus_stats(self, user):
         table_name = "monthly_distance"
         db = DataBase()
         db.connect_db()
@@ -55,18 +56,37 @@ class Sustainability:
             self.logger.info("connection closed, getting monthly distances")
             monthly_distances = db.return_user_row(table_name, user)
             self.logger.info(f"monthly distances: {monthly_distances}")
-            
             db.close_con()
             return self.calc_emissions_savings(monthly_distances)
 
         else:
-
             db.close_con()
+            return None
+        
+    def db_fetch_year_sus_stats(self, user):
+        table_name = "monthly_emissions_2025"
+        db = DataBase()
+        db.connect_db()
+
+        # If user found
+        if db.search_user(table_name, user):
+            self.logger.info("Found user")
+            current_year_emissions = db.return_user_row(table_name, user)
+            current_year_emissions.pop("username", None)  # Remove the username key if it exists
+
+            self.logger.info("Current year emissions retrieved")
+            self.logger.info(f"Current year emissions: {current_year_emissions}")
+            db.close_con()
+
+            return current_year_emissions
+
+        else:
+            db.close_con()
+            print("Year stats not found")
+#            self.logger("error getting year stats - user not found")
             return None
 
         
-
-
     def calc_emissions(self, distance: float, vehicle_type: str) -> float:
         """EF = E/A # EF => E = A * EF = emmisiions factor, E = total emissions,
         A = activity level (km travelled)
