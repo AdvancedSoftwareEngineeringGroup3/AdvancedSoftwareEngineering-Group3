@@ -1,4 +1,4 @@
-import postIncident from '../src/utils/incidentReporterUtils';
+import { postIncident } from '../src/utils/incidentReporterUtils';
 
 global.fetch = jest.fn();
 global.alert = jest.fn();

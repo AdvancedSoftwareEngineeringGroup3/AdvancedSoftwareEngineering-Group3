@@ -118,7 +118,6 @@ function IncidentReporter({ onSubmitIncident }) {
         comment: comment.trim(),
         timestamp: new Date().toISOString(),
         location: {
-          // You'd get these from your map/location services
           latitude: location.latitude,
           longitude: location.longitude,
         },

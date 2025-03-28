@@ -8,9 +8,9 @@ export const postIncident = async (incidentData, customBaseUrl = null) => {
       (Platform.OS === 'web'
         ? 'http://localhost:8000'
         : process.env.EXPO_PUBLIC_API_URL);
-    console.log(`Sending request to ${baseUrl}/reportIncident}`);
+    console.log(`Sending request to ${baseUrl}/report_incident}`);
 
-    const response = await fetch(`${baseUrl}/reportIncident`, {
+    const response = await fetch(`${baseUrl}/report_incident`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
