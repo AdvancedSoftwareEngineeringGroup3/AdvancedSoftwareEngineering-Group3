@@ -22,6 +22,14 @@ import silverTrain from './assets/SustainablityDashboard/SilverTrain.png';
 import bronzeTrain from './assets/SustainablityDashboard/BronzeTrain.png';
 
 // Dummy pie chart data
+const rankings = [
+  { name: 'You', icon: fullBloom, sustainabilityScore: 85 },
+  { name: 'Alice', icon: bushy, sustainabilityScore: 95 },
+  { name: 'Bob', icon: bloom, sustainabilityScore: 70 },
+  { name: 'Charlie', icon: bald, sustainabilityScore: 88 },
+  { name: 'Diana', icon: goldCar, sustainabilityScore: 78 },
+];
+
 const sustainabilityScore = '75';
 const data = [
   {
@@ -132,6 +140,43 @@ export default function Dashboard({ navigation }) {
         <Image source={fullBloom} style={susDashboardStyles.image} />
       </View>
 
+       {/* Rankings Section */}
+       <Text style={susDashboardStyles.titleText}>Leadership Board</Text>
+      <View style={susDashboardStyles.rankingsContainer}>
+        {/* Title Row */}
+        <View style={susDashboardStyles.rankingsHeader}>
+          <Text style={susDashboardStyles.rankColumn}>Rank</Text>
+          <Text style={susDashboardStyles.iconColumn}> </Text>
+          <Text style={susDashboardStyles.nameHeader}>Name</Text>
+          <Text style={susDashboardStyles.scoreColumn}>Score</Text>
+        </View>
+
+        <ScrollView>
+          {rankings.map((item, index) => (
+            <View key={index} style={susDashboardStyles.rankingsItem}>
+              {/* Row with four columns */}
+              <View style={susDashboardStyles.rankingsRow}>
+                {/* Rank Column */}
+                <Text style={susDashboardStyles.rankColumn}>{index + 1}</Text>
+
+                {/* Icon/Image Column */}
+                <Image source={item.icon} style={susDashboardStyles.iconColumn} />
+
+                {/* Name and Score Column */}
+                <Text style={susDashboardStyles.nameColumn}>
+                  {item.name}
+                </Text>
+
+                {/* Sustainability Score Column */}
+                <Text style={susDashboardStyles.scoreColumn}>
+                  {item.sustainabilityScore}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+
 
       
         {/* Grid Section */}
@@ -189,20 +234,6 @@ export default function Dashboard({ navigation }) {
         })}
       </View>
 
-      {/* Pie Chart Section */}
-      <View style={susDashboardStyles.chartContainer}>
-        <PieChart
-          data={data}
-          width={370} // Ensure this is a number
-          height={240} // Ensure this is a number
-          chartConfig={chartConfig}
-          accessor="emissions"
-          backgroundColor="transparent"
-          paddingLeft="15"
-          center={[10, 0]}
-          absolute
-        />
-      </View>
 
       {/* Line Chart Section */}
       <View style={susDashboardStyles.chartContainer}>
@@ -215,21 +246,7 @@ export default function Dashboard({ navigation }) {
         />
       </View>
 
-      {/* Buttons Section */}
-      <View style={susDashboardStyles.buttonContainer}>
-        <TouchableOpacity
-          style={susDashboardStyles.monthButton}
-          onPress={() => switchTimeframe('m')}
-        >
-          <Text style={susDashboardStyles.buttonText}>Month</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={susDashboardStyles.yearButton}
-          onPress={() => switchTimeframe('y')}
-        >
-          <Text style={susDashboardStyles.buttonText}>Year</Text>
-        </TouchableOpacity>
-      </View>
+     
     </ScrollView>
   );
 }

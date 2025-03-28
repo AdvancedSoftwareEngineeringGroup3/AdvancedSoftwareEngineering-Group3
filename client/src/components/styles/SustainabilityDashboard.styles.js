@@ -83,6 +83,75 @@ const susDashboardStyles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  rankingsHeader: {
+    flexDirection: 'row', // Arrange columns in a row
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#D3D3D3',
+    fontWeight: 'bold',
+    paddingBottom: 5,
+    marginBottom: 10,
+  },
+  rankingsContainer: {
+    backgroundColor: '#EADABB', // Brown background
+    borderRadius: 10, // Curved corners
+    padding: 10,
+    marginBottom: 20,
+    width: '90%',
+    alignSelf: 'center',
+    maxHeight: 250, // Limit height to make it scrollable
+  },
+  rankingsItem: {
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#D3D3D3',
+  },
+  rankingsRow: {
+    flexDirection: 'row', // Arrange columns in a row
+    alignItems: 'center',
+  },
+  rankColumn: {
+    flex: 1, // Small column for rank
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#231F20', // White text for contrast
+    textAlign: 'center',
+  },
+  iconColumn: {
+    flex: 1, // Small column for icon
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+  },
+  nameHeader: {
+    flex: 3, // Small column for icon
+    width: 30,
+    height: 30,
+    fontSize: 16,
+    fontWeight: 'bold',
+    resizeMode: 'contain',
+    textAlign: 'left',
+    paddingTop: 5,
+  },
+  nameColumn: {
+    flex: 3, // Larger column for name and score
+    fontSize: 16,
+    color: '#231F20', // White text for contrast
+    paddingLeft: 10,
+  },
+  scoreColumn: {
+    flex: 1, // Small column for sustainability score
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#231F20', // White text for contrast
+    textAlign: 'center',
+  },
+  titleText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#231F20', // White text for contrast
+  },
 });
 
 export default susDashboardStyles;
