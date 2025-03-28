@@ -14,73 +14,18 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const [remainingPolyline, setRemainingPolyline] = useState(polylineCoordinates);
   const [devMode, setDevMode] = useState(false);
   const [stepData, setStepData] = useState([]);
-  const [innerStepData, setInnerStepData] = useState([]);
-
-
-  function removeHtmlTags(instruction) {
-    return instruction.replace(/<\/?[^>]+(>|$)/g, "");
-  }
-
-  // TODO: ADD COMMENTS***
-  // rename to indicate polyline
-  const getStepData = () => {
-    routeData.legs[0].steps.map((step) => {
-      let temp = stepData;
-      temp.push({
-          html_instructions: removeHtmlTags(step.html_instructions),
-          start_location: step.start_location,
-        });
-      setStepData(temp);
-    });
-  };
-
-  // rename to indicate instructions
-  const getInnerStepData = () => {
-    routeData.legs[0].steps.map((step) =>{
-      if(step.travel_mode !== 'TRANSIT') {
-        step.steps.map((innerStep) => {
-          let temp = innerStepData;
-          temp.push({
-            html_instructions: removeHtmlTags(innerStep.html_instructions),
-            start_location: innerStep.start_location,
-          });
-          setInnerStepData(temp);
-        })
-      }
-    });
-  };
-
-
-  const checkProximityAndUpdate = useCallback(
-    (currentLocation) => {
-      for(let i = 0; i < remainingPolyline.length; i++) {
-        const distance = haversine(currentLocation, remainingPolyline[i]);
-        
-        // Assuming 50 meters as the proximity threshold
-        if (distance < 50) {
-          setTravelledPolyline((prev) => [...prev, ...remainingPolyline.slice(0, i)]);
-          setRemainingPolyline((prev) => prev.slice(i));
-          
-          if (remainingPolyline.length == 1) {
-            Alert.alert(
-              'Destination reached',
-              'You have reached your destination.',
-            );
-            //  TODO: maybe navigate to sustainability
-            navigation.navigate('Map');
-          }
-          break;
-        }
-      }
-    },
-    [remainingPolyline, navigation],
-  );
+  const [detailedStepData, setDetailedStepData] = useState([]);
+  const [currentInstruction, setCurrentInstruction] = useState(null);
 
   useEffect(() => {
     getStepData();
-    console.log(stepData);
-    getInnerStepData();
-    console.log(innerStepData);
+    // console.log(stepData);
+    setDetailedStepData([]);
+    // if (routeData.legs[0].steps)
+    //   setDetailedStepData(stepData);
+    getDetailedStepData();
+
+    // console.log(detailedStepData);
   }, []);
 
   useEffect(() => {
@@ -98,7 +43,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
         console.error('Error starting location tracking:', error);
       }
     };
-    if (!devMode){
+    if (!devMode) {
       startTracking();
     }
     return () => {
@@ -107,6 +52,97 @@ export default function DisplayRouteScreen({ navigation, route }) {
       }
     };
   }, [devMode, checkProximityAndUpdate]);
+
+  function removeHtmlTags(instruction) {
+    return instruction.replace(/<\/?[^>]+(>|$)/g, "");
+  }
+
+  // TODO: ADD COMMENTS***
+  // rename to indicate polyline
+  const getStepData = () => {
+    routeData.legs[0].steps.map((step) => {
+      let temp = stepData;
+      temp.push({
+        html_instructions: removeHtmlTags(step.html_instructions),
+        start_location: step.start_location,
+      });
+      setStepData(temp);
+    });
+  };
+
+  // rename to indicate instructions
+  const getDetailedStepData = () => {
+    routeData.legs[0].steps.map((step) => {
+      if (step.travel_mode !== 'TRANSIT' && step.steps) {
+        step.steps.map((detailedStep) => {
+          let temp = detailedStepData;
+          temp.push({
+            html_instructions: removeHtmlTags(detailedStep.html_instructions),
+            start_location: detailedStep.start_location,
+          });
+          setDetailedStepData(temp);
+        })
+      } else if (step.travel_mode === 'TRANSIT') {
+        let temp = detailedStepData;
+        temp.push({
+          html_instructions: `${removeHtmlTags(step.html_instructions)} until ${step.transit_details.arrival_stop.name}`,
+          start_location: step.start_location,
+        });
+        setDetailedStepData(temp);
+      } else {
+        let temp = detailedStepData;
+        temp.push({
+          html_instructions: removeHtmlTags(step.html_instructions),
+          start_location: step.start_location,
+        });
+        setDetailedStepData(temp);
+      }
+    });
+  };
+
+
+  const checkProximityAndUpdate = useCallback(
+    (currentLocation) => {
+      for (let i = 0; i < remainingPolyline.length; i++) {
+        const distance = haversine(currentLocation, remainingPolyline[i]);
+
+        // Assuming 50 meters as the proximity threshold
+        if (distance < 50) {
+          setTravelledPolyline((prev) => [...prev, ...remainingPolyline.slice(0, i)]);
+          setRemainingPolyline((prev) => prev.slice(i));
+
+          if (remainingPolyline.length == 1) {
+            Alert.alert(
+              'Destination reached',
+              'You have reached your destination.',
+            );
+            //  TODO: maybe navigate to sustainability
+            navigation.navigate('Map');
+          } else {
+            // console.log("DetailedstepData: ", detailedStepData);
+            for (let i = 0; i < detailedStepData.length; i++) {
+              // print("instruction: ", instruction);
+              // print("detailedStepData: ", detailedStepData);
+              // print("instruction_location: ", detailedStepData[i].start_location);
+              let instructionLocation = { latitude: detailedStepData[i].start_location.lat, longitude: detailedStepData[i].start_location.lng };
+              const instructionDistance = haversine(currentLocation, instructionLocation);
+              // console.log("current Instruction: " , currentInstruction)
+              if (instructionDistance < 50) {
+                setCurrentInstruction(detailedStepData[i].html_instructions);
+                console.log("detailedstepdata instruction: ", detailedStepData[0].html_instructions);
+                console.log("detailedstepdata instruction (i): ", detailedStepData[i].html_instructions);
+                setDetailedStepData((prev) => prev.slice(i));
+                
+                // console.log("current instruction:" , currentInstruction);
+              }
+            }
+          }
+          break;
+        }
+      }
+    },
+    [remainingPolyline, navigation],
+  );
 
   // Call checkProximityAndUpdate and update setlocation on latitude / longitude button click
   const devMove = ({ delLat = 0, delLng = 0 }) => {
@@ -121,9 +157,11 @@ export default function DisplayRouteScreen({ navigation, route }) {
 
   const toggleDevMode = (value) => {
     setDevMode(value);
-    if(value) {
+    if (value) {
       // Set initial location to the first coordinate in the polyline
       setLocation(polylineCoordinates[0]);
+      // console.log("location: ", location);
+      // console.log("instruction: ", detailedStepData[0].start_location);
     }
   };
 
@@ -135,15 +173,23 @@ export default function DisplayRouteScreen({ navigation, route }) {
         <>
           <View style={displayRouteStyles.infoContainer}>
             <View style={displayRouteStyles.routeInfoContainer}>
-              <Text style={displayRouteStyles.routeInfo}>
-                Route from {origin} to {destination}
-              </Text>
-              <Text style={displayRouteStyles.routeInfo}>
-                Distance: {routeData.legs[0].distance.text}
-              </Text>
-              <Text style={displayRouteStyles.routeInfo}>
-                Duration: {routeData.legs[0].duration.text}
-              </Text>
+              {currentInstruction != null ? (
+                <Text style={displayRouteStyles.routeInfo}>
+                  {currentInstruction}
+                </Text>) :
+                (<>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Route from {origin} to {destination}
+                  </Text>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Distance: {routeData.legs[0].distance.text}
+                  </Text>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Duration: {routeData.legs[0].duration.text}
+                  </Text>
+                </>)}
+
+
             </View>
             <View style={displayRouteStyles.devModeContainer}>
               <Text style={displayRouteStyles.devModeText}>Dev Mode</Text>
