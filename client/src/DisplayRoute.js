@@ -13,7 +13,6 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const [travelledPolyline, setTravelledPolyline] = useState([]);
   const [remainingPolyline, setRemainingPolyline] = useState(polylineCoordinates);
   const [devMode, setDevMode] = useState(false);
-  const [stepData, setStepData] = useState([]);
   const [detailedStepData, setDetailedStepData] = useState([]);
   const [currentInstruction, setCurrentInstruction] = useState(null);
 
@@ -22,6 +21,8 @@ export default function DisplayRouteScreen({ navigation, route }) {
     setDetailedStepData([]);
     getDetailedStepData();
   }, []);
+
+  // Check proximity to the next coordinate in the polyline
 
   useEffect(() => {
     let locationSubscription;
@@ -52,23 +53,13 @@ export default function DisplayRouteScreen({ navigation, route }) {
     return instruction.replace(/<\/?[^>]+(>|$)/g, "");
   }
 
-  // TODO: ADD COMMENTS
-  // TODO: rename to indicate polyline
-  const getStepData = () => {
-    routeData.legs[0].steps.map((step) => {
-      let temp = stepData;
-      temp.push({
-        html_instructions: removeHtmlTags(step.html_instructions),
-        start_location: step.start_location,
-      });
-      setStepData(temp);
-    });
-  };
-
-  // TODO: rename to indicate instructions
+  // Creating a dictionary of step data for each step in the route
+  // Pairing locations along with the instructions of each step of the route
+  // Using this data to display the instructions on the map as the user moves along the route
   const getDetailedStepData = () => {
     routeData.legs[0].steps.map((step) => {
-      if (step.travel_mode !== 'TRANSIT' && step.steps) {
+      // Due to the complicated nature of the response some modes of transport have instructions in outer steps and other in inner
+      if (step.travel_mode !== 'TRANSIT' && step.steps) {  // For non-transit steps within a transit route
         step.steps.map((detailedStep) => {
           let temp = detailedStepData;
           temp.push({
@@ -77,14 +68,14 @@ export default function DisplayRouteScreen({ navigation, route }) {
           });
           setDetailedStepData(temp);
         })
-      } else if (step.travel_mode === 'TRANSIT') {
+      } else if (step.travel_mode === 'TRANSIT') {  // If the step is a transit step, add the arrival stop to the instructions
         let temp = detailedStepData;
         temp.push({
           html_instructions: `${removeHtmlTags(step.html_instructions)} until ${step.transit_details.arrival_stop.name}`,
           start_location: step.start_location,
         });
         setDetailedStepData(temp);
-      } else {
+      } else {  // For non transit routes
         let temp = detailedStepData;
         temp.push({
           html_instructions: removeHtmlTags(step.html_instructions),
@@ -111,11 +102,13 @@ export default function DisplayRouteScreen({ navigation, route }) {
               'Destination reached',
               'You have reached your destination.',
             );
-            //  TODO: maybe navigate to sustainability
+            // TODO: maybe navigate to sustainability
             navigation.navigate('Map');
           } else {
+            // Update instruction if previous instruction complete
             for (let i = 0; i < detailedStepData.length; i++) {
-              let instructionLocation = { latitude: detailedStepData[i].start_location.lat, longitude: detailedStepData[i].start_location.lng };
+              let instructionLocation = { latitude: detailedStepData[i].start_location.lat,
+                                          longitude: detailedStepData[i].start_location.lng};
               const instructionDistance = haversine(currentLocation, instructionLocation);
               if (instructionDistance < 50) {
                 setCurrentInstruction(detailedStepData[i].html_instructions);
@@ -146,12 +139,8 @@ export default function DisplayRouteScreen({ navigation, route }) {
     if (value) {
       // Set initial location to the first coordinate in the polyline
       setLocation(polylineCoordinates[0]);
-      // console.log("location: ", location);
-      // console.log("instruction: ", detailedStepData[0].start_location);
     }
   };
-
-  // Check proximity to the next coordinate in the polyline
 
   return (
     <View style={displayRouteStyles.container}>
@@ -174,8 +163,6 @@ export default function DisplayRouteScreen({ navigation, route }) {
                     Duration: {routeData.legs[0].duration.text}
                   </Text>
                 </>)}
-
-
             </View>
             <View style={displayRouteStyles.devModeContainer}>
               <Text style={displayRouteStyles.devModeText}>Dev Mode</Text>
