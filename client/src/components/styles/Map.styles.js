@@ -1,4 +1,8 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform, Dimensions } from 'react-native';
+
+
+const screenWidth = Dimensions.get('window').width;
+const screenheight = Dimensions.get('window').height;
 
 const MapStyles = StyleSheet.create({
   container: {
@@ -128,6 +132,48 @@ const MapStyles = StyleSheet.create({
     textAlignVertical: 'center',
     fontSize: 18,
   },
+  bar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    width: screenWidth,
+    height: 120,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  barImage: {
+    position: 'absolute',
+    width: screenWidth,
+    height: screenheight * 0.175,
+    left: 0,
+    bottom: -10,
+    zIndex: 0, // put image behind buttons
+    resizeMode: 'stretch', // or 'cover' if stretch distorts
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    zIndex: -1
+  },
+  centerButton: {
+    marginBottom: 10, // visually pop it up if needed
+  },
+  icon: {
+    width: 36,
+    height: 36,
+  },
+  centerIcon: {
+    width: 44,
+    height: 44,
+  },
+  label: {
+    fontSize: 12,
+    color: '#fff',
+    marginTop: 4,
+  },
+  
 });
 
 export default MapStyles;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { getCurrentLocation, startLocationTracking } from './utils/mapUtils';
 import locationCircleIcon from './assets/location-circle.png';
@@ -63,18 +63,7 @@ export default function MapScreen({ navigation }) {
     fetchLocation();
   }, []);
 
-  // Send Location to WebSocket
-  const sendLocation = () => {
-    if (webSocket && location) {
-      webSocket.send(JSON.stringify(location));
-      console.log('Sent location:', location);
-    } else {
-      Alert.alert(
-        'Location/WebSocket Issue',
-        !location ? 'Fetching GPS location...' : 'WebSocket not connected.',
-      );
-    }
-  };
+
 
   const renderContent = () => {
     if (errorMessage) {
@@ -101,40 +90,36 @@ export default function MapScreen({ navigation }) {
               icon={locationCircleIcon}
             />
           </MapView>
-          <TouchableOpacity style={MapStyles.sendButton} onPress={sendLocation}>
-            <Text style={MapStyles.buttonText}>Send Location</Text>
-          </TouchableOpacity>
+  
           <TouchableOpacity
             style={MapStyles.loginButton}
             onPress={() => navigation.navigate('AccountScreen')}
           >
             <Text style={MapStyles.buttonText}>Log In</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={MapStyles.findRouteButton}
-            onPress={() => navigation.navigate('FindRouteScreen')}
-          >
-            <Text style={MapStyles.buttonText}>Find Route</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={MapStyles.findRouteButton}
-            onPress={() => navigation.navigate('FindRouteScreen')}
-          >
-            <Text style={MapStyles.buttonText}>Find Route</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={MapStyles.friendScreenButton}
-            onPress={() => navigation.navigate('FriendsScreen')}
-          >
-            <Text style={MapStyles.buttonText}>Friends UI</Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            style={MapStyles.dashboardButton}
-            onPress={() => navigation.navigate('Dashboard')}
-          >
-            <Text style={MapStyles.buttonText}>Sustainability Dashboard</Text>
-          </TouchableOpacity>
+          <View style={MapStyles.bar}>
+            <Image
+            source={require('./assets/MapDashboard/movementbar.png')}
+            style={MapStyles.barImage}
+            resizeMode="contain"
+            />
+            <TouchableOpacity onPress={() => navigation.navigate('Dashboard')} style={MapStyles.button}>
+              <Image source={require('./assets/MapDashboard/leaficon.png')} style={MapStyles.icon} />
+              <Text style={MapStyles.label}>Dashboard</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate('FindRouteScreen')} style={[MapStyles.button, MapStyles.centerButton]}>
+              <Image source={require('./assets/MapDashboard/routeicon.png')} style={[MapStyles.icon, MapStyles.centerIcon]} />
+              <Text style={MapStyles.label}>Find Route</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate('FriendsScreen')} style={MapStyles.button}>
+              <Image source={require('./assets/MapDashboard/friendsicon.png')} style={MapStyles.icon} />
+              <Text style={MapStyles.label}>Friends</Text>
+            </TouchableOpacity>
+          </View>
+          
           <TouchableOpacity
             style={MapStyles.weatherButton}
             onPress={() => navigation.navigate('WeatherScreen')}
