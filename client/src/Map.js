@@ -8,6 +8,7 @@ import MapStyles from './components/styles/Map.styles';
 export default function MapScreen({ navigation }) {
   const [webSocket, setWebSocket] = useState(null);
   const [location, setLocation] = useState(null);
+  const [weather, setWeather] = useState(null)
   const [errorMessage, setErrorMessage] = useState('');
   const mapRef = useRef(null);
 
@@ -30,6 +31,51 @@ export default function MapScreen({ navigation }) {
 
     return () => socket.close();
   }, []);
+
+
+              
+    // Poll for friend requests every 5 seconds
+    //useEffect() => {
+      //const intervalId = setInterval(() => {
+        //fetchFromServer();
+     /// }, 10000); // Poll every 5 seconds
+  
+
+
+  const fetchFromServer = async () => {
+      try {
+        const baseUrl =
+          Platform.OS === 'web'
+            ? 'http://localhost:8000'
+            : process.env.EXPO_PUBLIC_API_URL;
+        console.log(`Sending request to ${baseUrl}/weather?longitude=${location.longitude}?latitude=${ location.latitude}`);
+  
+        const response = await fetch(`${baseUrl}/weather?longitude=${location.longitude}?latitude=${ location.latitude}`, {
+          method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+  
+        // Check if the response is ok
+        if (response.ok) {
+          // Parse the response as JSON
+          const serverMessage = await response.json();
+          console.log('Response from Server: ', serverMessage.message);
+  
+          // alert(server_message.message);
+          setWeather(serverMessage.weather);
+        } else {
+          // Log the raw response text for debugging
+          const responseText = await response.text();
+          console.error('Failed to get weather:', responseText);
+          alert('Server Error: ', responseText);
+        }
+      } catch (error) {
+        console.error('Error getting real time weather inf', error);
+      }
+    };
 
   // useEffect(() => {
   //   (async () => {
