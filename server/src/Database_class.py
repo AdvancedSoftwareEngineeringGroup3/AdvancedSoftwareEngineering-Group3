@@ -313,15 +313,15 @@ def main():
     # Initialise database class
     db = DataBase()
 
-    table_name = "testing_table"
+    table_name = "incident_table"
     table_info = {
         "id": "SERIAL PRIMARY KEY",
-        "username": "VARCHAR(50)",
-        "password": "VARCHAR(50)",
-        "friends_list": "VARCHAR[]",
-        "pending_friends": "VARCHAR[]",
-        "sus_score": "VARCHAR(50)",
-        "ip": "VARCHAR(50)",
+        "type": "VARCHAR(50)",
+        "title": "VARCHAR(50)",
+        "comment": "VARCHAR(1000)",
+        "timestamp": "VARCHAR(50)",
+        "latitude": "VARCHAR(50)",
+        "longitude": "VARCHAR(50)",
     }
 
     table_data = {
@@ -335,16 +335,16 @@ def main():
     # Connect to db
     db.connect_db()
     db.create_table(table_name, table_info)
-    db.add_entry(table_name, table_data)
+    # db.add_entry(table_name, table_data)
 
-    result = db.search_entry(table_name, "Conor", "pending_friends")
-    print(result)
+    # result = db.search_entry(table_name, "Conor", "pending_friends")
+    # print(result)
 
-    db.append_entry(table_name, "keith", "Conor", "pending_friends")
-    db.append_entry(table_name, "siobhan", "Conor", "pending_friends")
+    # db.append_entry(table_name, "keith", "Conor", "pending_friends")
+    # db.append_entry(table_name, "siobhan", "Conor", "pending_friends")
 
-    result = db.search_entry(table_name, "Conor", "pending_friends")
-    print(result)
+    # result = db.search_entry(table_name, "Conor", "pending_friends")
+    # print(result)
 
     # db.add_entry(table_name, {"username": "Keith",
     # "password": "strong password"})

@@ -39,29 +39,34 @@ class IncidentReporter:
             return {"message": response}
     
     def db_handle_incident_report(self, request: IncidentReport):
-        db = DataBase()
-        db.connect_db()
-        table_name = "incident_table"
-        type_column = "type"
-        title_column = "title"
-        comment_column = "comment"
-        timestamp_column = "timestamp"
-        latitude_column = "latitude"
-        longitude_column = "longitude"
+        try:
+            db = DataBase()
+            db.connect_db()
+            table_name = "incident_table"
+            type_column = "type"
+            title_column = "title"
+            comment_column = "comment"
+            timestamp_column = "timestamp"
+            latitude_column = "latitude"
+            longitude_column = "longitude"
 
-        incident_dict = {
-            type_column: request.type,
-            title_column: request.title,
-            comment_column: request.comment,
-            timestamp_column: request.timestamp,
-            latitude_column: request.location.latitude,
-            longitude_column: request.location.longitude
-        }
+            incident_dict = {
+                type_column: request.type,
+                title_column: request.title,
+                comment_column: request.comment,
+                timestamp_column: request.timestamp,
+                latitude_column: request.location.latitude,
+                longitude_column: request.location.longitude
+            }
 
-        db.add_entry(table_name, incident_dict)
+            db.add_entry(table_name, incident_dict)
 
-        self.logger.info("Incident report sent successfully")
-        db.close_con()
+            return "Incident report sent successfully"
+        except Exception as e:
+            self.logger.error(f"Error reporting incident: {e}")
+            return "Error reporting incident"
+        finally:
+            db.close_con()
 
 if __name__ == "__main__":
     pass
