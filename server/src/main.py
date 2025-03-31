@@ -11,6 +11,7 @@ from src.wayfinding import router  # Import the API routes
 from src.weatherApi import weatherAPI
 from src.preferences import Preferences
 from src.networking import Networking
+from src.incident_reporter import IncidentReporter
 
 
 class Server:
@@ -30,6 +31,7 @@ class Server:
         self.connection_manager = ConnectionManager()
         self.weather_api = weatherAPI()
         self.networking = Networking(self.app, self.logger)
+        self.incident_reporter = IncidentReporter(self.app, self.logger)
 
         # Configure CORS
         self.configure_cors()
