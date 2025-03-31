@@ -145,9 +145,9 @@ const MapStyles = StyleSheet.create({
   barImage: {
     position: 'absolute',
     width: screenWidth,
-    height: screenheight * 0.175,
+    height: 140,
     left: 0,
-    bottom: -10,
+    bottom: 0,
     zIndex: 0, // put image behind buttons
     resizeMode: 'stretch', // or 'cover' if stretch distorts
   },
@@ -155,7 +155,6 @@ const MapStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    zIndex: -1
   },
   centerButton: {
     marginBottom: 10, // visually pop it up if needed
