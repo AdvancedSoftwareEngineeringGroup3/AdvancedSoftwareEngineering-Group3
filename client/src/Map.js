@@ -12,7 +12,8 @@ import Thunder from './assets/MapDashboard/lightingIcon.png';
 export default function MapScreen({ navigation }) {
   const [webSocket, setWebSocket] = useState(null);
   const [location, setLocation] = useState(null);
-  const [weather, setWeather] = useState(null)
+  const [weather, setWeather] = useState(null);
+  const [temperature, setTemperature] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const mapRef = useRef(null);
 
@@ -84,15 +85,19 @@ export default function MapScreen({ navigation }) {
         if (response.ok) {
           const serverMessage = await response.json();
           console.log('Response from Server: ', serverMessage.weather);
+          console.log('Response from Server: ', serverMessage.temperature);
           setWeather(serverMessage.weather);
+          setTemperature(serverMessage.temperature);
         } else {
           const responseText = await response.text();
           console.error('Failed to get weather:', responseText);
           setWeather('cloud'); // fallback
+          setTemperature('10');
         }
       } catch (error) {
         console.error('Error getting real time weather', error);
         setWeather('cloud'); // fallback on network error
+        setTemperature('10');
       }
     };
     
@@ -157,12 +162,16 @@ export default function MapScreen({ navigation }) {
       return (
         <>
           {weatherIcon && (
-            <Image
-              source={weatherIcon}
-              style={MapStyles.weatherIcon}
-              resizeMode="contain"
-            />
+            <>
+              <Image
+                source={weatherIcon}
+                style={MapStyles.weatherIcon}
+                resizeMode="contain"
+              />
+              <Text style={MapStyles.weatherText}> {temperature}°C</Text>
+            </>
           )}
+
           <MapView
             ref={mapRef}
             style={MapStyles.map}

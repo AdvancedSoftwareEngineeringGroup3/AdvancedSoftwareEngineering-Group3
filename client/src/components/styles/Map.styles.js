@@ -180,7 +180,24 @@ const MapStyles = StyleSheet.create({
     height: 80,
     zIndex: 10,
   },
-  
+  weatherText: {
+    position: 'absolute',
+    top: 85,
+    left: 30,
+    width: 80,
+    height: 80,
+    zIndex: 10,
+    fontSize: 24,               // Bigger text
+    fontWeight: 'bold',         // Bold text
+    color: '#555',              // White text for contrast
+    //backgroundColor: '#555',    // Medium grey background
+    //textAlign: 'center',        // Center the text
+    //textAlignVertical: 'center',// Center text vertically (works on Android)
+    borderRadius: 10,           // Rounded corners for aesthetics
+    padding: 1,                // Padding inside the box
+    //overflow: 'hidden',         // Clips content to rounded corners
+  },
+
 });
 
 export default MapStyles;

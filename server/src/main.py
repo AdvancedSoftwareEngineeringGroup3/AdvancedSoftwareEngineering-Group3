@@ -102,8 +102,9 @@ class Server:
         async def get_weather(longitude: str = Query(...), latitude: str = Query(...)):
             self.logger.info(f"Received weather API request: lat={latitude}, lng={longitude}")
             try:
-                realtimeweatherdata = self.weather_api.get(lat=latitude, lng=longitude)
-                return {"weather": realtimeweatherdata}
+                realtimeweatherdata, temperature = self.weather_api.get(lat=latitude, lng=longitude)
+                print(f"Temperature: {temperature}")
+                return {"weather": realtimeweatherdata, "temperature": temperature}
             except Exception as e:
                 self.logger.error(f"Error hitting weather endpoint: {e}")
                 raise

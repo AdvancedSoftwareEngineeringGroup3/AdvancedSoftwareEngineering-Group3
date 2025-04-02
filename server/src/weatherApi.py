@@ -45,7 +45,8 @@ class weatherAPI:  # (BaseAPI):
     def get(self, lat, lng):
         self.lat = lat
         self.lng = lng
-        self.url = f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.lng}&current=weather_code&forecast_days=1"
+        self.url = f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.lng}&current=temperature_2m,weather_code"
+        
         # Fetch the geoJSON data from the URL
         response = requests.get(self.url)
 
@@ -54,8 +55,9 @@ class weatherAPI:  # (BaseAPI):
             data = response.json()['current']
             #weather = data['weather_code']
             
-            #print(self.who_table[data['weather_code']])
-            return self.who_table[data['weather_code']]
+            #print(data['temperature_2m'])
+
+            return self.who_table[data['weather_code']], data['temperature_2m']
             
 
         else:
