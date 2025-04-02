@@ -10,6 +10,7 @@ import Cloud from './assets/MapDashboard/CloudIcon.png';
 import Thunder from './assets/MapDashboard/lightingIcon.png';
 
 export default function MapScreen({ navigation }) {
+  const [bikeStations, setBikeStations] = useState([]);
   const [webSocket, setWebSocket] = useState(null);
   const [location, setLocation] = useState(null);
   const [weather, setWeather] = useState(null);
@@ -66,7 +67,7 @@ export default function MapScreen({ navigation }) {
   
 
 
-     const fetchFromServer = async () => {
+     const fetchWeather = async () => {
       try {
         const baseUrl =
           Platform.OS === 'web'
@@ -100,6 +101,47 @@ export default function MapScreen({ navigation }) {
         setTemperature('10');
       }
     };
+
+
+    const fetchBikeApi = async () => {
+      try {
+        const baseUrl =
+          Platform.OS === 'web'
+            ? 'http://localhost:8000'
+            : process.env.EXPO_PUBLIC_API_URL;
+    
+        console.log(`Sending request to ${baseUrl}/BikeStand?longitude=${location.longitude}&latitude=${location.latitude}`);
+    
+        const response = await fetch(
+          `${baseUrl}/BikeStand?longitude=${location.longitude}&latitude=${location.latitude}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+    
+        const raw = await response.text();
+        console.log('Raw Bike API Response:', raw);
+    
+        const serverMessage = raw ? JSON.parse(raw) : null;
+    
+        if (serverMessage && Array.isArray(serverMessage.BikeInfo)) {
+          setBikeStations(serverMessage.BikeInfo);
+        } else if (Array.isArray(serverMessage)) {
+          // if it's just a raw array
+          setBikeStations(serverMessage);
+        } else {
+          console.warn('Unexpected or null response, setting empty bikeStations');
+          setBikeStations([]);
+        }
+      } catch (error) {
+        console.error('Error fetching bike station data:', error);
+        setBikeStations([]); // fallback
+      }
+    };
+    
     
 
   // useEffect(() => {
@@ -137,7 +179,8 @@ export default function MapScreen({ navigation }) {
   useEffect(() => {
     const pollWeather = () => {
       if (location) {
-        fetchFromServer();
+        fetchWeather();
+        fetchBikeApi();
       }
     };
   
@@ -182,6 +225,23 @@ export default function MapScreen({ navigation }) {
               longitudeDelta: 0.01,
             }}
           >
+
+
+
+            {Array.isArray(bikeStations) &&
+              bikeStations.map((station) => (
+                <Marker
+                  key={station.number}
+                  coordinate={{
+                    latitude: station.position.lat,
+                    longitude: station.position.lng,
+                  }}
+                  title={station.name}
+                  description={`Available Bikes: ${station.available_bikes}`}
+                />
+            ))}
+
+
             <Marker
               coordinate={location}
               title="Your Location"

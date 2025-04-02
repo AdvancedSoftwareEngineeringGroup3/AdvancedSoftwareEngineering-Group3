@@ -11,6 +11,7 @@ from src.wayfinding import router  # Import the API routes
 from src.weatherApi import weatherAPI
 from src.preferences import Preferences
 from src.networking import Networking
+from src.dublin_bike_api import bikeAPI
 
 
 class Server:
@@ -29,6 +30,7 @@ class Server:
         self.preferences_logic = Preferences(self.app, self.logger)
         self.connection_manager = ConnectionManager()
         self.weather_api = weatherAPI()
+        self.bike_api = bikeAPI()
         self.networking = Networking(self.app, self.logger)
 
         # Configure CORS
@@ -107,6 +109,18 @@ class Server:
                 return {"weather": realtimeweatherdata, "temperature": temperature}
             except Exception as e:
                 self.logger.error(f"Error hitting weather endpoint: {e}")
+                raise
+
+        @self.app.get("/BikeStand")
+        async def get_bikeStand(longitude: str = Query(...), latitude: str = Query(...)):
+            self.logger.info(f"Received bike API request: lat={latitude}, lng={longitude}")
+            try:
+                realtimeBikeInfo = self.bike_api.get(lat=latitude, lng=longitude)
+                print(f"real time bike info: {realtimeBikeInfo}")
+        
+                return {"BikeInfo": realtimeBikeInfo}
+            except Exception as e:
+                self.logger.error(f"Error hitting BikeApi endpoint: {e}")
                 raise
 
 
