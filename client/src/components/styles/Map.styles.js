@@ -172,6 +172,14 @@ const MapStyles = StyleSheet.create({
     color: '#fff',
     marginTop: 4,
   },
+  weatherIcon: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    width: 80,
+    height: 80,
+    zIndex: 10,
+  },
   
 });
 

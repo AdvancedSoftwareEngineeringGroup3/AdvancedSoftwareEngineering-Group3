@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Query
 
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -99,14 +99,15 @@ class Server:
                 raise
 
         @self.app.get("/weather")
-        async def get_weather():
-            self.logger.info(f'{"Received weather API request"}')
+        async def get_weather(longitude: str = Query(...), latitude: str = Query(...)):
+            self.logger.info(f"Received weather API request: lat={latitude}, lng={longitude}")
             try:
-                # Example coordinates for Dublin
-                return self.weather_api.get(lat="-6.266155", lng="53.350140")
+                realtimeweatherdata = self.weather_api.get(lat=latitude, lng=longitude)
+                return {"weather": realtimeweatherdata}
             except Exception as e:
                 self.logger.error(f"Error hitting weather endpoint: {e}")
                 raise
+
 
         @self.app.websocket("/ws/location")
         async def websocket_endpoint(websocket: WebSocket):

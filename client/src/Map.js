@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Image, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { getCurrentLocation, startLocationTracking } from './utils/mapUtils';
 import locationCircleIcon from './assets/location-circle.png';
 import MapStyles from './components/styles/Map.styles';
+import Sunny from './assets/MapDashboard/SunIcon.png';
+import Rain from './assets/MapDashboard/rainIcon.png';
+import Cloud from './assets/MapDashboard/CloudIcon.png';
+import Thunder from './assets/MapDashboard/lightingIcon.png';
 
 export default function MapScreen({ navigation }) {
   const [webSocket, setWebSocket] = useState(null);
@@ -12,25 +16,44 @@ export default function MapScreen({ navigation }) {
   const [errorMessage, setErrorMessage] = useState('');
   const mapRef = useRef(null);
 
-  // WebSocket Setup
-  useEffect(() => {
-    const wsUrl = `${process.env.EXPO_PUBLIC_API_URL.replace(/^http/, 'ws')}/ws/location`;
-    console.log('Connecting to WebSocket:', wsUrl);
+  //choose weather Icon
+  const getWeatherIcon = (weather) => {
+    switch (weather) {
+      case 'sun':
+        return Sunny;
+      case 'cloud':
+        return Cloud;
+      case 'rain':
+        return Rain;
+      case 'thunder':
+        return Thunder;
+      default:
+        return null;
+    }
+  };
+  
 
-    const socket = new WebSocket(wsUrl);
 
-    socket.onopen = () => {
-      console.log('WebSocket connection opened');
-      setWebSocket(socket);
-    };
 
-    socket.onmessage = (event) =>
-      console.log('Message from server:', event.data); // check if required
-    socket.onerror = (error) => console.error('WebSocket error:', error);
-    socket.onclose = () => console.log('WebSocket connection closed');
+  // // WebSocket Setup
+  // useEffect(() => {
+  //   const wsUrl = `${process.env.EXPO_PUBLIC_API_URL.replace(/^http/, 'ws')}/ws/location`;
+  //   console.log('Connecting to WebSocket:', wsUrl);
 
-    return () => socket.close();
-  }, []);
+  //   const socket = new WebSocket(wsUrl);
+
+  //   socket.onopen = () => {
+  //     console.log('WebSocket connection opened');
+  //     setWebSocket(socket);
+  //   };
+
+  //   socket.onmessage = (event) =>
+  //     console.log('Message from server:', event.data); // check if required
+  //   socket.onerror = (error) => console.error('WebSocket error:', error);
+  //   socket.onclose = () => console.log('WebSocket connection closed');
+
+  //   return () => socket.close();
+  // }, []);
 
 
               
@@ -42,40 +65,37 @@ export default function MapScreen({ navigation }) {
   
 
 
-  const fetchFromServer = async () => {
+     const fetchFromServer = async () => {
       try {
         const baseUrl =
           Platform.OS === 'web'
             ? 'http://localhost:8000'
             : process.env.EXPO_PUBLIC_API_URL;
-        console.log(`Sending request to ${baseUrl}/weather?longitude=${location.longitude}?latitude=${ location.latitude}`);
-  
-        const response = await fetch(`${baseUrl}/weather?longitude=${location.longitude}?latitude=${ location.latitude}`, {
+    
+        console.log(`Sending request to ${baseUrl}/weather?longitude=${location.longitude}&latitude=${location.latitude}`);
+    
+        const response = await fetch(`${baseUrl}/weather?longitude=${location.longitude}&latitude=${location.latitude}`, {
           method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+          headers: {
+            'Content-Type': 'application/json',
           },
-        );
-  
-        // Check if the response is ok
+        });
+    
         if (response.ok) {
-          // Parse the response as JSON
           const serverMessage = await response.json();
-          console.log('Response from Server: ', serverMessage.message);
-  
-          // alert(server_message.message);
+          console.log('Response from Server: ', serverMessage.weather);
           setWeather(serverMessage.weather);
         } else {
-          // Log the raw response text for debugging
           const responseText = await response.text();
           console.error('Failed to get weather:', responseText);
-          alert('Server Error: ', responseText);
+          setWeather('cloud'); // fallback
         }
       } catch (error) {
-        console.error('Error getting real time weather inf', error);
+        console.error('Error getting real time weather', error);
+        setWeather('cloud'); // fallback on network error
       }
     };
+    
 
   // useEffect(() => {
   //   (async () => {
@@ -109,6 +129,22 @@ export default function MapScreen({ navigation }) {
     fetchLocation();
   }, []);
 
+  useEffect(() => {
+    const pollWeather = () => {
+      if (location) {
+        fetchFromServer();
+      }
+    };
+  
+    // Poll every 15 minutes
+    const intervalId = setInterval(pollWeather, 1 * 60 * 1000);
+  
+    
+    pollWeather();
+
+    return () => clearInterval(intervalId);
+  }, [location]);
+  
 
 
   const renderContent = () => {
@@ -117,8 +153,16 @@ export default function MapScreen({ navigation }) {
     }
 
     if (location) {
+      const weatherIcon = getWeatherIcon(weather);
       return (
         <>
+          {weatherIcon && (
+            <Image
+              source={weatherIcon}
+              style={MapStyles.weatherIcon}
+              resizeMode="contain"
+            />
+          )}
           <MapView
             ref={mapRef}
             style={MapStyles.map}
@@ -166,12 +210,6 @@ export default function MapScreen({ navigation }) {
             </TouchableOpacity>
           </View>
           
-          <TouchableOpacity
-            style={MapStyles.weatherButton}
-            onPress={() => navigation.navigate('WeatherScreen')}
-          >
-            <Text style={MapStyles.buttonText}>Weather</Text>
-          </TouchableOpacity>
 
           {/* todo: Need to make new changes to the preferences logic */}
           {/* <TouchableOpacity
