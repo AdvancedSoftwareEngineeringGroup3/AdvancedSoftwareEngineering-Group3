@@ -26,11 +26,39 @@ class Preferences:
     def db_handle_preferences(self, request):
         db = DataBase()
         db.connect_db()
-        db.add_entry(
-            "user_personalized_settings", request.request_into_dictionary()
-        )
-        self.logger.info("User preferences saved to database")
+        dict = request.request_into_dictionary()
+        
+        for key, val in dict.items():
+            db.update_entry(
+                "user_personalized_settings", dict["username"], key, val 
+            )
+        self.logger.info("User preferences updated in the database")
         db.close_con()
+        
+    def db_initialise_preferences(self, username):
+        db = DataBase()
+        db.connect_db()
+        
+        dict = {
+            "username": username,
+            "bike": False,
+            "private_vehicle": False,
+            "accessibility": False,
+            "motorways": False,
+            "tolls": False,
+            "bus": False,
+            "car": False,
+            "train": False,
+            "walk": False,
+            "tram": False,
+            "personal_bike": False,
+        }
+        
+        db.add_entry(
+            "user_personalized_settings", dict
+        )
+        self.logger.info("User has signed up and a preferences entry has been created for him with default values all set to false")
+        db.close_con()    
         
     def db_get_preferences(self, username):
         db = DataBase()
