@@ -20,10 +20,9 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const [currentInstruction, setCurrentInstruction] = useState(null);
 
   useEffect(() => {
-    getStepData();
     setDetailedStepData([]);
     getDetailedStepData();
-  }, [getDetailedStepData, routeData]);
+  }, [routeData]);
 
   // Check proximity to the next coordinate in the polyline
 
@@ -66,7 +65,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
       // Due to the complicated nature of the response some modes of transport have instructions in outer steps and other in inner
       if (step.travel_mode !== 'TRANSIT' && step.steps) {
         // For non-transit steps within a transit route
-        step.steps.foreach((detailedStep) => {
+        step.steps.forEach((detailedStep) => {
           const temp = detailedStepData;
           temp.push({
             html_instructions: removeHtmlTags(detailedStep.html_instructions),

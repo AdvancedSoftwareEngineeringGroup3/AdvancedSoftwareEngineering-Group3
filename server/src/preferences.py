@@ -25,7 +25,18 @@ class Preferences:
 
             # return success message
             return {"message": "Successfully saved user preferences"}
-
+    
+    # def get_Preferences(self, username):
+        
+    #     self.logger.info("Received username to find the users references: ", username)
+    #     print("Received username to find the users references: ", username)
+    #     return self.db_get_preferences(username)
+    
+        # @self.app.get("/getPreferences")
+        # async def get_Preferences():
+            # For thursday move this out of the inner function so that it can be called from wayfinding.py
+            
+            
     def db_handle_preferences(self, request):
         db = DataBase()
         db.connect_db()
@@ -34,6 +45,20 @@ class Preferences:
         )
         self.logger.info("User preferences saved to database")
         db.close_con()
+        
+    def db_get_preferences(self, username):
+        db = DataBase()
+        db.connect_db()
+        motorwayPref = db.search_entry("user_personalized_settings", username, 'motorways')
+        tollsPref = db.search_entry("user_personalized_settings", username, 'tolls')
+        self.logger.info("User preferences retrieved from database")
+        print("preferences retrieved from db", motorwayPref, tollsPref)
+        db.close_con()
+        return {    
+            "motorways": motorwayPref,
+            "tolls": tollsPref,
+        }
+    
 
 
 class userPersonalizedSettings(BaseModel):
@@ -53,7 +78,7 @@ class userPersonalizedSettings(BaseModel):
 
     def request_into_dictionary(self):
         return {
-            "username": self.username,  # hardcoded username for now
+            "username": self.username, 
             "bike": self.bike,
             "private_vehicle": self.privateVehicle,
             "accessibility": self.accessibility,

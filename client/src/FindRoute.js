@@ -13,6 +13,7 @@ import {
   findRouteStyles,
   pickerSelectStyles,
 } from './components/styles/FindRoute.styles';
+import { retrieveData } from './caching';
 
 export default function FindRouteScreen({ navigation }) {
   const pickerRef = useRef();
@@ -25,22 +26,48 @@ export default function FindRouteScreen({ navigation }) {
 
   const isFormValid = start.trim() !== '' && destination.trim() !== '';
 
+  // const searchRoute = async () => {
+  //   const username = await retrieveData('username');
+  //   if (username !== null) {
+  //     const baseUrl =
+  //       Platform.OS === 'web'
+  //         ? 'http://localhost:8000'
+  //         : process.env.EXPO_PUBLIC_API_URL;
+  //     console.log(`Sending request to ${baseUrl}/wayfinding/preferences/get_routes`);
+
+  //     const response = await fetch(`${baseUrl}/wayfinding/preferences/get_routes`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
+  //   }
+  // }
+
   const fetchRoutes = async () => {
+
+    username = await retrieveData('username')
+    if (username == null){
+      username = "";
+    }
+      
     try {
       const payload = {
         origin: start,
         destination,
         mode: selectedMode,
         alternatives: true,
+        username,
       };
 
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost:8000'
           : process.env.EXPO_PUBLIC_API_URL;
-      console.log(`Sending request to ${baseUrl}/wayfinding/get_routes`);
+      console.log(`Sending request to ${baseUrl}/wayfinding/preferences/get_routes`);
 
-      const response = await fetch(`${baseUrl}/wayfinding/get_routes`, {
+      const response = await fetch(`${baseUrl}/wayfinding/preferences/get_routes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
