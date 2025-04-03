@@ -1,9 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as Progress from 'react-native-progress';
-import { Animated, TouchableWithoutFeedback } from 'react-native';
+import { Animated, TouchableWithoutFeedback, Platform, View, Image, ScrollView, Text } from 'react-native';
 import { LineChart, PieChart } from 'react-native-chart-kit';
-import { Platform, View, Image, ScrollView } from 'react-native';
-import { useEffect, useState } from 'react';
 import susDashboardStyles from './components/styles/SustainabilityDashboard.styles';
 import fullBloom from './assets/SustainablityDashboard/Rootyfullbloom.png';
 import bushy from './assets/SustainablityDashboard/RootyBushy.png';
@@ -22,13 +20,71 @@ import goldTrain from './assets/SustainablityDashboard/GoldTrain.png';
 import silverTrain from './assets/SustainablityDashboard/SilverTrain.png';
 import bronzeTrain from './assets/SustainablityDashboard/BronzeTrain.png';
 
+
+// Define thresholds for medals
+const MEDAL_THRESHOLDS = {
+  gold: 70,
+  silver: 50,
+  bronze: 0,
+};
+
+// Determine medal type based on distance
+const getMedalImage = (value, vehicleType) => {
+  const medalImages = {
+    bike: {
+      gold: goldBike,
+      silver: silverBike,
+      bronze: bronzeBike
+    },
+    bus: {
+      gold: goldBus,
+      silver: silverBus,
+      bronze: bronzeBus
+    },
+    train: {
+      gold: goldTrain,
+      silver: silverTrain,
+      bronze: bronzeTrain
+    },
+    car: {
+      gold: goldCar,
+      silver: silverCar,
+      bronze: bronzeCar
+    },
+    // Add default images for other vehicle types
+    default: {
+      gold: goldCar,
+      silver: silverCar,
+      bronze: bronzeCar
+    }
+  };
+
+  if (value >= MEDAL_THRESHOLDS.gold) {
+    return medalImages[vehicleType]?.gold || medalImages.default.gold;
+  } else if (value >= MEDAL_THRESHOLDS.silver) {
+    return medalImages[vehicleType]?.silver || medalImages.default.silver;
+  } else {
+    return medalImages[vehicleType]?.bronze || medalImages.default.bronze;
+  }
+};
+
+
+const getIconForScore = (score) => {
+  if (score >= 70) return fullBloom;
+  if (score >= 40) return bushy;
+  if (score >= 20) return bloom;
+  return bald;
+};
+
+
 const configurePieChartData = (emissionsSavings) => {
-  // Defien colors for types
+  // Define colors for types
   const colors = {
     train: '#6689c6',
     bus: '#e0ac2b',
     walk: '#9a6fb0',
-    car: '#a53253',
+    bike: '#a53253',
+    luas: '#229e1c'
   };
   // Map emissions savings JSON to PieChart data
   return Object.keys(emissionsSavings).map((key) => ({
@@ -104,9 +160,10 @@ const chartConfig = {
 };
 
 export default function Dashboard({ navigation }) {
-  // const [monthlyEmissionsSavings, setMonthlyEmissionsSavings]  = useState([]);
-  // const [yearEmissions, setYearEmissions] = useState([])
-
+  const [userSustainabilityScore, setUserSustainabilityScore] = useState(0);
+  const [userSustainabilityImage, setUserSustainabilityImage] = useState(bald); // Default image
+  const [leaderBoardData, setLeaderBoardData] = useState([]);
+  const [gridItems, setGridItems] = useState([]);
   const [savingsPieChartData, setPieChartData] = useState([]);
   const  [yearLineChartData, setYearLineChartData] = useState({
     labels: ['Fetching data...'],
@@ -125,6 +182,55 @@ export default function Dashboard({ navigation }) {
   useEffect(() => {
     getSustainabilityStats();
   }, []);
+
+  const updateGridItems = (rawDistances) => {
+    const items = [
+      {
+        type: 'bike',
+        label: 'Distance traveled by Bike',
+        value: rawDistances.bike || 0,
+        total: 100
+      },
+      {
+        type: 'walk',
+        label: 'Distance traveled by Walking',
+        value: rawDistances.walk || 0,
+        total: 100
+      },
+      {
+        type: 'bus',
+        label: 'Distance traveled by Bus',
+        value: rawDistances.bus || 0,
+        total: 100
+      },
+      {
+        type: 'car',
+        label: 'Distance traveled by Car',
+        value: rawDistances.car || 0,
+        total: 100
+      },
+      {
+        type: 'train',
+        label: 'Distance traveled by Train',
+        value: rawDistances.train || 0,
+        total: 100
+      },
+      {
+        type: 'luas',
+        label: 'Distance traveled by Luas',
+        value: rawDistances.luas || 0,
+        total: 100
+      }
+    ];
+
+    setGridItems(items.map(item => ({
+      ...item,
+      image: getMedalImage(item.value, item.type),
+      ratio: item.value
+    })));
+    
+  };
+
 
   const getSustainabilityStats = async () =>{
     try {
@@ -150,13 +256,31 @@ export default function Dashboard({ navigation }) {
         const serverMessage = await response.json();
         console.log("Response from Server: ", serverMessage.message);
 
-        const { emissions_savings, current_year_emissions } = serverMessage;
+        const { emissions_savings, current_year_emissions, raw_distances, friends_sus_scores } = serverMessage;
 
         console.log("Emissions savings: ", emissions_savings);
         console.log("Year emissions: ", current_year_emissions);
+        console.log("Raw distances: ", raw_distances);
+        console.log("Sust scores of friends: ", friends_sus_scores);
 
+        // Format leaderboard data with icons
+        const formattedLeaderboardData = Object.entries(friends_sus_scores).map(([username, sustainability_score]) => ({
+          name: username,
+          sustainabilityScore: parseInt(sustainability_score, 10),
+          icon: getIconForScore(parseInt(sustainability_score, 10))
+        })).sort((a, b) => b.sustainabilityScore - a.sustainabilityScore);
+
+        const userSustScore = formattedLeaderboardData.find(item => item.name === senderName);
+          // Set the sustainability score and icon for senderName
+        if (userSustScore) {
+          setUserSustainabilityScore(userSustScore.sustainabilityScore);
+          setUserSustainabilityImage(userSustScore.icon);
+        }
+
+        updateGridItems(raw_distances); // Update grid items with raw distances
         setPieChartData(configurePieChartData(emissions_savings));
         setYearLineChartData(configureLineChartData(current_year_emissions));
+        setLeaderBoardData(formattedLeaderboardData);
 
       } else {
         const responseText = await response.text();
@@ -167,6 +291,36 @@ export default function Dashboard({ navigation }) {
     }
   };
 
+  
+  const [shakeAnims] = useState(() => 
+    Array(6).fill(0).map(() => new Animated.Value(0))
+  );
+
+
+  const handlePressIn = (index) => {
+    if (!shakeAnims[index]) return;
+
+    // Start the shake animation when the image is pressed
+    Animated.sequence([
+      Animated.timing(shakeAnims[index], {
+        toValue: -5, // Move left
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnims[index], {
+        toValue: 5, // Move right
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnims[index], {
+        toValue: 0, // Return to center
+        duration: 50,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+
   return (
     <ScrollView
       style={susDashboardStyles.container} // Outer container styles
@@ -175,13 +329,13 @@ export default function Dashboard({ navigation }) {
       {/* Sustainability Score Section */}
       <View style={susDashboardStyles.scoreContainer}>
         <Text style={susDashboardStyles.scoreText}>
-          Sustainability Score: {sustainabilityScore}
+          Sustainability Score: {userSustainabilityScore}
         </Text>
-        <Image source={fullBloom} style={susDashboardStyles.image} />
+        <Image source={userSustainabilityImage} style={susDashboardStyles.image} />
       </View>
 
        {/* Rankings Section */}
-       <Text style={susDashboardStyles.titleText}>Leadership Board</Text>
+       <Text style={susDashboardStyles.titleText}>Leaderboard</Text>
       <View style={susDashboardStyles.rankingsContainer}>
         {/* Title Row */}
         <View style={susDashboardStyles.rankingsHeader}>
@@ -192,7 +346,7 @@ export default function Dashboard({ navigation }) {
         </View>
 
         <ScrollView>
-          {rankings.map((item, index) => (
+          {leaderBoardData.map((item, index) => (
             <View key={index} style={susDashboardStyles.rankingsItem}>
               {/* Row with four columns */}
               <View style={susDashboardStyles.rankingsRow}>
@@ -219,67 +373,59 @@ export default function Dashboard({ navigation }) {
 
 
       
-        {/* Grid Section */}
+      {/* Grid Section */}
       <View style={susDashboardStyles.gridContainer}>
-        {gridItems.map((item, index) => {
-          const shakeAnim = useRef(new Animated.Value(0)).current; // Initial horizontal position
-
-          const handlePressIn = () => {
-            // Start the shake animation when the image is pressed
-            Animated.sequence([
-              Animated.timing(shakeAnim, {
-                toValue: -5, // Move left
-                duration: 50,
-                useNativeDriver: true,
-              }),
-              Animated.timing(shakeAnim, {
-                toValue: 5, // Move right
-                duration: 50,
-                useNativeDriver: true,
-              }),
-              Animated.timing(shakeAnim, {
-                toValue: 0, // Return to center
-                duration: 50,
-                useNativeDriver: true,
-              }),
-            ]).start();
-          };
-
-          return (
-            <View key={index} style={susDashboardStyles.gridItem}>
-              <TouchableWithoutFeedback onPressIn={handlePressIn}>
-                <Animated.Image
-                  source={item.image}
-                  style={[
-                    susDashboardStyles.gridImage,
-                    { transform: [{ translateX: shakeAnim }] }, // Apply shaking animation
-                  ]}
-                />
-              </TouchableWithoutFeedback>
-              <Text style={susDashboardStyles.gridLabel}>{item.label}</Text>
-              <Text style={susDashboardStyles.progressText}>
-                {item.ratio}/{item.total}
-              </Text>
-              <Progress.Bar
-                progress={item.ratio / item.total}
-                width={100}
-                height={10}
-                color="#4CAF50"
-                unfilledColor="#D3D3D3"
-                borderWidth={0}
-                borderColor="#000"
+        {gridItems.map((item, index) => (
+          <View key={index} style={susDashboardStyles.gridItem}>
+            <TouchableWithoutFeedback 
+              onPressIn={() => handlePressIn(index)}
+              key={`touch-${index}`}
+            >
+              <Animated.Image
+                source={item.image}
+                style={[
+                  susDashboardStyles.gridImage,
+                  { transform: [{ translateX: shakeAnims[index] || new Animated.Value(0) }] },
+                ]}
               />
-            </View>
-          );
-        })}
+            </TouchableWithoutFeedback>
+            <Text style={susDashboardStyles.gridLabel}>{item.label}</Text>
+            <Text style={susDashboardStyles.progressText}>
+              {item.ratio}/{item.total}
+            </Text>
+            <Progress.Bar
+              progress={item.ratio / item.total}
+              width={100}
+              height={10}
+              color="#4CAF50"
+              unfilledColor="#D3D3D3"
+              borderWidth={0}
+              borderColor="#000"
+            />
+          </View>
+        ))}
       </View>
 
+      {/* Pie Chart Section */}
+      <Text style={[susDashboardStyles.titleText, susDashboardStyles.centeredText]}>Monthly Emissions Savings Breakdown</Text>
+        <PieChart
+          data={savingsPieChartData}
+          width={370} // Ensure this is a number
+          height={220} // Ensure this is a number
+          chartConfig={chartConfig}
+          accessor="emissions"
+          backgroundColor="transparent"
+          paddingLeft="15"
+          center={[10, 0]} // Adjust the center position as needed
+          absolute
+        />
 
       {/* Line Chart Section */}
+        <Text style={[susDashboardStyles.titleText, susDashboardStyles.centeredText]}>Monthly Emissions</Text>
       <View style={susDashboardStyles.chartContainer}>
         <LineChart
           style={susDashboardStyles.lineChart}
-          data={lineGraphData}
+          data={yearLineChartData}
           width={370} // Ensure this is a number
           height={220} // Ensure this is a number
           chartConfig={chartConfig}

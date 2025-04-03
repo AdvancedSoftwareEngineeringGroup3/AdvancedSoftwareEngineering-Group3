@@ -32,9 +32,13 @@ class Sustainability:
             )
             emissions_savings = self.db_fetch_month_sus_stats(user)
             current_year_emissions = self.db_fetch_year_sus_stats(user)
+            raw_distances = self.db_fetch_raw_distances(user)
+            friends_sus_scores = self.db_get_friends_sust_scores(user)
 
             self.logger.info(f"Emissions savings: {emissions_savings}")
             self.logger.info(f"Year emissions: {current_year_emissions}")
+            self.logger.info(f"Raw distances: {raw_distances}")
+            self.logger.info(f"Sustainability scores of friends: {friends_sus_scores}")
 
             if emissions_savings is None or current_year_emissions is None:
                 raise HTTPException(
@@ -44,7 +48,7 @@ class Sustainability:
             self.logger.info("Sustainability stats retrieved")
 
             # Return emissions_savings as JSON
-            return {"emissions_savings": emissions_savings, "current_year_emissions": current_year_emissions}
+            return {"emissions_savings": emissions_savings, "current_year_emissions": current_year_emissions, "raw_distances": raw_distances, "friends_sus_scores": friends_sus_scores}
 
     def db_fetch_month_sus_stats(self, user):
         table_name = "monthly_distance"
@@ -86,7 +90,62 @@ class Sustainability:
 #            self.logger("error getting year stats - user not found")
             return None
 
-        
+    
+    def db_fetch_raw_distances(self, user):
+        table_name = "monthly_distance"
+        db = DataBase()
+        db.connect_db()
+
+        # If user found
+        if db.search_user(table_name, user):
+            self.logger.info("Found user")
+            monthly_distances = db.return_user_row(table_name, user)
+            self.logger.info(f"monthly distances: {monthly_distances}")
+            db.close_con()
+            return monthly_distances
+
+        else:
+            db.close_con()
+            print("Year stats not found")
+            return None        
+
+
+    def db_fetch_all_sust_friends(self, user):
+        table_name = "user_table"
+        db = DataBase()
+        db.connect_db()
+        friends_list = db.search_entry(table_name, user, "friends_list")
+        db.close_con()
+        return friends_list
+    
+    def db_get_friends_sust_scores(self, user):
+        table_name = "user_table"
+        db = DataBase()
+        db.connect_db()
+        friends_list = self.db_fetch_all_sust_friends(user)
+        friends_list.append(user)
+
+        friend_scores = {}
+        for friend in friends_list:
+            query = f"SELECT sus_score FROM {table_name} WHERE username = '{friend}';"
+            cursor = db.connection.cursor()
+            try:
+                cursor.execute(query)
+                result = cursor.fetchone()
+                if result:
+                    friend_scores[friend] = result[0]
+                else:
+                    friend_scores[friend] = None
+            except Exception as e:
+                self.logger.error(f"Error fetching sustainability score for {friend}: {e}")
+                friend_scores[friend] = None
+            finally:
+                cursor.close()
+
+        db.close_con()
+        return friend_scores
+
+
     def calc_emissions(self, distance: float, vehicle_type: str) -> float:
         """EF = E/A # EF => E = A * EF = emmisiions factor, E = total emissions,
         A = activity level (km travelled)
@@ -155,4 +214,8 @@ class Sustainability:
 
             emissions_dif[vehicle_type] = car_emissions - transport_emissions
 
+
         return emissions_dif
+    
+
+   
