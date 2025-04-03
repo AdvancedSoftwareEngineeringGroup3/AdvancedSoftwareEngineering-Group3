@@ -15,6 +15,7 @@ app = FastAPI()
 logger = logging.getLogger("test_logger")
 preferences = Preferences(api=app, logger=logger)
 
+
 @router.post("/wayfinding/get_routes")
 def get_routes(
     origin: str = Body(...),
@@ -32,7 +33,8 @@ def get_routes(
         "key": GOOGLE_MAPS_API_KEY,
     }
     response = requests.get(url, params=parameters)
-    return response.json() 
+    return response.json()
+
 
 @router.post("/wayfinding/preferences/get_routes")
 def get_routes_with_preferences(
@@ -47,14 +49,14 @@ def get_routes_with_preferences(
     preferencesList = preferences.db_get_preferences(username)
     print(preferencesList)
     if not preferencesList:
-        logger.error(f"No preferences found for user {username}. Using default route.")
+        logger.error(f"No preferences found {username}. Using default route.")
         return get_routes(
             origin=origin,
             destination=destination,
             mode=mode,
             alternatives=alternatives,
         )
-    
+
     if preferencesList["tolls"] and preferencesList["motorways"]:
         toAvoid = "tolls|highways"
     elif preferencesList["tolls"]:
@@ -63,7 +65,7 @@ def get_routes_with_preferences(
         toAvoid = "motorways"
     else:
         toAvoid = ""
-    
+
     url = "https://maps.googleapis.com/maps/api/directions/json"
     parameters = {
         "origin": origin,
