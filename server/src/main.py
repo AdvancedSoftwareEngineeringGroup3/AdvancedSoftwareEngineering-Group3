@@ -13,6 +13,7 @@ from src.preferences import Preferences
 from src.networking import Networking
 from src.sustainability import Sustainability
 
+
 class Server:
     def __init__(self):
         # Configure logging

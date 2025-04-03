@@ -1,6 +1,14 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Progress from 'react-native-progress';
-import { Animated, TouchableWithoutFeedback, Platform, View, Image, ScrollView, Text } from 'react-native';
+import {
+  Animated,
+  TouchableWithoutFeedback,
+  Platform,
+  View,
+  Image,
+  ScrollView,
+  Text,
+} from 'react-native';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 import susDashboardStyles from './components/styles/SustainabilityDashboard.styles';
 import fullBloom from './assets/SustainablityDashboard/Rootyfullbloom.png';
@@ -20,7 +28,6 @@ import goldTrain from './assets/SustainablityDashboard/GoldTrain.png';
 import silverTrain from './assets/SustainablityDashboard/SilverTrain.png';
 import bronzeTrain from './assets/SustainablityDashboard/BronzeTrain.png';
 
-
 // Define thresholds for medals
 const MEDAL_THRESHOLDS = {
   gold: 70,
@@ -34,40 +41,39 @@ const getMedalImage = (value, vehicleType) => {
     bike: {
       gold: goldBike,
       silver: silverBike,
-      bronze: bronzeBike
+      bronze: bronzeBike,
     },
     bus: {
       gold: goldBus,
       silver: silverBus,
-      bronze: bronzeBus
+      bronze: bronzeBus,
     },
     train: {
       gold: goldTrain,
       silver: silverTrain,
-      bronze: bronzeTrain
+      bronze: bronzeTrain,
     },
     car: {
       gold: goldCar,
       silver: silverCar,
-      bronze: bronzeCar
+      bronze: bronzeCar,
     },
     // Add default images for other vehicle types
     default: {
       gold: goldCar,
       silver: silverCar,
-      bronze: bronzeCar
-    }
+      bronze: bronzeCar,
+    },
   };
 
   if (value >= MEDAL_THRESHOLDS.gold) {
     return medalImages[vehicleType]?.gold || medalImages.default.gold;
-  } else if (value >= MEDAL_THRESHOLDS.silver) {
-    return medalImages[vehicleType]?.silver || medalImages.default.silver;
-  } else {
-    return medalImages[vehicleType]?.bronze || medalImages.default.bronze;
   }
+  if (value >= MEDAL_THRESHOLDS.silver) {
+    return medalImages[vehicleType]?.silver || medalImages.default.silver;
+  }
+  return medalImages[vehicleType]?.bronze || medalImages.default.bronze;
 };
-
 
 const getIconForScore = (score) => {
   if (score >= 70) return fullBloom;
@@ -76,7 +82,6 @@ const getIconForScore = (score) => {
   return bald;
 };
 
-
 const configurePieChartData = (emissionsSavings) => {
   // Define colors for types
   const colors = {
@@ -84,7 +89,7 @@ const configurePieChartData = (emissionsSavings) => {
     bus: '#e0ac2b',
     walk: '#9a6fb0',
     bike: '#a53253',
-    luas: '#229e1c'
+    luas: '#229e1c',
   };
   // Map emissions savings JSON to PieChart data
   return Object.keys(emissionsSavings).map((key) => ({
@@ -112,18 +117,18 @@ const configureLineChartData = (yearEmissions) => {
 
   // Month mapping to full names
   const monthMapping = {
-    '1': 'Jan',
-    '2': 'Feb',
-    '3': 'Mar',
-    '4': 'Apr',
-    '5': 'May',
-    '6': 'Jun',
-    '7': 'Jul',
-    '8': 'Aug',
-    '9': 'Sep',
-    '10': 'Oct',
-    '11': 'Nov',
-    '12': 'Dec'
+    1: 'Jan',
+    2: 'Feb',
+    3: 'Mar',
+    4: 'Apr',
+    5: 'May',
+    6: 'Jun',
+    7: 'Jul',
+    8: 'Aug',
+    9: 'Sep',
+    10: 'Oct',
+    11: 'Nov',
+    12: 'Dec',
   };
 
   // Sort the months numerically
@@ -131,10 +136,10 @@ const configureLineChartData = (yearEmissions) => {
     // eslint-disable-next-line prettier/prettier
     .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
   return {
-    labels: sortedMonths.map(month => monthMapping[month]),
+    labels: sortedMonths.map((month) => monthMapping[month]),
     datasets: [
       {
-        data: sortedMonths.map(month => yearEmissions[month]),
+        data: sortedMonths.map((month) => yearEmissions[month]),
         color: (opacity = 1) => `rgba(7, 32, 144, ${opacity})`,
         strokeWidth: 2,
       },
@@ -156,16 +161,16 @@ const chartConfig = {
     // Adjust originY/originX to help position the text
     originX: 0,
     // originY: 0,
-  }
+  },
 };
 
-export default function Dashboard({ navigation }) {
+export default function Dashboard() {
   const [userSustainabilityScore, setUserSustainabilityScore] = useState(0);
   const [userSustainabilityImage, setUserSustainabilityImage] = useState(bald); // Default image
   const [leaderBoardData, setLeaderBoardData] = useState([]);
   const [gridItems, setGridItems] = useState([]);
   const [savingsPieChartData, setPieChartData] = useState([]);
-  const  [yearLineChartData, setYearLineChartData] = useState({
+  const [yearLineChartData, setYearLineChartData] = useState({
     labels: ['Fetching data...'],
     datasets: [
       {
@@ -177,10 +182,12 @@ export default function Dashboard({ navigation }) {
   });
 
   // test name
-  const senderName = 'Cormac'
+  const senderName = 'Cormac';
 
   useEffect(() => {
+    // eslint-disable-next-line no-use-before-define
     getSustainabilityStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateGridItems = (rawDistances) => {
@@ -189,50 +196,50 @@ export default function Dashboard({ navigation }) {
         type: 'bike',
         label: 'Distance traveled by Bike',
         value: rawDistances.bike || 0,
-        total: 100
+        total: 100,
       },
       {
         type: 'walk',
         label: 'Distance traveled by Walking',
         value: rawDistances.walk || 0,
-        total: 100
+        total: 100,
       },
       {
         type: 'bus',
         label: 'Distance traveled by Bus',
         value: rawDistances.bus || 0,
-        total: 100
+        total: 100,
       },
       {
         type: 'car',
         label: 'Distance traveled by Car',
         value: rawDistances.car || 0,
-        total: 100
+        total: 100,
       },
       {
         type: 'train',
         label: 'Distance traveled by Train',
         value: rawDistances.train || 0,
-        total: 100
+        total: 100,
       },
       {
         type: 'luas',
         label: 'Distance traveled by Luas',
         value: rawDistances.luas || 0,
-        total: 100
-      }
+        total: 100,
+      },
     ];
 
-    setGridItems(items.map(item => ({
-      ...item,
-      image: getMedalImage(item.value, item.type),
-      ratio: item.value
-    })));
-    
+    setGridItems(
+      items.map((item) => ({
+        ...item,
+        image: getMedalImage(item.value, item.type),
+        ratio: item.value,
+      })),
+    );
   };
 
-
-  const getSustainabilityStats = async () =>{
+  const getSustainabilityStats = async () => {
     try {
       const baseUrl =
         Platform.OS === 'web'
@@ -254,48 +261,56 @@ export default function Dashboard({ navigation }) {
 
       if (response.ok) {
         const serverMessage = await response.json();
-        console.log("Response from Server: ", serverMessage.message);
+        console.log('Response from Server: ', serverMessage.message);
 
-        const { emissions_savings, current_year_emissions, raw_distances, friends_sus_scores } = serverMessage;
+        const {
+          emissionsSavings,
+          currentYearEmissions,
+          rawDistances,
+          friendsSusScores,
+        } = serverMessage;
 
-        console.log("Emissions savings: ", emissions_savings);
-        console.log("Year emissions: ", current_year_emissions);
-        console.log("Raw distances: ", raw_distances);
-        console.log("Sust scores of friends: ", friends_sus_scores);
+        console.log('Emissions savings: ', emissionsSavings);
+        console.log('Year emissions: ', currentYearEmissions);
+        console.log('Raw distances: ', rawDistances);
+        console.log('Sust scores of friends: ', friendsSusScores);
 
         // Format leaderboard data with icons
-        const formattedLeaderboardData = Object.entries(friends_sus_scores).map(([username, sustainability_score]) => ({
-          name: username,
-          sustainabilityScore: parseInt(sustainability_score, 10),
-          icon: getIconForScore(parseInt(sustainability_score, 10))
-        })).sort((a, b) => b.sustainabilityScore - a.sustainabilityScore);
+        const formattedLeaderboardData = Object.entries(friendsSusScores)
+          .map(([username, sustainabilityScore]) => ({
+            name: username,
+            sustainabilityScore: parseInt(sustainabilityScore, 10),
+            icon: getIconForScore(parseInt(sustainabilityScore, 10)),
+          }))
+          .sort((a, b) => b.sustainabilityScore - a.sustainabilityScore);
 
-        const userSustScore = formattedLeaderboardData.find(item => item.name === senderName);
-          // Set the sustainability score and icon for senderName
+        const userSustScore = formattedLeaderboardData.find(
+          (item) => item.name === senderName,
+        );
+        // Set the sustainability score and icon for senderName
         if (userSustScore) {
           setUserSustainabilityScore(userSustScore.sustainabilityScore);
           setUserSustainabilityImage(userSustScore.icon);
         }
 
-        updateGridItems(raw_distances); // Update grid items with raw distances
-        setPieChartData(configurePieChartData(emissions_savings));
-        setYearLineChartData(configureLineChartData(current_year_emissions));
+        updateGridItems(rawDistances); // Update grid items with raw distances
+        setPieChartData(configurePieChartData(emissionsSavings));
+        setYearLineChartData(configureLineChartData(currentYearEmissions));
         setLeaderBoardData(formattedLeaderboardData);
-
       } else {
         const responseText = await response.text();
-        console.error("Failed to get monthly emissions: ", responseText);
+        console.error('Failed to get monthly emissions: ', responseText);
       }
-    } catch (error){
-      console.error("Error getting sustainability stats: ", error)
+    } catch (error) {
+      console.error('Error getting sustainability stats: ', error);
     }
   };
 
-  
-  const [shakeAnims] = useState(() => 
-    Array(6).fill(0).map(() => new Animated.Value(0))
+  const [shakeAnims] = useState(() =>
+    Array(6)
+      .fill(0)
+      .map(() => new Animated.Value(0)),
   );
-
 
   const handlePressIn = (index) => {
     if (!shakeAnims[index]) return;
@@ -320,7 +335,6 @@ export default function Dashboard({ navigation }) {
     ]).start();
   };
 
-
   return (
     <ScrollView
       style={susDashboardStyles.container} // Outer container styles
@@ -331,11 +345,14 @@ export default function Dashboard({ navigation }) {
         <Text style={susDashboardStyles.scoreText}>
           Sustainability Score: {userSustainabilityScore}
         </Text>
-        <Image source={userSustainabilityImage} style={susDashboardStyles.image} />
+        <Image
+          source={userSustainabilityImage}
+          style={susDashboardStyles.image}
+        />
       </View>
 
-       {/* Rankings Section */}
-       <Text style={susDashboardStyles.titleText}>Leaderboard</Text>
+      {/* Rankings Section */}
+      <Text style={susDashboardStyles.titleText}>Leaderboard</Text>
       <View style={susDashboardStyles.rankingsContainer}>
         {/* Title Row */}
         <View style={susDashboardStyles.rankingsHeader}>
@@ -347,6 +364,7 @@ export default function Dashboard({ navigation }) {
 
         <ScrollView>
           {leaderBoardData.map((item, index) => (
+            // eslint-disable-next-line react/no-array-index-key
             <View key={index} style={susDashboardStyles.rankingsItem}>
               {/* Row with four columns */}
               <View style={susDashboardStyles.rankingsRow}>
@@ -354,12 +372,13 @@ export default function Dashboard({ navigation }) {
                 <Text style={susDashboardStyles.rankColumn}>{index + 1}</Text>
 
                 {/* Icon/Image Column */}
-                <Image source={item.icon} style={susDashboardStyles.iconColumn} />
+                <Image
+                  source={item.icon}
+                  style={susDashboardStyles.iconColumn}
+                />
 
                 {/* Name and Score Column */}
-                <Text style={susDashboardStyles.nameColumn}>
-                  {item.name}
-                </Text>
+                <Text style={susDashboardStyles.nameColumn}>{item.name}</Text>
 
                 {/* Sustainability Score Column */}
                 <Text style={susDashboardStyles.scoreColumn}>
@@ -371,21 +390,27 @@ export default function Dashboard({ navigation }) {
         </ScrollView>
       </View>
 
-
-      
       {/* Grid Section */}
       <View style={susDashboardStyles.gridContainer}>
         {gridItems.map((item, index) => (
+          // eslint-disable-next-line react/no-array-index-key
           <View key={index} style={susDashboardStyles.gridItem}>
-            <TouchableWithoutFeedback 
+            <TouchableWithoutFeedback
               onPressIn={() => handlePressIn(index)}
+              // eslint-disable-next-line react/no-array-index-key
               key={`touch-${index}`}
             >
               <Animated.Image
                 source={item.image}
                 style={[
                   susDashboardStyles.gridImage,
-                  { transform: [{ translateX: shakeAnims[index] || new Animated.Value(0) }] },
+                  {
+                    transform: [
+                      {
+                        translateX: shakeAnims[index] || new Animated.Value(0),
+                      },
+                    ],
+                  },
                 ]}
               />
             </TouchableWithoutFeedback>
@@ -407,21 +432,29 @@ export default function Dashboard({ navigation }) {
       </View>
 
       {/* Pie Chart Section */}
-      <Text style={[susDashboardStyles.titleText, susDashboardStyles.centeredText]}>Monthly Emissions Savings Breakdown</Text>
-        <PieChart
-          data={savingsPieChartData}
-          width={370} // Ensure this is a number
-          height={220} // Ensure this is a number
-          chartConfig={chartConfig}
-          accessor="emissions"
-          backgroundColor="transparent"
-          paddingLeft="15"
-          center={[10, 0]} // Adjust the center position as needed
-          absolute
-        />
+      <Text
+        style={[susDashboardStyles.titleText, susDashboardStyles.centeredText]}
+      >
+        Monthly Emissions Savings Breakdown
+      </Text>
+      <PieChart
+        data={savingsPieChartData}
+        width={370} // Ensure this is a number
+        height={220} // Ensure this is a number
+        chartConfig={chartConfig}
+        accessor="emissions"
+        backgroundColor="transparent"
+        paddingLeft="15"
+        center={[10, 0]} // Adjust the center position as needed
+        absolute
+      />
 
       {/* Line Chart Section */}
-        <Text style={[susDashboardStyles.titleText, susDashboardStyles.centeredText]}>Monthly Emissions</Text>
+      <Text
+        style={[susDashboardStyles.titleText, susDashboardStyles.centeredText]}
+      >
+        Monthly Emissions
+      </Text>
       <View style={susDashboardStyles.chartContainer}>
         <LineChart
           style={susDashboardStyles.lineChart}
@@ -431,8 +464,6 @@ export default function Dashboard({ navigation }) {
           chartConfig={chartConfig}
         />
       </View>
-
-     
     </ScrollView>
   );
 }

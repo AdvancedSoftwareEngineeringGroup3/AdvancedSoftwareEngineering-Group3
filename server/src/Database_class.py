@@ -1,6 +1,7 @@
 import pg8000
 from dotenv import load_dotenv
 import os
+
 # from src.sustainability import Sustainability
 
 # Load environment variables from .env file
@@ -308,15 +309,13 @@ class DataBase:
         finally:
             cursor.close()
 
-
     def return_user_row(self, table_name: str, user: str):
 
         try:
             cursor = self.connection.cursor()
 
             query = (
-                f"SELECT * FROM {table_name} "
-                f"WHERE username = '{user}';"
+                f"SELECT * FROM {table_name} " f"WHERE username = '{user}';"
             )
 
             cursor.execute(query)
@@ -337,64 +336,3 @@ class DataBase:
             return None
         finally:
             cursor.close()
-
-
-def main():
-    # Initialise database class
-    db = DataBase()
-
-    table_name = "testing_table"
-    table_info = {
-        "id": "SERIAL PRIMARY KEY",
-        "username": "VARCHAR(50)",
-        "password": "VARCHAR(50)",
-        "friends_list": "VARCHAR[]",
-        "pending_friends": "VARCHAR[]",
-        "sus_score": "VARCHAR(50)",
-        "ip": "VARCHAR(50)",
-    }
-
-    table_data = {
-        "username": "Conor",
-        "password": "abc123",
-        "friends_list": "ARRAY['mark', 'gunjan', 'fiona']",
-        "pending_friends": "ARRAY['cormac', 'jason']",
-        "sus_score": "100",
-    }
-
-    # Connect to db
-    db.connect_db()
-    # db.create_table(table_name, table_info)
-    # db.add_entry(table_name, table_data)
-
-    # result = db.search_entry(table_name, "Conor", "pending_friends")
-    # print(result)
-
-    # db.append_entry(table_name, "keith", "Conor", "pending_friends")
-    # db.append_entry(table_name, "siobhan", "Conor", "pending_friends")
-
-    # result = db.search_entry(table_name, "Conor", "pending_friends")
-    # print(result)
-
-    table = "monthly_distance"
-    username = "Cormac"
-    cormac_result = db.return_user_row(table, username)
-    print(f"print db row: {cormac_result}")
-
-    sus = Sustainability()
-    calc_emissions = sus.db_fetch_sus_stats("Cormac")
-    print(calc_emissions)
-
-#    print(f"print emissions: {sus.calc_emissions_savings(cormac_result)}")
-
-    # db.add_entry(table_name, {"username": "Keith",
-    # "password": "strong password"})
-    # db.remove_entry(table_name, 'Conor')
-    # db.update_entry(table_name, 'Keith', 'password', 'Roots123')
-    # db.print_table(table_name)
-    # print(db.search_user(table_name, 'Conor'))
-    db.close_con()
-
-
-if __name__ == "__main__":
-    main()

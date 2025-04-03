@@ -4,6 +4,7 @@ from fastapi import Query, HTTPException
 from dotenv import load_dotenv
 from .Database_class import DataBase
 
+
 class VehicleEnum(Enum):
     Bus = "bus"
     Car = "car"
@@ -11,6 +12,7 @@ class VehicleEnum(Enum):
     Train = "train"
     Bike = "bike"
     Walk = "walk"
+
 
 class Sustainability:
     def __init__(self, api, logger: logging.Logger):
@@ -22,7 +24,6 @@ class Sustainability:
         load_dotenv()
         # Register Endpoints
         self.api_get_sus_stats()
-
 
     def api_get_sus_stats(self):
         @self.app.get("/get_sus_stats")
@@ -38,7 +39,9 @@ class Sustainability:
             self.logger.info(f"Emissions savings: {emissions_savings}")
             self.logger.info(f"Year emissions: {current_year_emissions}")
             self.logger.info(f"Raw distances: {raw_distances}")
-            self.logger.info(f"Sustainability scores of friends: {friends_sus_scores}")
+            self.logger.info(
+                f"Sustainability scores of friends: {friends_sus_scores}"
+            )
 
             if emissions_savings is None or current_year_emissions is None:
                 raise HTTPException(
@@ -48,7 +51,12 @@ class Sustainability:
             self.logger.info("Sustainability stats retrieved")
 
             # Return emissions_savings as JSON
-            return {"emissions_savings": emissions_savings, "current_year_emissions": current_year_emissions, "raw_distances": raw_distances, "friends_sus_scores": friends_sus_scores}
+            return {
+                "emissions_savings": emissions_savings,
+                "current_year_emissions": current_year_emissions,
+                "raw_distances": raw_distances,
+                "friends_sus_scores": friends_sus_scores,
+            }
 
     def db_fetch_month_sus_stats(self, user):
         table_name = "monthly_distance"
@@ -66,7 +74,7 @@ class Sustainability:
         else:
             db.close_con()
             return None
-        
+
     def db_fetch_year_sus_stats(self, user):
         table_name = "monthly_emissions_2025"
         db = DataBase()
@@ -76,10 +84,14 @@ class Sustainability:
         if db.search_user(table_name, user):
             self.logger.info("Found user")
             current_year_emissions = db.return_user_row(table_name, user)
-            current_year_emissions.pop("username", None)  # Remove the username key if it exists
+            current_year_emissions.pop(
+                "username", None
+            )  # Remove the username key if it exists
 
             self.logger.info("Current year emissions retrieved")
-            self.logger.info(f"Current year emissions: {current_year_emissions}")
+            self.logger.info(
+                f"Current year emissions: {current_year_emissions}"
+            )
             db.close_con()
 
             return current_year_emissions
@@ -87,10 +99,8 @@ class Sustainability:
         else:
             db.close_con()
             print("Year stats not found")
-#            self.logger("error getting year stats - user not found")
             return None
 
-    
     def db_fetch_raw_distances(self, user):
         table_name = "monthly_distance"
         db = DataBase()
@@ -107,8 +117,7 @@ class Sustainability:
         else:
             db.close_con()
             print("Year stats not found")
-            return None        
-
+            return None
 
     def db_fetch_all_sust_friends(self, user):
         table_name = "user_table"
@@ -117,7 +126,7 @@ class Sustainability:
         friends_list = db.search_entry(table_name, user, "friends_list")
         db.close_con()
         return friends_list
-    
+
     def db_get_friends_sust_scores(self, user):
         table_name = "user_table"
         db = DataBase()
@@ -127,7 +136,7 @@ class Sustainability:
 
         friend_scores = {}
         for friend in friends_list:
-            query = f"SELECT sus_score FROM {table_name} WHERE username = '{friend}';"
+            query = f"SELECT sus_score FROM {table_name} WHERE username = '{friend}';"  # noqa: E501
             cursor = db.connection.cursor()
             try:
                 cursor.execute(query)
@@ -137,7 +146,9 @@ class Sustainability:
                 else:
                     friend_scores[friend] = None
             except Exception as e:
-                self.logger.error(f"Error fetching sustainability score for {friend}: {e}")
+                self.logger.error(
+                    f"Error fetching sustainability score for {friend}: {e}"
+                )
                 friend_scores[friend] = None
             finally:
                 cursor.close()
@@ -145,9 +156,9 @@ class Sustainability:
         db.close_con()
         return friend_scores
 
-
     def calc_emissions(self, distance: float, vehicle_type: str) -> float:
-        """EF = E/A # EF => E = A * EF = emmisiions factor, E = total emissions,
+        """
+        EF = E/A # EF => E = A * EF = emmisiions factor, E = total emissions,
         A = activity level (km travelled)
 
         Args:
@@ -170,6 +181,10 @@ class Sustainability:
             emission_factor = 5
         elif vehicle_type == "train":
             emission_factor = 28
+        elif vehicle_type == "bike":
+            emission_factor = 0
+        elif vehicle_type == "walk":
+            emission_factor = 0
         else:
             return -1
 
@@ -177,13 +192,11 @@ class Sustainability:
 
         return emissions
 
-
     def calc_scores(self, emissions_difference: float) -> float:
         if emissions_difference < 0:
             return -1
 
         return round(emissions_difference / 1000, 2)
-
 
     def calc_emissions_savings(self, monthly_distances):
         emissions_dif = {
@@ -195,13 +208,19 @@ class Sustainability:
         }
 
         for vehicle_type in self.vehicle_types:
-            if vehicle_type == "car" or vehicle_type == "total" or vehicle_type == "username":
+            if (
+                vehicle_type == "car"
+                or vehicle_type == "total"
+                or vehicle_type == "username"
+            ):
                 continue
 
             if vehicle_type not in monthly_distances:
-                self.logger.error(f"Key '{vehicle_type}' not found in monthly_distances")
+                self.logger.error(
+                    f"Key '{vehicle_type}' not found in monthly_distances"
+                )
                 continue
-            
+
             # self.logger.log(msg=f"current vehicle type: {vehicle_type}")
             print(f"current vehicle type: {vehicle_type}")
 
@@ -214,8 +233,4 @@ class Sustainability:
 
             emissions_dif[vehicle_type] = car_emissions - transport_emissions
 
-
         return emissions_dif
-    
-
-   
