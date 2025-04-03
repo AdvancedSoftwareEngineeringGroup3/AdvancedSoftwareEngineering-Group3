@@ -59,7 +59,6 @@ export const handleLogin = async (username, password, navigation) => {
         await storeData('username', username);
       }
     }
-
     console.log('Server response:', data);
   }
 };
