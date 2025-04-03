@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     left: 0,
-    width: MODAL_WIDTH + 40, // Just enough to cover the modal with padding
-    height: MODAL_HEIGHT + 40,
+    width: MODAL_WIDTH + 15, // Just enough to cover the modal with padding
+    height: MODAL_HEIGHT + 15,
     backgroundColor: 'rgba(0, 0, 0, 0.3)', // More transparent
     zIndex: 100,
     borderRadius: 20, // Round the corners of the backdrop
@@ -140,7 +140,8 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   commentInput: {
-    flex: 1,
+    flex: 0,
+    height: 100,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1,

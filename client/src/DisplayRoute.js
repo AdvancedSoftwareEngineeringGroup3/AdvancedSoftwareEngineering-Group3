@@ -16,6 +16,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const [travelledPolyline, setTravelledPolyline] = useState([]);
   const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
   const [devMode, setDevMode] = useState(false);
+  const [incidentInfo, setIncidentInfo] = useState([]);
 
   const handleIncidentSubmit = async (incidentData) => {
     // Here you would process the incident data
@@ -77,6 +78,16 @@ export default function DisplayRouteScreen({ navigation, route }) {
     startTracking();
   }, [devMode, polylineCoordinates, checkProximityAndUpdate]);
 
+  // Poll for incidents every 5 seconds
+    useEffect(() => {
+      const intervalId = setInterval(() => {
+        pollIncident();
+      }, 5000); // Poll every 5 seconds
+  
+      // Cleanup function to clear the interval when the component unmounts
+      return () => clearInterval(intervalId);
+    }, []);
+
   // Call checkProximityAndUpdate and update setlocation on latitude / longitude button click
   const devMove = ({ delLat = 0, delLng = 0 }) => {
     setLocation({
@@ -121,6 +132,19 @@ export default function DisplayRouteScreen({ navigation, route }) {
               longitudeDelta: 1,
             }}
           >
+            {Array.isArray(incidentInfo) && incidentInfo.map((incident) =>
+              <Marker
+                key={incident[0]}
+                coordinate={{
+                  latitude: parseFloat(incident[5]),
+                  longitude: parseFloat(incident[6]),
+                }}
+                title={incident[2]}
+                description={incident[3]}
+              ></Marker>
+
+            )}
+
             <Marker
               coordinate={location}
               description="Real-time location"

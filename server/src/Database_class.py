@@ -264,7 +264,7 @@ class DataBase:
             records = cursor.fetchall()
 
             # Print the results
-            print(f"{tablename}:")
+            print(f"{tablename}: {records}")
             for record in records:
                 print(record)
 
@@ -273,6 +273,29 @@ class DataBase:
             self.connection.rollback()
         finally:
             cursor.close()
+
+    def search_table(self, tablename: str):
+        """Search and return all entries in the current selected table
+
+        Args:
+            tablename (str): Name of table to be returned
+        """
+        try:
+            cursor = self.connection.cursor()
+
+            query = f"SELECT * FROM {tablename};"
+
+            cursor.execute(query)
+            records = cursor.fetchall()
+
+            self.connection.commit()
+
+        except Exception as e:
+            print("An error occurred:", e)
+            self.connection.rollback()
+        finally:
+            cursor.close()
+            return records
 
     def close_con(self):
         """Close the connection"""
@@ -334,7 +357,9 @@ def main():
 
     # Connect to db
     db.connect_db()
-    db.create_table(table_name, table_info)
+    # db.create_table(table_name, table_info)
+
+    db.print_table("incident_table")
     # db.add_entry(table_name, table_data)
 
     # result = db.search_entry(table_name, "Conor", "pending_friends")

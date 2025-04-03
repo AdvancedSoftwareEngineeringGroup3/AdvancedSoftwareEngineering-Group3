@@ -25,6 +25,7 @@ class IncidentReporter:
         load_dotenv()
 
         self.api_report_incident()
+        self.api_check_incident()
 
     def api_report_incident(self):
         @self.app.post("/report_incident")
@@ -67,6 +68,33 @@ class IncidentReporter:
             return "Error reporting incident"
         finally:
             db.close_con()
+
+    def api_check_incident(self):
+        @self.app.post("/check_incidents")
+        async def check_incident():
+            self.logger.info(f"Checking for incident reports in database")
+
+            response = self.db_handle_checking_incidents()
+
+            print(response)
+
+            return {"message": response}
+        
+    def db_handle_checking_incidents(self):
+        try:
+            db = DataBase()
+            db.connect_db()
+            table_name = "incident_table"
+
+            data = db.search_table(table_name)
+
+            return data
+        except Exception as e:
+            self.logger.error(f"Error checking incidents: {e}")
+            return "Error checking incident"
+        finally:
+            db.close_con()
+
 
 if __name__ == "__main__":
     pass
