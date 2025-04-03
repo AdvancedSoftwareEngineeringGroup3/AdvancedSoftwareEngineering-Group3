@@ -72,6 +72,7 @@ export default function FindRouteScreen({ navigation }) {
         },
         body: JSON.stringify(payload),
       });
+
   
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -79,7 +80,11 @@ export default function FindRouteScreen({ navigation }) {
   
       const data = await response.json();
       console.log('Server response:', data);
-  
+
+      if (data.error) {
+        alert(`Error finding route: ${response.message || response.status}`);
+        return;
+      }
       navigation.navigate('SelectRouteScreen', {
         origin: originToSend,
         destination,

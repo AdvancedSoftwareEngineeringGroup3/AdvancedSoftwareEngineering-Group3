@@ -33,4 +33,14 @@ def get_routes(
     # retrurn list of limits for each step of each leg
 
     response = requests.get(url, params=parameters)
-    return response.json()  # Forward full response to the client
+    data = response.json()
+
+
+    if data.get("status") != "OK":
+        return {
+            "error": True,
+            "status": data.get("status"),
+            "message": data.get("error_message", "Could not retrieve directions."),
+        }
+
+    return data  # Return full successful response
