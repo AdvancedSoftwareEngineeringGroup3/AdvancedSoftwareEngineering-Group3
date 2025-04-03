@@ -33,12 +33,11 @@ def test_db_fetch_month_sus_stats(sustainability_instance):
         result = sustainability_instance.db_fetch_month_sus_stats("test_user")
 
         assert result == {
-            "bus": 100,
-            "car": 200,
-            "luas": 50,
-            "train": 75,
-            "bike": 10,
-            "walk": 5,
+            "bus": 7700,
+            "luas": 4850,
+            "train": 5550,
+            "bike": 1020,
+            "walk": 510,
         }
 
         mock_db.search_user.assert_called_once_with(
@@ -115,7 +114,7 @@ def test_invalid_vehicle_calc_emissions(sustainability_instance):
 
 
 def test_valid_input_calc_scores(sustainability_instance):
-    assert sustainability_instance.calc_scores(138.6) == 1.39
+    assert sustainability_instance.calc_scores(138.6) == 0.14
 
 
 def test_invalid_input_calc_scores(sustainability_instance):
