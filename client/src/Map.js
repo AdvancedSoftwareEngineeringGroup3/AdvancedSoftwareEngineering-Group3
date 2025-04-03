@@ -207,15 +207,16 @@ export default function MapScreen({ navigation }) {
       return (
         <>
           {weatherIcon && (
-            <>
+            <View style={MapStyles.weatherContainer}>
               <Image
                 source={weatherIcon}
                 style={MapStyles.weatherIcon}
                 resizeMode="contain"
               />
-              <Text style={MapStyles.weatherText}> {temperature}°C</Text>
-            </>
+              <Text style={MapStyles.weatherText}>{temperature}°C</Text>
+            </View>
           )}
+
 
           <MapView
             ref={mapRef}

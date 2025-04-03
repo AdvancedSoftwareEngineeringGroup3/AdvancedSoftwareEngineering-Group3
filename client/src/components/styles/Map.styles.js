@@ -172,31 +172,34 @@ const MapStyles = StyleSheet.create({
     color: '#fff',
     marginTop: 4,
   },
+  weatherContainer: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    flexDirection: 'column', // 🔁 stack vertically
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    zIndex: 100,
+  },
+  
   weatherIcon: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-    width: 80,
-    height: 80,
-    zIndex: 10,
+    width: 50,
+    height: 50,
+    marginBottom: 4, // space between icon and text
   },
+  
   weatherText: {
-    position: 'absolute',
-    top: 100,
-    left: 30,
-    width: 80,
-    height: 80,
-    zIndex: 10,
-    fontSize: 24,               // Bigger text
-    fontWeight: 'bold',         // Bold text
-    color: '#555',              // White text for contrast
-    //backgroundColor: '#555',    // Medium grey background
-    //textAlign: 'center',        // Center the text
-    //textAlignVertical: 'center',// Center text vertically (works on Android)
-    borderRadius: 10,           // Rounded corners for aesthetics
-    padding: 1,                // Padding inside the box
-    //overflow: 'hidden',         // Clips content to rounded corners
+    fontSize: 14,
+    color: '#333',
   },
+  
 
 });
 
