@@ -20,6 +20,7 @@
     "@react-navigation/native": "^7.0.2",
     "@react-navigation/native-stack": "^7.0.2",
     "crypto": "^1.0.1",
+    "crypto-js": "^4.2.0",
     "d3": "^7.9.0",
     "deg2rad": "^1.0.0",
     "expo": "^52.0.7",

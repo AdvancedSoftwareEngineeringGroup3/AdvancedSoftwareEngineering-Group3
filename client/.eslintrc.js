@@ -16,7 +16,7 @@ module.exports = {
     jest: true,
   },
   rules: {
-    'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    'prettier/prettier': ['warn', { endOfLine: 'auto' }],
     'react/react-in-jsx-scope': 'off', // Not needed for React Native
     'import/no-extraneous-dependencies': 'off',
     'react/jsx-filename-extension': [

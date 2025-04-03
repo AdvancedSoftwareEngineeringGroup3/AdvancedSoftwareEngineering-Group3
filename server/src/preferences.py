@@ -16,16 +16,13 @@ class Preferences:
 
     def set_Preferences(
         self,
-    ):  # todo: check if user already has preferences
-        # saved and update them instead
+    ): 
         @self.app.post("/setPreferences")
         async def set_Preferences(request: userPersonalizedSettings):
             self.logger.info("Received user personalized settings:")
             self.db_handle_preferences(request)
-
-            # return success message
-            return {"message": "Successfully saved user preferences"}
-
+            return {"message": "Successfully saved user preferences"}      
+            
     def db_handle_preferences(self, request):
         db = DataBase()
         db.connect_db()
@@ -34,6 +31,20 @@ class Preferences:
         )
         self.logger.info("User preferences saved to database")
         db.close_con()
+        
+    def db_get_preferences(self, username):
+        db = DataBase()
+        db.connect_db()
+        motorwayPref = db.search_entry("user_personalized_settings", username, 'motorways')
+        tollsPref = db.search_entry("user_personalized_settings", username, 'tolls')
+        self.logger.info("User preferences retrieved from database")
+        print("preferences retrieved from db", motorwayPref, tollsPref)
+        db.close_con()
+        return {    
+            "motorways": motorwayPref,
+            "tolls": tollsPref,
+        }
+    
 
 
 class userPersonalizedSettings(BaseModel):
@@ -47,13 +58,12 @@ class userPersonalizedSettings(BaseModel):
     car: bool = Body(...)
     train: bool = Body(...)
     walk: bool = Body(...)
-    # walkingSpeed: str = Body(...)
     tram: bool = Body(...)
     personalBike: bool = Body(...)
 
     def request_into_dictionary(self):
         return {
-            "username": self.username,  # hardcoded username for now
+            "username": self.username, 
             "bike": self.bike,
             "private_vehicle": self.privateVehicle,
             "accessibility": self.accessibility,
