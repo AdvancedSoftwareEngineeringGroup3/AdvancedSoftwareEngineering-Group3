@@ -27,12 +27,11 @@ export default function FindRouteScreen({ navigation }) {
   const isFormValid = start.trim() !== '' && destination.trim() !== '';
 
   const fetchRoutes = async () => {
-
-    username = await retrieveData('username')
-    if (username == null){
-      username = "";
+    username = await retrieveData('username');
+    if (username == null) {
+      username = '';
     }
-      
+
     try {
       const payload = {
         origin: start,
@@ -46,15 +45,20 @@ export default function FindRouteScreen({ navigation }) {
         Platform.OS === 'web'
           ? 'http://localhost:8000'
           : process.env.EXPO_PUBLIC_API_URL;
-      console.log(`Sending request to ${baseUrl}/wayfinding/preferences/get_routes`);
+      console.log(
+        `Sending request to ${baseUrl}/wayfinding/preferences/get_routes`,
+      );
 
-      const response = await fetch(`${baseUrl}/wayfinding/preferences/get_routes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${baseUrl}/wayfinding/preferences/get_routes`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

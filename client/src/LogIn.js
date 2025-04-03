@@ -46,15 +46,18 @@ export default function LoginScreen({ navigation }) {
               <Text style={styles.TouchableOpacityText}>Log In</Text>
             </TouchableOpacity>
           </>
-        ) : ( <>
-          <Text style={styles.Text}>You are logged in</Text>
-          <TouchableOpacity
-            style={styles.TouchableOpacity}
-            onPress={() => navigation.navigate('Map')}
-            color="#841584">
-            <Text style={styles.TouchableOpacityText}>Go to Map</Text>
-          </TouchableOpacity>
-        </> )  }
+        ) : (
+          <>
+            <Text style={styles.Text}>You are logged in</Text>
+            <TouchableOpacity
+              style={styles.TouchableOpacity}
+              onPress={() => navigation.navigate('Map')}
+              color="#841584"
+            >
+              <Text style={styles.TouchableOpacityText}>Go to Map</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </SafeAreaView>
     </View>
   );

@@ -101,7 +101,7 @@ export default function MapScreen({ navigation }) {
               icon={locationCircleIcon}
             />
           </MapView>
-          
+
           <TouchableOpacity style={MapStyles.sendButton} onPress={sendLocation}>
             <Text style={MapStyles.buttonText}>Send Location</Text>
           </TouchableOpacity>
@@ -149,7 +149,7 @@ export default function MapScreen({ navigation }) {
             onPress={() => navigation.navigate('PreferencesScreen')}
           >
             <Text style={MapStyles.buttonText}>User Preferences</Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
         </>
       );
     }
