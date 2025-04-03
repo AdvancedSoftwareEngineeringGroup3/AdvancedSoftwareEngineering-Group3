@@ -58,14 +58,8 @@ export const handleLogin = async (username, password, navigation) => {
       } else {
         await storeData('username', username);
       }
-
-      
-      // if the data is "success", then cache details
-
-      console.log('Server response:', data);
-    } catch (error) {
-      console.error('Error details:', error);
     }
+    console.log('Server response:', data);
   }
 };
 
