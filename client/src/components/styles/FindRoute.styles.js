@@ -14,7 +14,7 @@ const findRouteStyles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     backgroundColor: '#fafafa',
-    marginBottom: 16,
+    marginBottom: 1,
     fontSize: 16,
   },
   label: {
@@ -73,6 +73,27 @@ const findRouteStyles = StyleSheet.create({
     color: '#333',
     textAlign: 'center',
   },
+  useLocationButton: {
+    marginTop: 6,
+    alignSelf: 'flex-start',
+    backgroundColor: 'white',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    marginBottom: 16,
+  },
+  
+  useLocationButtonText: {
+    color: '#333',
+    fontSize: 14,
+  },
+  
   
 });
 

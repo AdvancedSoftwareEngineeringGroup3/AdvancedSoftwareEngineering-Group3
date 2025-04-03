@@ -15,6 +15,7 @@ import {
   pickerSelectStyles,
 } from './components/styles/FindRoute.styles';
 import bgImage from './assets/FindRouteScreen/Navigationbackground.png'
+import { storeData, retrieveData, removeData, updateData } from './caching';
 
 export default function FindRouteScreen({ navigation }) {
   const pickerRef = useRef();
@@ -29,19 +30,41 @@ export default function FindRouteScreen({ navigation }) {
 
   const fetchRoutes = async () => {
     try {
+      let originToSend = start.trim();
+  
+      // Check for "current location" variations
+      const normalizedStart = originToSend.toLowerCase();
+      const isCurrentLocation =
+        normalizedStart === 'current location' ||
+        normalizedStart === 'Current Location' ||
+        normalizedStart === 'my location';
+  
+      if (isCurrentLocation) {
+        const currentlat = await retrieveData('currentLat'); // e.g., { lat: 53.35, lng: -6.26 }
+        const currentlon = await retrieveData('currentLon');
+      
+        if (!currentlat || !currentlon) {
+          alert('Current location not available in cache.');
+          return;
+        }
+  
+        originToSend = `${currentlat},${currentlon}`;
+      }
+  
       const payload = {
-        origin: start,
+        origin: originToSend,
         destination,
         mode: selectedMode,
         alternatives: true,
       };
-
+  
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost:8000'
           : process.env.EXPO_PUBLIC_API_URL;
+  
       console.log(`Sending request to ${baseUrl}/wayfinding/get_routes`);
-
+  
       const response = await fetch(`${baseUrl}/wayfinding/get_routes`, {
         method: 'POST',
         headers: {
@@ -49,17 +72,16 @@ export default function FindRouteScreen({ navigation }) {
         },
         body: JSON.stringify(payload),
       });
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+  
       const data = await response.json();
       console.log('Server response:', data);
-
-      // Navigate to SelectRouteScreen with the response data
+  
       navigation.navigate('SelectRouteScreen', {
-        origin: start,
+        origin: originToSend,
         destination,
         routeData: data,
       });
@@ -67,6 +89,7 @@ export default function FindRouteScreen({ navigation }) {
       console.error('Error details:', error);
     }
   };
+  
 
   const modeDropdownData = [
     { label: 'Walking', value: 'walking' },
@@ -86,12 +109,19 @@ export default function FindRouteScreen({ navigation }) {
     >
     <SafeAreaView style={findRouteStyles.container}>
       <TextInput
-        style={findRouteStyles.input}
-        placeholder="Enter starting point"
-        value={start}
-        onChangeText={setStartPoint}
-        onSubmitEditing={() => ref2.current.focus()}
-      />
+      style={findRouteStyles.input}
+      placeholder="Enter starting point"
+      value={start}
+      onChangeText={setStartPoint}
+      onSubmitEditing={() => ref2.current.focus()}
+    />
+
+    <TouchableOpacity
+      style={findRouteStyles.useLocationButton}
+      onPress={() => setStartPoint('Current Location')}
+    >
+      <Text style={findRouteStyles.useLocationButtonText}>📍 Use Current Location as Start</Text>
+    </TouchableOpacity>
 
       <TextInput
         ref={ref2}
