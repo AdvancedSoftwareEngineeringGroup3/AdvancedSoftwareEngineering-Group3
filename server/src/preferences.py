@@ -16,26 +16,12 @@ class Preferences:
 
     def set_Preferences(
         self,
-    ):  # todo: check if user already has preferences
-        # saved and update them instead
+    ): 
         @self.app.post("/setPreferences")
         async def set_Preferences(request: userPersonalizedSettings):
             self.logger.info("Received user personalized settings:")
             self.db_handle_preferences(request)
-
-            # return success message
-            return {"message": "Successfully saved user preferences"}
-    
-    # def get_Preferences(self, username):
-        
-    #     self.logger.info("Received username to find the users references: ", username)
-    #     print("Received username to find the users references: ", username)
-    #     return self.db_get_preferences(username)
-    
-        # @self.app.get("/getPreferences")
-        # async def get_Preferences():
-            # For thursday move this out of the inner function so that it can be called from wayfinding.py
-            
+            return {"message": "Successfully saved user preferences"}      
             
     def db_handle_preferences(self, request):
         db = DataBase()
@@ -72,7 +58,6 @@ class userPersonalizedSettings(BaseModel):
     car: bool = Body(...)
     train: bool = Body(...)
     walk: bool = Body(...)
-    # walkingSpeed: str = Body(...)
     tram: bool = Body(...)
     personalBike: bool = Body(...)
 

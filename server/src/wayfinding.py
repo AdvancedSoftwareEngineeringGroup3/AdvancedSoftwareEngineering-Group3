@@ -34,12 +34,6 @@ def get_routes(
     response = requests.get(url, params=parameters)
     return response.json() 
 
-
-
-#########################################################################
-
-
-
 @router.post("/wayfinding/preferences/get_routes")
 def get_routes_with_preferences(
     origin: str = Body(...),
