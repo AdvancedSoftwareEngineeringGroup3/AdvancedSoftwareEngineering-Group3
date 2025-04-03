@@ -182,7 +182,7 @@ const MapStyles = StyleSheet.create({
   },
   weatherText: {
     position: 'absolute',
-    top: 85,
+    top: 100,
     left: 30,
     width: 80,
     height: 80,

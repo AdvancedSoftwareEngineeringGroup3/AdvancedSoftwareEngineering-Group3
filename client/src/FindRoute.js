@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Text,
+  ImageBackground,
 } from 'react-native';
 import Picker from 'react-native-picker-select';
 import ActionSheet from 'react-native-actionsheet';
@@ -13,6 +14,7 @@ import {
   findRouteStyles,
   pickerSelectStyles,
 } from './components/styles/FindRoute.styles';
+import bgImage from './assets/FindRouteScreen/Navigationbackground.png'
 
 export default function FindRouteScreen({ navigation }) {
   const pickerRef = useRef();
@@ -77,39 +79,59 @@ export default function FindRouteScreen({ navigation }) {
   };
 
   return (
+    <ImageBackground
+      source={bgImage}
+      style={findRouteStyles.container}
+      resizeMode="cover"
+    >
     <SafeAreaView style={findRouteStyles.container}>
       <TextInput
+        style={findRouteStyles.input}
         placeholder="Enter starting point"
         value={start}
-        onChangeText={(text) => setStartPoint(text)}
+        onChangeText={setStartPoint}
         onSubmitEditing={() => ref2.current.focus()}
       />
+
       <TextInput
         ref={ref2}
+        style={findRouteStyles.input}
         placeholder="Enter destination point"
         value={destination}
-        onChangeText={(text) => setDestinationPoint(text)}
+        onChangeText={setDestinationPoint}
         onSubmitEditing={() => alert(`Route Entered`)}
       />
 
-      <Text style={findRouteStyles.label}>Select an option:</Text>
+
+      <Text style={findRouteStyles.label}>Mode of Transport:</Text>
       {Platform.OS === 'android' ? (
         <TouchableOpacity onPress={() => pickerRef.current.togglePicker()}>
+          <View style={findRouteStyles.pickerWrapper}>
           <Picker
             ref={pickerRef}
             onValueChange={handlePickerSelect}
             items={modeDropdownData}
-            placeholder={{ label: 'Choose an option...', value: null }}
+            placeholder={{ label: 'Choose a mode ...', value: null }}
             useNativeAndroidPickerStyle={false}
             style={pickerSelectStyles}
             doneText="Done"
           />
+
+        </View>
+
         </TouchableOpacity>
       ) : (
         <>
-          <TouchableOpacity onPress={() => actionSheetRef.current.show()}>
-            <Text style={findRouteStyles.label}>Choose an option...</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+        style={findRouteStyles.dropdownButton}
+        onPress={() => actionSheetRef.current.show()}
+        activeOpacity={0.8}
+      >
+        <Text style={findRouteStyles.dropdownButtonText}>
+          {selectedMode ? `Selected: ${selectedMode}` : 'Choose an option ▼'}
+        </Text>
+      </TouchableOpacity>
+
           <ActionSheet
             ref={actionSheetRef}
             title="Select Mode"
@@ -125,18 +147,22 @@ export default function FindRouteScreen({ navigation }) {
           />
         </>
       )}
-      {selectedMode && (
+      {/* {selectedMode && (
         <Text style={findRouteStyles.selected}>Selected: {selectedMode}</Text>
-      )}
+      )} */}
 
       <TouchableOpacity
-        style={findRouteStyles.TouchableOpacity}
-        onPress={isFormValid ? fetchRoutes : null}
-        color="#841584"
+      style={[
+        findRouteStyles.button,
+        !isFormValid && findRouteStyles.disabledButton,
+      ]}
+      disabled={!isFormValid}
+      onPress={isFormValid ? fetchRoutes : null}
       >
-        {/* activeOpacity={isFormValid ? 0.7 : 1} */}
-        <Text>Search</Text>
+      <Text style={findRouteStyles.buttonText}>Search</Text>
       </TouchableOpacity>
+
     </SafeAreaView>
+    </ImageBackground>
   );
 }

@@ -24,7 +24,7 @@ class bikeAPI():
         # Check if the request was successful
         if self.response.status_code == 200:
             for item in self.response.json():
-                print(item['position']['lat'])
+                #print(item['position']['lat'])
                 within_walking = self.are_coordinates_within_distance(float(item['position']['lat']), float(item['position']['lng']), lat, lng, 0.5)
                 if within_walking:
                    loadedBikestops.append(item)

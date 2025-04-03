@@ -3,51 +3,101 @@ import { StyleSheet } from 'react-native';
 const findRouteStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    paddingHorizontal: 20,
     justifyContent: 'center',
   },
   input: {
     width: '100%',
-    padding: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
     borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    marginBottom: 10,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#fafafa',
+    marginBottom: 16,
+    fontSize: 16,
   },
   label: {
-    marginBottom: 10,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 8,
   },
   selected: {
+    fontSize: 14,
     marginTop: 10,
-    marginBottom: 10,
+    color: '#444',
   },
-  TouchableOpacity: {
-    padding: 10,
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     backgroundColor: '#841584',
-    borderRadius: 5,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 24,
   },
   disabledButton: {
     backgroundColor: '#ccc',
   },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  pickerWrapper: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  dropdownButton: {
+    width: '100%',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  
+  dropdownButtonText: {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+  },
+  
 });
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    color: 'black',
-    paddingTop: 13,
-    paddingHorizontal: 10,
-    paddingBottom: 12,
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
     borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    backgroundColor: 'white',
-    width: '100%',
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    marginBottom: 16,
   },
   inputAndroid: {
-    color: 'black',
-    width: '80%',
+    fontSize: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    marginBottom: 16,
   },
 });
+
 
 export { pickerSelectStyles, findRouteStyles };

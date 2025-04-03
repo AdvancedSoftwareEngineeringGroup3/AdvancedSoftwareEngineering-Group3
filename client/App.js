@@ -18,7 +18,22 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="AccountScreen">
+      <Stack.Navigator initialRouteName="AccountScreen"
+        screenOptions={({ route }) => {
+          switch (route.name) {
+            case 'FindRouteScreen':
+              return { animation: 'fade' }; // or 'slide_from_bottom' if supported
+            case 'Dashboard':
+              return { animation: 'slide_from_left' };
+            case 'FriendsScreen':
+              return { animation: 'slide_from_right' };
+            default:
+              return { animation: 'fade' };
+          }
+        }}
+      
+      
+      >  
         <Stack.Screen
           options={{ headerBackVisible: false }}
           name="Map"
@@ -32,15 +47,56 @@ export default function App() {
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
         <Stack.Screen name="WeatherScreen" component={WeatherScreen} />
-        <Stack.Screen name="FindRouteScreen" component={FindRouteScreen} />
-        <Stack.Screen name="SelectRouteScreen" component={SelectRouteScreen} />
+        <Stack.Screen name="FindRouteScreen" component={FindRouteScreen} 
+        options={{
+          title: 'Select Route', // Sets the header title
+          headerStyle: {
+            backgroundColor: '#99CC66',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+      }}
+        
+        />
+        <Stack.Screen name="SelectRouteScreen" component={SelectRouteScreen} 
+          
+  
+        />
         <Stack.Screen
           name="DisplayRouteScreen"
           component={DisplayRouteScreen}
+         
         />
-        <Stack.Screen name="Dashboard" component={Dashboard} />
+        <Stack.Screen name="Dashboard" component={Dashboard} 
+         options={{
+          title: 'Sustainability Dashboard', // Sets the header title
+          headerStyle: {
+            backgroundColor: '#4CAF50',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+        
+        />
         <Stack.Screen name="PreferencesScreen" component={PreferencesScreen} />
-        <Stack.Screen name="FriendsScreen" component={FriendsScreen} />
+        <Stack.Screen name="FriendsScreen" component={FriendsScreen} 
+         options={{
+          title: 'Friends Screen', // Sets the header title
+          headerStyle: {
+            backgroundColor: '#66CCFF',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+        
+        
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -8,6 +8,8 @@ import Sunny from './assets/MapDashboard/SunIcon.png';
 import Rain from './assets/MapDashboard/rainIcon.png';
 import Cloud from './assets/MapDashboard/CloudIcon.png';
 import Thunder from './assets/MapDashboard/lightingIcon.png';
+import bikeMarkerIcon from './assets/MapDashboard/bikeicon.png';
+
 
 export default function MapScreen({ navigation }) {
   const [bikeStations, setBikeStations] = useState([]);
@@ -228,26 +230,40 @@ export default function MapScreen({ navigation }) {
 
 
 
+
+
+
+
             {Array.isArray(bikeStations) &&
               bikeStations.map((station) => (
                 <Marker
-                  key={station.number}
-                  coordinate={{
-                    latitude: station.position.lat,
-                    longitude: station.position.lng,
-                  }}
-                  title={station.name}
-                  description={`Available Bikes: ${station.available_bikes}`}
+                key={station.number}
+                coordinate={{
+                  latitude: station.position.lat,
+                  longitude: station.position.lng,
+                }}
+                title={station.name}
+                description={`Available Bikes: ${station.available_bikes}`}
+              >
+                <Image
+                  source={require('./assets/MapDashboard/bikeicon.png')}
+                  style={{ width: 40, height: 40 }}
+                  resizeMode="contain"
                 />
+              </Marker>
             ))}
-
 
             <Marker
               coordinate={location}
               title="Your Location"
               description="Real-time location"
-              icon={locationCircleIcon}
-            />
+            >
+              <Image
+                source={require('./assets/location-circle.png')}
+                style={{ width: 20, height: 20 }}
+                resizeMode="contain"
+              />
+            </Marker>
           </MapView>
   
           <TouchableOpacity

@@ -13,8 +13,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     marginBottom: 20,
-    
-    
   },
   input: {
     flex: 1,
