@@ -27,7 +27,7 @@ export default function FindRouteScreen({ navigation }) {
   const isFormValid = start.trim() !== '' && destination.trim() !== '';
 
   const fetchRoutes = async () => {
-    username = await retrieveData('username');
+    let username = await retrieveData('username');
     if (username == null) {
       username = '';
     }
