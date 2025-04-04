@@ -8,6 +8,8 @@ import displayRouteStyles from './components/styles/DisplayRoute.styles';
 
 import locationCircleIcon from './assets/location-circle.png';
 
+import * as Speech from 'expo-speech';
+
 export default function DisplayRouteScreen({ navigation, route }) {
   // route is a prop passed by the navigator, hence why that is used instead of other variable names
   const { origin, destination, routeData, polylineCoordinates } = route.params;
@@ -52,6 +54,10 @@ export default function DisplayRouteScreen({ navigation, route }) {
       }
     };
   }, [devMode, checkProximityAndUpdate]);
+
+  useEffect(() => {
+    Speech.speak(currentInstruction);
+  }, [currentInstruction])
 
   function removeHtmlTags(instruction) {
     return instruction.replace(/<\/?[^>]+(>|$)/g, '');
