@@ -7,7 +7,6 @@ import uvicorn
 import sys
 from src.signup import Signup
 from src.login import Login
-from src.wayfinding import router as wayfinding_router
 from src.preferences import router as preferences_router
 from src.weatherApi import weatherAPI
 from src.preferences import Preferences
@@ -25,17 +24,19 @@ class Server:
         # Include the API routes from the my_routes.py file
         
         # Instantiate components
-        self.signup_logic = Signup(self.app, self.logger)
+        
         self.login_logic = Login(self.app, self.logger)
         self.connection_manager = ConnectionManager()
         self.weather_api = weatherAPI()
         self.networking = Networking(self.app, self.logger)
         self.preferences_logic = Preferences(self.app, self.logger)
-
+        self.signup_logic = Signup(self.app, self.logger, self.preferences_logic)
+        
         wayfinding_router = wayfinding_router_setup(
             preferences_logic=self.preferences_logic,
             logger=self.logger,
         )
+
 
         self.app.include_router(wayfinding_router, prefix="/wayfinding")
         self.app.include_router(preferences_router, prefix="/preferences")

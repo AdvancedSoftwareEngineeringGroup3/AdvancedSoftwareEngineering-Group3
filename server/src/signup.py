@@ -5,16 +5,15 @@ from src.preferences import Preferences
 import logging
 from fastapi import FastAPI
 
-app = FastAPI()
+
 logger = logging.getLogger("test_logger")
-preferences = Preferences(api=app, logger=logger)
 
 
 class Signup:
-    def __init__(self, api, logger: logging.Logger):
+    def __init__(self, api, logger: logging.Logger, preferences_logic: Preferences):
         self.app = api
         self.logger = logger
-
+        self.preferences = preferences_logic
         # register signup route
         self.handle_signup()
 
@@ -59,7 +58,7 @@ class Signup:
         self.logger.info(f"User {username} signed up")
         db.close_con()
 
-        preferences.db_initialise_preferences(username)
+        self.preferences.db_initialise_preferences(username)
         return True
 
 
