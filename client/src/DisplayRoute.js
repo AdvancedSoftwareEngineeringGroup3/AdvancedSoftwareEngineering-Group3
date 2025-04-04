@@ -3,6 +3,7 @@ import { View, Text, Alert, TouchableOpacity, Switch } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { haversine, startLocationTracking } from './utils/mapUtils';
 import displayRouteStyles from './components/styles/DisplayRoute.styles';
+import { Platform } from 'react-native';
 
 import IncidentReporter from './IncidentReporter';
 import { postIncident } from './utils/incidentReporterUtils';
@@ -28,6 +29,45 @@ export default function DisplayRouteScreen({ navigation, route }) {
 
     // Example: Update local state to show on map
     // setMapIncidents(prev => [...prev, incidentData]);
+  };
+
+  const pollIncident = async () => {
+    try {
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
+      console.log(
+        `Sending request to ${baseUrl}/check_incidents`,
+      );
+
+      const response = await fetch(`${baseUrl}/check_incidents`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      // Check if the response is ok
+      if (response.ok) {
+        // Parse the response as JSON
+        const serverMessage = await response.json();
+        console.log('Response from Server: ', serverMessage.message);
+
+        // process the return incidents object, which contains multiple incidents
+        setIncidentInfo(serverMessage.message)
+
+      } else {
+        // Log the raw response text for debugging
+        const responseText = await response.text();
+        console.error('Failed to get crowd sourced incidents:', responseText);
+        alert('Server Error: ', responseText);
+      }
+    } catch (error) {
+      console.error('Error getting crowd sourced incidents:', error);
+    }
   };
 
   const checkProximityAndUpdate = useCallback(
