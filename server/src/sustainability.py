@@ -129,6 +129,10 @@ class Sustainability:
         db = DataBase()
         db.connect_db()
         friends_list = self.db_fetch_all_sust_friends(user)
+
+        if isinstance(friends_list, tuple):
+            friends_list = list(friends_list)
+
         friends_list.append(user)
 
         friend_scores = {}
