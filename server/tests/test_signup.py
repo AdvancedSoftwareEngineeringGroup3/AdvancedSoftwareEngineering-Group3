@@ -8,7 +8,8 @@ from src.signup import Signup
 
 class MockPreferences:
     def db_initialise_preferences(self, username):
-        print(f"Mocking preferences")
+        print("Mocking preferences")
+
 
 @pytest.fixture
 def test_app():
