@@ -4,11 +4,27 @@ import MapView, { Polyline, Marker } from 'react-native-maps';
 import { haversine, startLocationTracking } from './utils/mapUtils';
 import displayRouteStyles from './components/styles/DisplayRoute.styles';
 import { Platform } from 'react-native';
-
+import locationCircleIcon from './assets/location-circle.png';
 import IncidentReporter from './IncidentReporter';
 import { postIncident } from './utils/incidentReporterUtils';
+import accident from './assets/Crowdsource/TrafficAccident.png';
+import roadClosure from './assets/Crowdsource/RoadClosure.png';
+import roadHazard from './assets/Crowdsource/hazard.png';
+import police from './assets/Crowdsource/speeding.png';
+import trafficJam from './assets/Crowdsource/TrafficSlow.png';
+import construction from './assets/Crowdsource/construction.png';
 
-import locationCircleIcon from './assets/location-circle.png';
+
+const iconMap = {
+  'Accident': accident,
+  'Closure': roadClosure,
+  'Hazard': roadHazard,
+  'Police': police,
+  'Traffic': trafficJam,
+  'Construction': construction,
+};
+
+
 
 export default function DisplayRouteScreen({ navigation, route }) {
   // route is a prop passed by the navigator, hence why that is used instead of other variable names
@@ -172,18 +188,30 @@ export default function DisplayRouteScreen({ navigation, route }) {
               longitudeDelta: 1,
             }}
           >
-            {Array.isArray(incidentInfo) && incidentInfo.map((incident) =>
-              <Marker
-                key={incident[0]}
-                coordinate={{
-                  latitude: parseFloat(incident[5]),
-                  longitude: parseFloat(incident[6]),
-                }}
-                title={incident[2]}
-                description={incident[3]}
-              ></Marker>
+            {Array.isArray(incidentInfo) &&
+                incidentInfo.map((incident, index) => {
+                  const type = incident[2]; // Adjust this if the incident type is in a different index
+                  const icon = iconMap[type] || accident; // default fallback icon
 
-            )}
+                  return (
+                    <Marker
+                      key={incident[0]}
+                      coordinate={{
+                        latitude: parseFloat(incident[5]),
+                        longitude: parseFloat(incident[6]),
+                      }}
+                      title={incident[2]}
+                      description={incident[3]}
+                    >
+                      <Image
+                        source={icon}
+                        style={{ width: 40, height: 40 }}
+                        resizeMode="contain"
+                      />
+                    </Marker>
+                  );
+                })}
+
 
             <Marker
               coordinate={location}

@@ -6,6 +6,25 @@ import locationCircleIcon from './assets/location-circle.png';
 import MapStyles from './components/styles/Map.styles';
 import { Platform } from 'react-native';
 
+import accident from './assets/Crowdsource/TrafficAccident.png';
+import roadClosure from './assets/Crowdsource/RoadClosure.png';
+import roadHazard from './assets/Crowdsource/hazard.png';
+import police from './assets/Crowdsource/speeding.png';
+import trafficJam from './assets/Crowdsource/TrafficSlow.png';
+import construction from './assets/Crowdsource/construction.png';
+
+
+const iconMap = {
+  'Accident': accident,
+  'Closure': roadClosure,
+  'Hazard': roadHazard,
+  'Police': police,
+  'Traffic': trafficJam,
+  'Construction': construction,
+};
+
+
+
 export default function MapScreen({ navigation }) {
   const [webSocket, setWebSocket] = useState(null);
   const [incidentInfo, setIncidentInfo] = useState([]);
@@ -145,18 +164,33 @@ export default function MapScreen({ navigation }) {
               longitudeDelta: 0.01,
             }}
           >
-            {Array.isArray(incidentInfo) && incidentInfo.map((incident) =>
-              <Marker
-                key={incident[0]}
-                coordinate={{
-                  latitude: parseFloat(incident[5]),
-                  longitude: parseFloat(incident[6]),
-                }}
-                title={incident[2]}
-                description={incident[3]}
-              ></Marker>
 
-            )}
+
+          {Array.isArray(incidentInfo) &&
+            incidentInfo.map((incident, index) => {
+              const type = incident[2]; // Adjust this if the incident type is in a different index
+              const icon = iconMap[type] || accident; // default fallback icon
+
+              return (
+                <Marker
+                  key={incident[0]}
+                  coordinate={{
+                    latitude: parseFloat(incident[5]),
+                    longitude: parseFloat(incident[6]),
+                  }}
+                  title={incident[2]}
+                  description={incident[3]}
+                >
+                  <Image
+                    source={icon}
+                    style={{ width: 40, height: 40 }}
+                    resizeMode="contain"
+                  />
+                </Marker>
+              );
+            })}
+
+            
 
             <Marker
               coordinate={location}
