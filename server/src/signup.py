@@ -3,7 +3,6 @@ from fastapi import HTTPException
 from .Database_class import DataBase
 from src.preferences import Preferences
 import logging
-from fastapi import FastAPI
 
 
 logger = logging.getLogger("test_logger")
