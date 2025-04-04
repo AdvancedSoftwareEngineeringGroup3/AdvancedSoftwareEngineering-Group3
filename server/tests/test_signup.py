@@ -6,6 +6,11 @@ import logging
 from src.signup import Signup
 
 
+class MockPreferences:
+    def db_initialise_preferences(self, username):
+        print("Mocking preferences")
+
+
 @pytest.fixture
 def test_app():
     """
@@ -14,7 +19,9 @@ def test_app():
     """
     app = FastAPI()
     logger = logging.getLogger("test_logger")
-    signup = Signup(api=app, logger=logger)  # noqa: F841
+    mock_preferences = MockPreferences()
+    signup = Signup(  # noqa: F841
+        api=app, logger=logger, preferences_logic=mock_preferences)
     return TestClient(app)
 
 

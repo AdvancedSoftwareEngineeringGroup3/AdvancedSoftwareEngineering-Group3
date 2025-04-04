@@ -1,16 +1,19 @@
 from pydantic import BaseModel
-
-# May need to be changed in future with restructure of DB connection
-import logging
 from fastapi import HTTPException
 from .Database_class import DataBase
+from src.preferences import Preferences
+import logging
+
+
+logger = logging.getLogger("test_logger")
 
 
 class Signup:
-    def __init__(self, api, logger: logging.Logger):
+    def __init__(self, api, logger: logging.Logger,
+                 preferences_logic: Preferences):
         self.app = api
         self.logger = logger
-
+        self.preferences = preferences_logic
         # register signup route
         self.handle_signup()
 
@@ -54,6 +57,8 @@ class Signup:
 
         self.logger.info(f"User {username} signed up")
         db.close_con()
+
+        self.preferences.db_initialise_preferences(username)
         return True
 
 
