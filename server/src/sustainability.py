@@ -64,10 +64,7 @@ class Sustainability:
         db.connect_db()
 
         if db.search_user(table_name, user):
-            self.logger.info("Found user")
-            self.logger.info("connection closed, getting monthly distances")
             monthly_distances = db.return_user_row(table_name, user)
-            self.logger.info(f"monthly distances: {monthly_distances}")
             db.close_con()
             return self.calc_emissions_savings(monthly_distances)
 

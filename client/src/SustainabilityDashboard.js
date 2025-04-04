@@ -10,6 +10,7 @@ import {
   Text,
 } from 'react-native';
 import { LineChart, PieChart } from 'react-native-chart-kit';
+import { retrieveData } from './caching';
 import susDashboardStyles from './components/styles/SustainabilityDashboard.styles';
 import fullBloom from './assets/SustainablityDashboard/Rootyfullbloom.png';
 import bushy from './assets/SustainablityDashboard/RootyBushy.png';
@@ -182,7 +183,7 @@ export default function Dashboard() {
   });
 
   // test name
-  const senderName = 'Cormac';
+  // const senderName = 'Cormac';
 
   useEffect(() => {
     // eslint-disable-next-line no-use-before-define
@@ -241,6 +242,14 @@ export default function Dashboard() {
 
   const getSustainabilityStats = async () => {
     try {
+      let senderName = await retrieveData('username');
+
+      console.log(senderName);
+
+      if (senderName == null) {
+        senderName = 'test_user'; // Default name if not found
+      }
+
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost:8000'
@@ -259,15 +268,17 @@ export default function Dashboard() {
         },
       );
 
+      console.log('Raw response: ', response);
+
       if (response.ok) {
         const serverMessage = await response.json();
         console.log('Response from Server: ', serverMessage.message);
 
         const {
-          emissionsSavings,
-          currentYearEmissions,
-          rawDistances,
-          friendsSusScores,
+          emissions_savings: emissionsSavings,
+          current_year_emissions: currentYearEmissions,
+          raw_distances: rawDistances,
+          friends_sus_scores: friendsSusScores,
         } = serverMessage;
 
         console.log('Emissions savings: ', emissionsSavings);
