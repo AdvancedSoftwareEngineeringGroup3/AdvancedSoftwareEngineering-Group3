@@ -17,27 +17,21 @@ import { retrieveData } from './src/caching';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const firstScreen =
+    retrieveData('username') === null ? 'AccountScreen' : 'Map';
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="AccountScreen">
+      <Stack.Navigator initialRouteName={firstScreen}>
         <Stack.Screen
           options={{ headerBackVisible: false }}
           name="Map"
           component={MapScreen}
         />
-        {retrieveData('username') === null ? (
-          <Stack.Screen
-            options={{ headerBackVisible: false }}
-            name="AccountScreen"
-            component={AccountScreen}
-          />
-        ) : (
-          <Stack.Screen
-            options={{ headerBackVisible: false }}
-            name="MapScreen"
-            component={MapScreen}
-          />
-        )}
+        <Stack.Screen
+          options={{ headerBackVisible: false }}
+          name="AccountScreen"
+          component={AccountScreen}
+        />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
         <Stack.Screen name="WeatherScreen" component={WeatherScreen} />
