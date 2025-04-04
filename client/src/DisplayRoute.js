@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Alert, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, Alert, TouchableOpacity, Switch, Image, } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { haversine, startLocationTracking } from './utils/mapUtils';
 import displayRouteStyles from './components/styles/DisplayRoute.styles';

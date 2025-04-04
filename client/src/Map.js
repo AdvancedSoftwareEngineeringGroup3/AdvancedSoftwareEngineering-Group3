@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { getCurrentLocation, startLocationTracking } from './utils/mapUtils';
 import locationCircleIcon from './assets/location-circle.png';
