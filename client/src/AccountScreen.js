@@ -6,8 +6,7 @@ import { retrieveData, removeData } from './caching';
 
 
 export default function AccountScreen({ navigation }) {
-
-  const [usernameValid, setUsernameValid] = useState('')
+  const [usernameValid, setUsernameValid] = useState(null)
 
   useEffect(() => {
     const fetchUsername = async () => {
@@ -66,7 +65,6 @@ export default function AccountScreen({ navigation }) {
             >
               <Text style={buttonStyles.buttonText}>Log Out</Text>
             </TouchableOpacity>
-            {/* maybe just have the logout button here????? */}
             <Text style={styles.Text}>You are logged in</Text>
           </>
         )}
