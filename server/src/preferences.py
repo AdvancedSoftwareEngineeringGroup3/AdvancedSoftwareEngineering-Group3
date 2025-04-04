@@ -1,9 +1,10 @@
 import logging
-from fastapi import Body
+from fastapi import Body, APIRouter
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from src.Database_class import DataBase
 
+router = APIRouter()
 
 class Preferences:
     def __init__(self, api, logger: logging.Logger):
