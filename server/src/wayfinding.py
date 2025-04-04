@@ -11,9 +11,6 @@ load_dotenv()
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 router = APIRouter()
-app = FastAPI()
-logger = logging.getLogger("test_logger")
-preferences = Preferences(api=app, logger=logger)
 
 
 @router.post("/wayfinding/get_routes")
@@ -46,7 +43,7 @@ def get_routes_with_preferences(
 ):
 
     print(username)
-    preferencesList = preferences.db_get_preferences(username)
+    preferencesList = Preferences.db_get_preferences(username)
     print(preferencesList)
     if not preferencesList:
         logger.error(f"No preferences found {username}. Using default route.")
