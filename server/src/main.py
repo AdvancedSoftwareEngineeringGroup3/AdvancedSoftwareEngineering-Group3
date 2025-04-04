@@ -12,7 +12,7 @@ from src.weatherApi import weatherAPI
 from src.preferences import Preferences
 from src.networking import Networking
 from src.wayfinding import wayfinding_router_setup
-
+from src.sustainability import Sustainability
 
 class Server:
     def __init__(self):
@@ -30,6 +30,7 @@ class Server:
         self.weather_api = weatherAPI()
         self.networking = Networking(self.app, self.logger)
         self.preferences_logic = Preferences(self.app, self.logger)
+        self.sustainability = Sustainability(self.app, self.logger)
         self.signup_logic = Signup(self.app, self.logger,
                                    self.preferences_logic)
 
