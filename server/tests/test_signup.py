@@ -7,9 +7,8 @@ from src.signup import Signup
 
 
 class MockPreferences:
-    # mocking preferences class for signup to instantiate properly
     def db_initialise_preferences(self, username):
-        print(f"Mocked: db_initialise_preferences called with {username}")
+        print("Mocking preferences class for signup to instantiate properly")
 
 @pytest.fixture
 def test_app():
