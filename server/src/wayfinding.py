@@ -12,6 +12,7 @@ GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 router = APIRouter()
 logger = logging.getLogger("test_logger")
 
+
 @router.post("/wayfinding/get_routes")
 def get_routes(
     origin: str = Body(...),
@@ -34,7 +35,7 @@ def get_routes(
 
 def wayfinding_router_setup(preferences_logic: Preferences, logger):
     router = APIRouter()
-    
+
     @router.post("/preferences/get_routes")
     def get_routes_with_preferences(
         origin: str = Body(...),
@@ -48,7 +49,7 @@ def wayfinding_router_setup(preferences_logic: Preferences, logger):
         preferencesList = preferences_logic.db_get_preferences(username)
         print(preferencesList)
         if not preferencesList:
-            logger.error(f"No preferences found {username}. Using default route.")
+            logger.error(f"No preferences {username}. Using default route.")
             return get_routes(
                 origin=origin,
                 destination=destination,

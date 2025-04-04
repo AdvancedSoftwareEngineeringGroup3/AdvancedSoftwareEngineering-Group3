@@ -6,6 +6,7 @@ from src.Database_class import DataBase
 
 router = APIRouter()
 
+
 class Preferences:
     def __init__(self, api, logger: logging.Logger):
 

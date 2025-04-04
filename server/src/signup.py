@@ -9,7 +9,8 @@ logger = logging.getLogger("test_logger")
 
 
 class Signup:
-    def __init__(self, api, logger: logging.Logger, preferences_logic: Preferences):
+    def __init__(self, api, logger: logging.Logger,
+                 preferences_logic: Preferences):
         self.app = api
         self.logger = logger
         self.preferences = preferences_logic
