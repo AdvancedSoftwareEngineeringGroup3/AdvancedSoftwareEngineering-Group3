@@ -10,6 +10,7 @@ class MockPreferences:
     def db_initialise_preferences(self, username):
         print("Mocking preferences class for signup to instantiate properly")
 
+
 @pytest.fixture
 def test_app():
     """
@@ -19,8 +20,8 @@ def test_app():
     app = FastAPI()
     logger = logging.getLogger("test_logger")
     mock_preferences = MockPreferences()
-    signup = Signup(api=app, logger=logger,
-                    preferences_logic=mock_preferences)  # noqa: F841
+    signup = Signup(  # noqa: F841
+        api=app, logger=logger, preferences_logic=mock_preferences)
     return TestClient(app)
 
 
