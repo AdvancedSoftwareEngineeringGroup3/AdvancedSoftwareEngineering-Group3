@@ -30,7 +30,6 @@ export const handleLogin = async (username, password, navigation) => {
 
       // Await response and print message from server
       const data = await response.json();
-      alert(data.message);
 
       if (retrieveData('username') !== null) {
         await removeData('username');

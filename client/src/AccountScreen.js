@@ -1,23 +1,39 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, SafeAreaView, TouchableOpacity, Text } from 'react-native';
 import styles from './components/styles/AccountScreen.styles';
 import buttonStyles from './components/common/button';
 import { retrieveData, removeData } from './caching';
 
+
 export default function AccountScreen({ navigation }) {
+
+  const [usernameValid, setUsernameValid] = useState('')
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const username = await retrieveData('username');
+        setUsernameValid(username);
+      } catch (error) {
+        console.error('Error retrieving username:', error);
+      }
+    };
+  fetchUsername();
+},[]);
+
   const logout = async () => {
     try {
       await removeData('username');
+      setUsernameValid(null);
+      navigation.navigate('Map');
     } catch (error) {
       console.error('Error logging out:', error);
     }
-    navigation.replace('AccountScreen');
-    // navigation.navigate('Map'); ????
   };
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <SafeAreaView style={styles.container}>
-        {retrieveData('username') === null ? (
+        {usernameValid === null ? (
           <>
             <TouchableOpacity
               style={buttonStyles.button}
@@ -52,13 +68,6 @@ export default function AccountScreen({ navigation }) {
             </TouchableOpacity>
             {/* maybe just have the logout button here????? */}
             <Text style={styles.Text}>You are logged in</Text>
-            <TouchableOpacity
-              style={styles.TouchableOpacity}
-              onPress={() => navigation.navigate('Map')}
-              color="#841584"
-            >
-              <Text style={styles.TouchableOpacityText}>Go to Map</Text>
-            </TouchableOpacity>
           </>
         )}
       </SafeAreaView>
