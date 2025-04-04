@@ -1,3 +1,5 @@
+/* eslint-disable no-undef, no-use-before-define, react-hooks/exhaustive-deps, array-callback-return */
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, Alert, TouchableOpacity, Switch } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
@@ -11,67 +13,149 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const { origin, destination, routeData, polylineCoordinates } = route.params;
   const [location, setLocation] = useState(null);
   const [travelledPolyline, setTravelledPolyline] = useState([]);
-  const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
+  const [remainingPolyline, setRemainingPolyline] =
+    useState(polylineCoordinates);
   const [devMode, setDevMode] = useState(false);
-
-  const checkProximityAndUpdate = useCallback(
-    (currentLocation) => {
-      if (currentPolylineIndex >= polylineCoordinates.length) return;
-
-      const nextCoordinate = polylineCoordinates[currentPolylineIndex];
-      const distance = haversine(currentLocation, nextCoordinate);
-
-      if (distance < 50) {
-        // Assuming 50 meters as the proximity threshold
-        setTravelledPolyline((prev) => [...prev, nextCoordinate]);
-        setCurrentPolylineIndex((prev) => prev + 1);
-        // setTravelledPolyline([...travelledPolyline, nextCoordinate]);
-        // setCurrentPolylineIndex(currentPolylineIndex + 1);
-
-        if (currentPolylineIndex + 1 >= polylineCoordinates.length) {
-          Alert.alert(
-            'Destination reached',
-            'You have reached your destination.',
-          );
-          navigation.navigate('Map');
-        }
-      }
-    },
-    [currentPolylineIndex, polylineCoordinates, navigation],
-  );
+  const [detailedStepData, setDetailedStepData] = useState([]);
+  const [currentInstruction, setCurrentInstruction] = useState(null);
 
   useEffect(() => {
-    if (devMode) {
-      // Set initial location to the first coordinate in the polyline
-      setLocation(polylineCoordinates[0]);
-    }
+    setDetailedStepData([]);
+    getDetailedStepData();
+  }, [routeData]);
+
+  // Check proximity to the next coordinate in the polyline
+
+  useEffect(() => {
+    let locationSubscription;
     // Start tracking location
     const startTracking = async () => {
       try {
-        await startLocationTracking((currentLocation) => {
-          if (!devMode) {
-            setLocation(currentLocation);
-          }
-          checkProximityAndUpdate(currentLocation);
-        });
+        locationSubscription = await startLocationTracking(
+          (currentLocation) => {
+            if (!devMode) {
+              setLocation(currentLocation);
+              checkProximityAndUpdate(currentLocation);
+            }
+          },
+        );
       } catch (error) {
         console.error('Error starting location tracking:', error);
       }
     };
+    if (!devMode) {
+      startTracking();
+    }
+    return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
+    };
+  }, [devMode, checkProximityAndUpdate]);
 
-    startTracking();
-  }, [devMode, polylineCoordinates, checkProximityAndUpdate]);
+  function removeHtmlTags(instruction) {
+    return instruction.replace(/<\/?[^>]+(>|$)/g, '');
+  }
+
+  // Creating a dictionary of step data for each step in the route
+  // Pairing locations along with the instructions of each step of the route
+  // Using this data to display the instructions on the map as the user moves along the route
+  const getDetailedStepData = () => {
+    routeData.legs[0].steps.map((step) => {
+      // Due to the complicated nature of the response some modes of transport have instructions in outer steps and other in inner
+      if (step.travel_mode !== 'TRANSIT' && step.steps) {
+        // For non-transit steps within a transit route
+        step.steps.forEach((detailedStep) => {
+          const temp = detailedStepData;
+          temp.push({
+            html_instructions: removeHtmlTags(detailedStep.html_instructions),
+            start_location: detailedStep.start_location,
+          });
+          setDetailedStepData(temp);
+        });
+      } else if (step.travel_mode === 'TRANSIT') {
+        // If the step is a transit step, add the arrival stop to the instructions
+        const temp = detailedStepData;
+        temp.push({
+          html_instructions: `${removeHtmlTags(step.html_instructions)} until ${step.transit_details.arrival_stop.name}`,
+          start_location: step.start_location,
+        });
+        setDetailedStepData(temp);
+      } else {
+        // For non transit routes
+        const temp = detailedStepData;
+        temp.push({
+          html_instructions: removeHtmlTags(step.html_instructions),
+          start_location: step.start_location,
+        });
+        setDetailedStepData(temp);
+      }
+      return null;
+    });
+  };
+
+  const checkProximityAndUpdate = useCallback(
+    (currentLocation) => {
+      for (let i = 0; i < remainingPolyline.length; i += 1) {
+        const distance = haversine(currentLocation, remainingPolyline[i]);
+
+        // Assuming 50 meters as the proximity threshold
+        if (distance < 50) {
+          setTravelledPolyline((prev) => [
+            ...prev,
+            ...remainingPolyline.slice(0, i),
+          ]);
+          setRemainingPolyline((prev) => prev.slice(i));
+
+          if (remainingPolyline.length === 1) {
+            Alert.alert(
+              'Destination reached',
+              'You have reached your destination.',
+            );
+            // TODO: maybe navigate to sustainability
+            navigation.navigate('Map');
+          } else {
+            // Update instruction if previous instruction complete
+            for (let j = 0; j < detailedStepData.length; j += 1) {
+              const instructionLocation = {
+                latitude: detailedStepData[j].start_location.lat,
+                longitude: detailedStepData[j].start_location.lng,
+              };
+              const instructionDistance = haversine(
+                currentLocation,
+                instructionLocation,
+              );
+              if (instructionDistance < 50) {
+                setCurrentInstruction(detailedStepData[j].html_instructions);
+                setDetailedStepData((prev) => prev.slice(j));
+              }
+            }
+          }
+          break;
+        }
+      }
+    },
+    [remainingPolyline, navigation, detailedStepData],
+  );
 
   // Call checkProximityAndUpdate and update setlocation on latitude / longitude button click
   const devMove = ({ delLat = 0, delLng = 0 }) => {
-    setLocation({
+    const newLocation = {
       latitude: location.latitude + delLat,
       longitude: location.longitude + delLng,
-    });
-    checkProximityAndUpdate(location);
+    };
+
+    setLocation(newLocation);
+    checkProximityAndUpdate(newLocation);
   };
 
-  // Check proximity to the next coordinate in the polyline
+  const toggleDevMode = (value) => {
+    setDevMode(value);
+    if (value) {
+      // Set initial location to the first coordinate in the polyline
+      setLocation(polylineCoordinates[0]);
+    }
+  };
 
   return (
     <View style={displayRouteStyles.container}>
@@ -79,21 +163,29 @@ export default function DisplayRouteScreen({ navigation, route }) {
         <>
           <View style={displayRouteStyles.infoContainer}>
             <View style={displayRouteStyles.routeInfoContainer}>
-              <Text style={displayRouteStyles.routeInfo}>
-                Route from {origin} to {destination}
-              </Text>
-              <Text style={displayRouteStyles.routeInfo}>
-                Distance: {routeData.legs[0].distance.text}
-              </Text>
-              <Text style={displayRouteStyles.routeInfo}>
-                Duration: {routeData.legs[0].duration.text}
-              </Text>
+              {currentInstruction != null ? (
+                <Text style={displayRouteStyles.routeInfo}>
+                  {currentInstruction}
+                </Text>
+              ) : (
+                <>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Route from {origin} to {destination}
+                  </Text>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Distance: {routeData.legs[0].distance.text}
+                  </Text>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Duration: {routeData.legs[0].duration.text}
+                  </Text>
+                </>
+              )}
             </View>
             <View style={displayRouteStyles.devModeContainer}>
               <Text style={displayRouteStyles.devModeText}>Dev Mode</Text>
               <Switch
                 value={devMode}
-                onValueChange={(value) => setDevMode(value)}
+                onValueChange={(value) => toggleDevMode(value)}
               />
             </View>
           </View>

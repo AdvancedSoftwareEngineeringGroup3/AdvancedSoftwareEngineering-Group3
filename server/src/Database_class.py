@@ -1,6 +1,7 @@
 import pg8000
 from dotenv import load_dotenv
 import os
+from typing import Dict
 
 # Load environment variables from .env file
 load_dotenv()
@@ -41,13 +42,13 @@ class DataBase:
             print("An error occurred:", e)
 
     def create_table(
-        self, table_name: str, table_info: dict[str, str]
+        self, table_name: str, table_info: Dict[str, str]
     ) -> None:
         """Creates table in database
 
         Args:
             table name (str): name of table to be queried
-            table info (dict[str, str]): dict containing columns
+            table info (Dict[str, str]): Dict containing columns
             as keys and data type as column type
         """
 
@@ -68,7 +69,7 @@ class DataBase:
             self.connection.rollback()
             print("An error occurred:", e)
 
-    def add_entry(self, table_name: str, table_data: dict[str, any]) -> None:
+    def add_entry(self, table_name: str, table_data: Dict[str, any]) -> None:
         """Add row to database with new entry
 
         Args:

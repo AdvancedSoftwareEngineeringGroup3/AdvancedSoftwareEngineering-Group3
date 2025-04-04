@@ -1,18 +1,19 @@
 from pydantic import BaseModel
-
-# May need to be changed in future with restructure of DB connection
-import logging
 from fastapi import HTTPException
 from .Database_class import DataBase
+from src.preferences import Preferences
+import logging
+
+
+logger = logging.getLogger("test_logger")
 
 
 class Signup:
-    def __init__(self, api, logger: logging.Logger):
+    def __init__(self, api, logger: logging.Logger,
+                 preferences_logic: Preferences):
         self.app = api
         self.logger = logger
-
-        # load_dotenv()
-
+        self.preferences = preferences_logic
         # register signup route
         self.handle_signup()
 
@@ -22,13 +23,6 @@ class Signup:
             self.logger.info(
                 f"Received signup attempt: {signup.username} {signup.password}"
             )
-            # try:
-            # If username is already in database
-            # return "username already exists"
-            # Else
-            # Add the username and password to the database
-
-            # return "user successfully signed up"
 
             try:
                 if not self.signup_user(signup.username, signup.password):
@@ -63,6 +57,8 @@ class Signup:
 
         self.logger.info(f"User {username} signed up")
         db.close_con()
+
+        self.preferences.db_initialise_preferences(username)
         return True
 
 

@@ -23,7 +23,6 @@ export default function SelectRouteScreen({ navigation, route }) {
       try {
         const initialLocation = await getCurrentLocation();
         setLocation(initialLocation);
-        console.log(location);
 
         const locationSubscription = await startLocationTracking(setLocation);
 
@@ -41,7 +40,6 @@ export default function SelectRouteScreen({ navigation, route }) {
     if (routeData && routeData.routes && routeData.routes.length > 0) {
       const encodedPolyline = currentRoute.overview_polyline.points;
       const decodedPath = decodeRoute(encodedPolyline); // Decode into lat/lng pairs
-      // if this mode is driving, call the speedlimit api, passing decodedPath
       setPolylineCoordinates(decodedPath);
       setRoutes(routeData.routes); // Set the routes state
     }
@@ -54,11 +52,10 @@ export default function SelectRouteScreen({ navigation, route }) {
     const encodedPolyline = selectedRoute.overview_polyline.points;
     const decodedPath = decodeRoute(encodedPolyline); // Decode into lat/lng pairs
     setPolylineCoordinates(decodedPath);
-    console.log(`origin: ${origin}destination: ${destination}`);
   };
 
   return (
-    <View style={selectRouteStyles.containter}>
+    <View style={selectRouteStyles.container}>
       {errorMessage && (
         <Text style={selectRouteStyles.error}>{errorMessage}</Text>
       )}
