@@ -14,7 +14,6 @@ logger = logging.getLogger("test_logger")
 preferences = Preferences(api=app, logger=logger)
 
 
-
 @router.post("/wayfinding/get_routes")
 def get_routes(
     origin: str = Body(...),
@@ -76,9 +75,10 @@ def wayfinding_router_setup(preferences_logic: Preferences, logger):
             "alternatives": str(alternatives).lower(),
             "key": GOOGLE_MAPS_API_KEY,
             "username": username,
-            "avoid": toAvoid
+            "avoid": toAvoid,
         }
 
         response = requests.get(url, params=parameters)
         return response.json()
+
     return router

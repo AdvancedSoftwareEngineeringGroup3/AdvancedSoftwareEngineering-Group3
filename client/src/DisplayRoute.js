@@ -3,12 +3,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, Alert, TouchableOpacity, Switch } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
+import * as Speech from 'expo-speech';
 import { haversine, startLocationTracking } from './utils/mapUtils';
 import displayRouteStyles from './components/styles/DisplayRoute.styles';
 
 import locationCircleIcon from './assets/location-circle.png';
-
-import * as Speech from 'expo-speech';
 
 export default function DisplayRouteScreen({ navigation, route }) {
   // route is a prop passed by the navigator, hence why that is used instead of other variable names
@@ -57,7 +56,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
 
   useEffect(() => {
     Speech.speak(currentInstruction);
-  }, [currentInstruction])
+  }, [currentInstruction]);
 
   function removeHtmlTags(instruction) {
     return instruction.replace(/<\/?[^>]+(>|$)/g, '');
