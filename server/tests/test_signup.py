@@ -20,7 +20,7 @@ def test_app():
     logger = logging.getLogger("test_logger")
     mock_preferences = MockPreferences()
     signup = Signup(api=app, logger=logger,
-                    preferences_logic=mock_preferences)  # noqa
+                    preferences_logic=mock_preferences)  # noqa: F841
     return TestClient(app)
 
 
