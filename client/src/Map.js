@@ -109,7 +109,7 @@ export default function MapScreen({ navigation }) {
             style={MapStyles.loginButton}
             onPress={() => navigation.navigate('AccountScreen')}
           >
-            <Text style={MapStyles.buttonText}>Log In</Text>
+            <Text style={MapStyles.buttonText}>Account</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={MapStyles.findRouteButton}

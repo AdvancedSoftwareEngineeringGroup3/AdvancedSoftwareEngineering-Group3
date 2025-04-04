@@ -25,7 +25,6 @@ export const retrieveData = async (key) => {
 export const removeData = async (key) => {
   try {
     await AsyncStorage.removeItem(JSON.stringify(key));
-    console.log('Removed successfully');
   } catch {
     console.error('Error removing data from cache');
   }
