@@ -12,6 +12,7 @@ import AccountScreen from './src/AccountScreen';
 import SignUpScreen from './src/SignUp';
 import DisplayRouteScreen from './src/DisplayRoute';
 import FriendsScreen from './src/FriendsScreen';
+import { retrieveData } from './src/caching';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,11 +25,19 @@ export default function App() {
           name="Map"
           component={MapScreen}
         />
-        <Stack.Screen
-          options={{ headerBackVisible: false }}
-          name="AccountScreen"
-          component={AccountScreen}
-        />
+        {retrieveData('username') === null ? (
+          <Stack.Screen
+            options={{ headerBackVisible: false }}
+            name="AccountScreen"
+            component={AccountScreen}
+          />
+        ) : (
+          <Stack.Screen
+            options={{ headerBackVisible: false }}
+            name="MapScreen"
+            component={MapScreen}
+          />
+        )}
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
         <Stack.Screen name="WeatherScreen" component={WeatherScreen} />
