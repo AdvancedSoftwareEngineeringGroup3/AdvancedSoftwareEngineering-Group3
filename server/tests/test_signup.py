@@ -19,7 +19,8 @@ def test_app():
     app = FastAPI()
     logger = logging.getLogger("test_logger")
     mock_preferences = MockPreferences()
-    signup = Signup(api=app, logger=logger, preferences_logic=mock_preferences) 
+    signup = Signup(api=app, logger=logger,
+                    preferences_logic=mock_preferences)  # noqa
     return TestClient(app)
 
 
