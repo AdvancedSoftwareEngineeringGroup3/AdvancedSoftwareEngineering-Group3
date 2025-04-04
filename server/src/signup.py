@@ -58,7 +58,7 @@ class Signup:
 
         self.logger.info(f"User {username} signed up")
         db.close_con()
-        
+
         preferences.db_initialise_preferences(username)
         return True
 

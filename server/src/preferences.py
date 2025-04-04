@@ -16,29 +16,29 @@ class Preferences:
 
     def set_Preferences(
         self,
-    ): 
+    ):
         @self.app.post("/setPreferences")
         async def set_Preferences(request: userPersonalizedSettings):
             self.logger.info("Received user personalized settings:")
             self.db_handle_preferences(request)
-            return {"message": "Successfully saved user preferences"}      
-            
+            return {"message": "Successfully saved user preferences"}
+
     def db_handle_preferences(self, request):
         db = DataBase()
         db.connect_db()
         dict = request.request_into_dictionary()
-        
+
         for key, val in dict.items():
             db.update_entry(
-                "user_personalized_settings", dict["username"], key, val 
+                "user_personalized_settings", dict["username"], key, val
             )
         self.logger.info("User preferences updated in the database")
         db.close_con()
-        
+
     def db_initialise_preferences(self, username):
         db = DataBase()
         db.connect_db()
-        
+
         dict = {
             "username": username,
             "bike": False,
@@ -53,26 +53,27 @@ class Preferences:
             "tram": False,
             "personal_bike": False,
         }
-        
-        db.add_entry(
-            "user_personalized_settings", dict
-        )
-        self.logger.info("User has signed up and a preferences entry has been created for him with default values all set to false")
-        db.close_con()    
-        
+
+        db.add_entry("user_personalized_settings", dict)
+        self.logger.info("User has signed up and a preferences")
+        db.close_con()
+
     def db_get_preferences(self, username):
         db = DataBase()
         db.connect_db()
-        motorwayPref = db.search_entry("user_personalized_settings", username, 'motorways')
-        tollsPref = db.search_entry("user_personalized_settings", username, 'tolls')
+        motorwayPref = db.search_entry(
+            "user_personalized_settings", username, "motorways"
+        )
+        tollsPref = db.search_entry(
+            "user_personalized_settings", username, "tolls"
+        )
         self.logger.info("User preferences retrieved from database")
         print("preferences retrieved from db", motorwayPref, tollsPref)
         db.close_con()
-        return {    
+        return {
             "motorways": motorwayPref,
             "tolls": tollsPref,
         }
-    
 
 
 class userPersonalizedSettings(BaseModel):
@@ -91,7 +92,7 @@ class userPersonalizedSettings(BaseModel):
 
     def request_into_dictionary(self):
         return {
-            "username": self.username, 
+            "username": self.username,
             "bike": self.bike,
             "private_vehicle": self.privateVehicle,
             "accessibility": self.accessibility,
