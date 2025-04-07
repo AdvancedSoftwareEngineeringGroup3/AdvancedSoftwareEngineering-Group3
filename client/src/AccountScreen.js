@@ -63,9 +63,19 @@ export default function AccountScreen({ navigation }) {
               onPress={logout}
               color="#841584"
             >
+
+            
               <Text style={buttonStyles.buttonText}>Log Out</Text>
             </TouchableOpacity>
             <Text style={styles.Text}>You are logged in</Text>
+
+            {/* todo: Need to make new changes to the preferences logic */}
+          <TouchableOpacity
+            style={buttonStyles.button}
+            onPress={() => navigation.navigate('PreferencesScreen')}
+          >
+            <Text style={buttonStyles .buttonText}>User Preferences</Text>
+          </TouchableOpacity>
           </>
         )}
       </SafeAreaView>

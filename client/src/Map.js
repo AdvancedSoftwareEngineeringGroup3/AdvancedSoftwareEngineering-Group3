@@ -35,39 +35,7 @@ export default function MapScreen({ navigation }) {
         return null;
     }
   };
-  
-
-
-
-  // // WebSocket Setup
-  // useEffect(() => {
-  //   const wsUrl = `${process.env.EXPO_PUBLIC_API_URL.replace(/^http/, 'ws')}/ws/location`;
-  //   console.log('Connecting to WebSocket:', wsUrl);
-
-  //   const socket = new WebSocket(wsUrl);
-
-  //   socket.onopen = () => {
-  //     console.log('WebSocket connection opened');
-  //     setWebSocket(socket);
-  //   };
-
-  //   socket.onmessage = (event) =>
-  //     console.log('Message from server:', event.data); // check if required
-  //   socket.onerror = (error) => console.error('WebSocket error:', error);
-  //   socket.onclose = () => console.log('WebSocket connection closed');
-
-  //   return () => socket.close();
-  // }, []);
-
-
-              
-    // Poll for friend requests every 5 seconds
-    //useEffect() => {
-      //const intervalId = setInterval(() => {
-        //fetchFromServer();
-     /// }, 10000); // Poll every 5 seconds
-  
-
+ 
 
      const fetchWeather = async () => {
       try {
@@ -145,22 +113,6 @@ export default function MapScreen({ navigation }) {
     };
     
     
-
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const initialLocation = await getCurrentLocation();
-  //       setLocation(initialLocation);
-
-  //       const locationSubscription = await startLocationTracking(setLocation);
-
-  //       return () => locationSubscription.remove();
-  //     } catch (error) {
-  //       setErrorMessage(error.message);
-  //     }
-  //   })();
-  // }, []);
-
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -186,13 +138,7 @@ export default function MapScreen({ navigation }) {
       }
     };
   
-    // Poll every 15 minutes
-    const intervalId = setInterval(pollWeather, 1 * 60 * 1000);
-  
-    
     pollWeather();
-
-    return () => clearInterval(intervalId);
   }, [location]);
   
 
@@ -228,12 +174,6 @@ export default function MapScreen({ navigation }) {
               longitudeDelta: 0.01,
             }}
           >
-
-
-
-
-
-
 
             {Array.isArray(bikeStations) &&
               bikeStations.map((station) => (
@@ -297,13 +237,7 @@ export default function MapScreen({ navigation }) {
           </View>
           
 
-          {/* todo: Need to make new changes to the preferences logic */}
-          <TouchableOpacity
-            style={MapStyles.PreferencesButton}
-            onPress={() => navigation.navigate('PreferencesScreen')}
-          >
-            <Text style={MapStyles.buttonText}>User Preferences</Text>
-          </TouchableOpacity>
+          
         </>
       );
     }
