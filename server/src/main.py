@@ -14,6 +14,7 @@ from src.networking import Networking
 from src.wayfinding import wayfinding_router_setup
 from src.sustainability import Sustainability
 
+
 class Server:
     def __init__(self):
         # Configure logging
@@ -31,8 +32,9 @@ class Server:
         self.networking = Networking(self.app, self.logger)
         self.preferences_logic = Preferences(self.app, self.logger)
         self.sustainability = Sustainability(self.app, self.logger)
-        self.signup_logic = Signup(self.app, self.logger,
-                                   self.preferences_logic)
+        self.signup_logic = Signup(
+            self.app, self.logger, self.preferences_logic, self.sustainability
+        )
 
         wayfinding_router = wayfinding_router_setup(
             preferences_logic=self.preferences_logic,

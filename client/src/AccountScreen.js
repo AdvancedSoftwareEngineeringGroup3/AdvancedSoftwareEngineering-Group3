@@ -4,9 +4,8 @@ import styles from './components/styles/AccountScreen.styles';
 import buttonStyles from './components/common/button';
 import { retrieveData, removeData } from './caching';
 
-
 export default function AccountScreen({ navigation }) {
-  const [usernameValid, setUsernameValid] = useState(null)
+  const [usernameValid, setUsernameValid] = useState(null);
 
   useEffect(() => {
     const fetchUsername = async () => {
@@ -17,8 +16,8 @@ export default function AccountScreen({ navigation }) {
         console.error('Error retrieving username:', error);
       }
     };
-  fetchUsername();
-},[]);
+    fetchUsername();
+  }, []);
 
   const logout = async () => {
     try {
