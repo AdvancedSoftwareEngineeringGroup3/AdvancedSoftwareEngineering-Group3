@@ -271,7 +271,7 @@ export default function MapScreen({ navigation }) {
             style={MapStyles.loginButton}
             onPress={() => navigation.navigate('AccountScreen')}
           >
-            <Text style={MapStyles.buttonText}>Log In</Text>
+            <Text style={MapStyles.buttonText}>Account</Text>
           </TouchableOpacity>
 
           <View style={MapStyles.bar}>
@@ -298,12 +298,12 @@ export default function MapScreen({ navigation }) {
           
 
           {/* todo: Need to make new changes to the preferences logic */}
-          {/* <TouchableOpacity
-                        style={MapStyles.PreferencesButton}
-                        onPress={() => navigation.navigate('PreferencesScreen')}
-                    >
-                        <Text style={MapStyles.buttonText}>User Preferences</Text>
-                    </TouchableOpacity> */}
+          <TouchableOpacity
+            style={MapStyles.PreferencesButton}
+            onPress={() => navigation.navigate('PreferencesScreen')}
+          >
+            <Text style={MapStyles.buttonText}>User Preferences</Text>
+          </TouchableOpacity>
         </>
       );
     }
@@ -313,19 +313,3 @@ export default function MapScreen({ navigation }) {
 
   return <View style={MapStyles.container}>{renderContent()}</View>;
 }
-
-// const styles = StyleSheet.create({
-//     container: { flex: 1, ...(Platform.OS === 'web' ? { height: '100vh' } : {}) },
-//     map: { flex: 1, minHeight: 300 },
-//     sendButton: {
-//         position: 'absolute', bottom: 20, left: '50%', transform: [{ translateX: -50 }],
-//         backgroundColor: '#007bff', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 10,
-//     },
-//     button: {
-//         position: 'absolute', bottom: 60, left: '50%', transform: [{ translateX: -50 }],
-//         backgroundColor: '#007bff', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 10,
-//     },
-//     buttonText: { color: '#fff', fontWeight: 'bold', textAlign: 'center' },
-//     error: { flex: 1, textAlign: 'center', fontSize: 18, color: 'red' },
-//     loadingText: { flex: 1, textAlign: 'center', fontSize: 18 },
-// });

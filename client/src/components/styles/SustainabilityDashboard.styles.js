@@ -31,7 +31,7 @@ const susDashboardStyles = StyleSheet.create({
     width: '90%',
   },
   gridItem: {
-    width: '45%', 
+    width: '45%',
     alignItems: 'center',
     marginBottom: 20,
   },

@@ -7,10 +7,12 @@ import uvicorn
 import sys
 from src.signup import Signup
 from src.login import Login
-from src.wayfinding import router  # Import the API routes
+from src.preferences import router as preferences_router
 from src.weatherApi import weatherAPI
 from src.preferences import Preferences
 from src.networking import Networking
+from src.wayfinding import wayfinding_router_setup
+from src.sustainability import Sustainability
 from src.dublin_bike_api import bikeAPI
 
 
@@ -22,16 +24,26 @@ class Server:
         # Initialize FastAPI app
         self.app = FastAPI()
         # Include the API routes from the my_routes.py file
-        self.app.include_router(router)
 
         # Instantiate components
-        self.signup_logic = Signup(self.app, self.logger)
+
         self.login_logic = Login(self.app, self.logger)
-        self.preferences_logic = Preferences(self.app, self.logger)
         self.connection_manager = ConnectionManager()
         self.weather_api = weatherAPI()
         self.bike_api = bikeAPI()
         self.networking = Networking(self.app, self.logger)
+        self.preferences_logic = Preferences(self.app, self.logger)
+        self.sustainability = Sustainability(self.app, self.logger)
+        self.signup_logic = Signup(self.app, self.logger,
+                                   self.preferences_logic)
+
+        wayfinding_router = wayfinding_router_setup(
+            preferences_logic=self.preferences_logic,
+            logger=self.logger,
+        )
+
+        self.app.include_router(wayfinding_router, prefix="/wayfinding")
+        self.app.include_router(preferences_router, prefix="/preferences")
 
         # Configure CORS
         self.configure_cors()

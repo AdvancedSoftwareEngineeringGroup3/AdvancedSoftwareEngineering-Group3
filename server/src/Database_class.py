@@ -1,6 +1,9 @@
 import pg8000
 from dotenv import load_dotenv
 import os
+from typing import Dict
+
+# from src.sustainability import Sustainability
 
 # Load environment variables from .env file
 load_dotenv()
@@ -41,13 +44,13 @@ class DataBase:
             print("An error occurred:", e)
 
     def create_table(
-        self, table_name: str, table_info: dict[str, str]
+        self, table_name: str, table_info: Dict[str, str]
     ) -> None:
         """Creates table in database
 
         Args:
             table name (str): name of table to be queried
-            table info (dict[str, str]): dict containing columns
+            table info (Dict[str, str]): Dict containing columns
             as keys and data type as column type
         """
 
@@ -68,7 +71,7 @@ class DataBase:
             self.connection.rollback()
             print("An error occurred:", e)
 
-    def add_entry(self, table_name: str, table_data: dict[str, any]) -> None:
+    def add_entry(self, table_name: str, table_data: Dict[str, any]) -> None:
         """Add row to database with new entry
 
         Args:
@@ -307,52 +310,30 @@ class DataBase:
         finally:
             cursor.close()
 
+    def return_user_row(self, table_name: str, user: str):
 
-def main():
-    # Initialise database class
-    db = DataBase()
+        try:
+            cursor = self.connection.cursor()
 
-    table_name = "testing_table"
-    table_info = {
-        "id": "SERIAL PRIMARY KEY",
-        "username": "VARCHAR(50)",
-        "password": "VARCHAR(50)",
-        "friends_list": "VARCHAR[]",
-        "pending_friends": "VARCHAR[]",
-        "sus_score": "VARCHAR(50)",
-        "ip": "VARCHAR(50)",
-    }
+            query = (
+                f"SELECT * FROM {table_name} " f"WHERE username = '{user}';"
+            )
 
-    table_data = {
-        "username": "Conor",
-        "password": "abc123",
-        "friends_list": "ARRAY['mark', 'gunjan', 'fiona']",
-        "pending_friends": "ARRAY['cormac', 'jason']",
-        "sus_score": "100",
-    }
+            cursor.execute(query)
+            record = cursor.fetchone()
 
-    # Connect to db
-    db.connect_db()
-    db.create_table(table_name, table_info)
-    db.add_entry(table_name, table_data)
+            column_names = [desc[0] for desc in cursor.description]
 
-    result = db.search_entry(table_name, "Conor", "pending_friends")
-    print(result)
+            # Combine column names and values into a dictionary
+            if record:
+                result = dict(zip(column_names, record))
+                return result
+            else:
+                return None  # Return None if no record is found
 
-    db.append_entry(table_name, "keith", "Conor", "pending_friends")
-    db.append_entry(table_name, "siobhan", "Conor", "pending_friends")
-
-    result = db.search_entry(table_name, "Conor", "pending_friends")
-    print(result)
-
-    # db.add_entry(table_name, {"username": "Keith",
-    # "password": "strong password"})
-    # db.remove_entry(table_name, 'Conor')
-    # db.update_entry(table_name, 'Keith', 'password', 'Roots123')
-    # db.print_table(table_name)
-    # print(db.search_user(table_name, 'Conor'))
-    db.close_con()
-
-
-if __name__ == "__main__":
-    main()
+        except Exception as e:
+            print("An error occurred:", e)
+            self.connection.rollback()
+            return None
+        finally:
+            cursor.close()

@@ -12,13 +12,16 @@ import AccountScreen from './src/AccountScreen';
 import SignUpScreen from './src/SignUp';
 import DisplayRouteScreen from './src/DisplayRoute';
 import FriendsScreen from './src/FriendsScreen';
+import { retrieveData } from './src/caching';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const firstScreen =
+    retrieveData('username') === null ? 'AccountScreen' : 'Map';
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="AccountScreen"
+      <Stack.Navigator initialRouteName={firstScreen}
         screenOptions={({ route }) => {
           switch (route.name) {
             case 'FindRouteScreen':
