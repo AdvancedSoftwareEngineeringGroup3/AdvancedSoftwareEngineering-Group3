@@ -12,7 +12,11 @@ logger = logging.getLogger("test_logger")
 
 class Signup:
     def __init__(
-        self, api, logger: logging.Logger, preferences_logic: Preferences, sustainability: Sustainability
+        self,
+        api,
+        logger: logging.Logger,
+        preferences_logic: Preferences,
+        sustainability: Sustainability,
     ):
         self.app = api
         self.logger = logger
@@ -63,8 +67,10 @@ class Signup:
         db.close_con()
 
         self.preferences.db_initialise_preferences(username)
-        self.sustainability.db_initialise_sustainability(username)  # Ensure the schema in `db_initialise_sustainability` uses "month_1", "month_2", etc.
-        
+        self.sustainability.db_initialise_sustainability(
+            username
+        )
+
         return True
 
 

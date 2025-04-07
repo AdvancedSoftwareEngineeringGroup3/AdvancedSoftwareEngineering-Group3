@@ -6,6 +6,7 @@ from .Database_class import DataBase
 
 router = APIRouter()
 
+
 class VehicleEnum(Enum):
     Bus = "bus"
     Car = "car"
@@ -179,7 +180,9 @@ class Sustainability:
         # Check for no friends
         if not friends_list:  # This handles both None and empty lists
             self.logger.info(f"Friends list empty for: {user}")
-            friends_list = [user]  # Create a list with the user as the only entry
+            friends_list = [
+                user
+            ]  # Create a list with the user as the only entry
         else:
             friends_list.append(user)  # Append the user to the existing list
 

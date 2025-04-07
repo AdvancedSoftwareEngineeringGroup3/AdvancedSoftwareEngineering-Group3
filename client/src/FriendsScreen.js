@@ -64,7 +64,7 @@ export default function FriendsScreen() {
   useEffect(() => {
     // eslint-disable-next-line no-use-before-define
     fetchUserAndFriends();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUserAndFriends = async () => {
