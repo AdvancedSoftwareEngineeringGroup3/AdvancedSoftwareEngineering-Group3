@@ -18,6 +18,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const [remainingPolyline, setRemainingPolyline] =
     useState(polylineCoordinates);
   const [devMode, setDevMode] = useState(false);
+  const [audioOn, setAudioOn] = useState(false);
   const [detailedStepData, setDetailedStepData] = useState([]);
   const [currentInstruction, setCurrentInstruction] = useState(null);
 
@@ -56,7 +57,9 @@ export default function DisplayRouteScreen({ navigation, route }) {
   }, [devMode, checkProximityAndUpdate]);
 
   useEffect(() => {
-    Speech.speak(currentInstruction);
+    if (audioOn) {
+      Speech.speak(currentInstruction);
+    }
   }, [currentInstruction]);
 
   function removeHtmlTags(instruction) {
@@ -192,6 +195,11 @@ export default function DisplayRouteScreen({ navigation, route }) {
               <Switch
                 value={devMode}
                 onValueChange={(value) => toggleDevMode(value)}
+              />
+              <Text style={displayRouteStyles.devModeText}>Audio</Text>
+              <Switch
+                value={audioOn}
+                onValueChange={(value) => setAudioOn(value)}
               />
             </View>
           </View>
