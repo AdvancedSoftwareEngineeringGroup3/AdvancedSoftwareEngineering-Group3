@@ -143,6 +143,15 @@ class Sustainability:
             return None
 
     def db_update_monthly_distances(self, user, journey_data):
+        """
+        Updates monthly distances for each transport mode travelled by user
+
+        Args:
+            user (str): username of the user
+            journey_data (dict): dictionary of distances travelled by user for each transport mode
+        Returns:
+            bool: True if update was successful, False otherwise
+        """
         table_name = "monthly_distance"
         db = DataBase()
         db.connect_db()
@@ -177,6 +186,15 @@ class Sustainability:
 
 
     def db_fetch_raw_distances(self, user):
+        """
+        Fetches distances for each transport mode travelled by user
+        for the current month
+        Args:
+            user (str): username of the user
+
+        Returns:
+            dict: dictionary of distances travelled by user for each transport mode
+        """
         table_name = "monthly_distance"
         db = DataBase()
         db.connect_db()
@@ -195,6 +213,13 @@ class Sustainability:
             return None
 
     def db_fetch_all_sust_friends(self, user):
+        """
+        Fetches all users friends
+        Args:
+            user (str): username of the user
+        Returns:
+            list: list of friends usernames
+        """
         table_name = "user_table"
         db = DataBase()
         db.connect_db()
@@ -285,33 +310,36 @@ class Sustainability:
         return round(emissions_difference / 1000, 2)
 
     def calc_scores_from_route(self, user, journey_data):
-        table_name = "monthly_distance"
-        db = DataBase()
-        db.connect_db()
+        """
+        Calculates total sustainability score from route data
+        Args:
+            user (str): username of the user
+            journey_data (dict): dictionary of distances travelled by user for each transport mode
 
-        calc_emissions_savings = self.calc_emissions_savings(journey_data)
+        Returns:
+            float: sustainability score
+        """
+
+        emissions_savings = self.calc_emissions_savings(journey_data)
         transport_score = 0
 
-        # If user found
-        if db.search_user(table_name, user):
-            self.logger.info("Found user")
-            for transport_mode in journey_data:
-                if transport_mode not in self.vehicle_types:
-                    self.logger.error(
-                        f"Invalid transport mode: {transport_mode}"
-                    )
-                    continue
-                
-                transport_score += self.calc_scores(
-                    calc_emissions_savings[transport_mode]
+        for transport_mode in journey_data:
+            if transport_mode not in self.vehicle_types:
+                self.logger.error(
+                    f"Invalid transport mode: {transport_mode}"
                 )
-            db.close_con()
-            return transport_score
+                continue
+            
+            # skip values not used in calculations
+            if transport_mode == "car" or transport_mode == "total" or transport_mode == "username":
+                continue
 
-        else:
-            db.close_con()
-            print("Monthly distances not found")
-            return 0
+            transport_score += self.calc_scores(
+                self.calc_emissions_savings[transport_mode]
+            )
+
+        return transport_score
+
 
     def calc_emissions_savings(self, monthly_distances):
         emissions_dif = {

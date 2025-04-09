@@ -220,8 +220,43 @@ def test_db_update_monthly_distances_success(sustainability_instance):
         assert mock_db.update_entry_any_call("monthly_distance", "test_user", "walk", 25)
 
 
+def test_calc_scores_from_route_success(sustainability_instance):
+    """
+    Test for successful calculation of scores from route
+    """
+    journey_data = {
+        "bike": 10,
+        "car": 0,
+        "luas": 20,
+        "train": 15,
+        "bus": 5,
+        "walk": 8
+    }
 
-
+    with patch.object(
+        sustainability_instance,
+        "calc_emissions_savings",
+        return_value={
+            "bike": 1020,  # 10 * 102 - 10 * 0 = 1020
+            "luas": 1940,  # 20 * 102 - 20 * 5 = 1940
+            "train": 1110,  # 15 * 102 - 15 * 28 = 1110
+            "bus": 385,    # 5 * 102 - 5 * 25 = 385
+            "walk": 816    # 8 * 102 - 8 * 0 = 816
+        }
+    ):
+        # Also patch calc_scores to return known values
+        with patch.object(
+            sustainability_instance,
+            "calc_scores",
+            side_effect=[1.02, 1.94, 1.11, 0.39, 0.82]  # Values divided by 1000 and rounded
+        ):
+            result = sustainability_instance.calc_scores_from_route("test_user", journey_data)
+            
+            assert result == 5.28  # Sum of all scores: 1.02 + 1.94 + 1.11 + 0.39 + 0.82 = 5.28
+            sustainability_instance.calc_emissions_savings.assert_called_once_with(journey_data)
+            
+            # Check that calc_scores was called for each transport mode except car
+            assert sustainability_instance.calc_scores.call_count == 5
 
 
 def test_car_calc_emissions(sustainability_instance):
