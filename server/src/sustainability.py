@@ -142,6 +142,40 @@ class Sustainability:
             print("Year stats not found")
             return None
 
+    def db_update_monthly_distances(self, user, journey_data):
+        table_name = "monthly_distance"
+        db = DataBase()
+        db.connect_db()
+
+        # If user found
+        if db.search_user(table_name, user):
+            self.logger.info("Found user")
+            for transport_mode in journey_data:
+                if transport_mode not in self.vehicle_types:
+                    self.logger.error(
+                        f"Invalid transport mode: {transport_mode}"
+                    )
+                    continue
+
+                # Get distance for each transport mode
+                raw_distances = db.return_user_row(table_name, user)
+                self.logger.info(f"Raw distances: {raw_distances}")
+                # Add new distances to the existing ones
+                journey_data[transport_mode] += raw_distances[transport_mode]
+                self.logger.info(f"Updated distances: {journey_data[transport_mode]}")
+                # Update the database with new distances
+                db.update_entry(
+                    table_name, user, transport_mode, journey_data[transport_mode]
+                )
+            db.close_con()
+            return True
+
+        else:
+            db.close_con()
+            print("Monthly distances not found")
+            return False
+
+
     def db_fetch_raw_distances(self, user):
         table_name = "monthly_distance"
         db = DataBase()
