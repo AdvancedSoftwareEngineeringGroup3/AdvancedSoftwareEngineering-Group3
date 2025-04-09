@@ -10,7 +10,7 @@ import { postIncident } from './utils/incidentReporterUtils';
 import accident from './assets/Crowdsource/TrafficAccident.png';
 import roadClosure from './assets/Crowdsource/RoadClosure.png';
 import roadHazard from './assets/Crowdsource/hazard.png';
-import police from './assets/Crowdsource/speeding.png';
+import police from './assets/Crowdsource/Speeding.png';
 import trafficJam from './assets/Crowdsource/TrafficSlow.png';
 import construction from './assets/Crowdsource/construction.png';
 
