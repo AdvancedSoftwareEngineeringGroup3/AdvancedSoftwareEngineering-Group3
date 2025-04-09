@@ -4,7 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { getCurrentLocation, startLocationTracking } from './utils/mapUtils';
 import locationCircleIcon from './assets/location-circle.png';
 import MapStyles from './components/styles/Map.styles';
-import { Platform } from 'react-native';
+
 
 import Sunny from './assets/MapDashboard/SunIcon.png';
 import Rain from './assets/MapDashboard/rainIcon.png';
@@ -196,6 +196,7 @@ export default function MapScreen({ navigation }) {
       if (location) {
         fetchWeather();
         fetchBikeApi();
+        pollIncident();
       }
     };
   

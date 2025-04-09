@@ -1,12 +1,11 @@
 /* eslint-disable no-undef, no-use-before-define, react-hooks/exhaustive-deps, array-callback-return */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Alert, TouchableOpacity, Switch, Image, } from 'react-native';
+import { View, Text, Alert, TouchableOpacity, Switch, Image, Platform} from 'react-native';
 import * as Speech from 'expo-speech';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { haversine, startLocationTracking } from './utils/mapUtils';
 import displayRouteStyles from './components/styles/DisplayRoute.styles';
-import { Platform } from 'react-native';
 import locationCircleIcon from './assets/location-circle.png';
 import IncidentReporter from './IncidentReporter';
 import { postIncident } from './utils/incidentReporterUtils';
@@ -29,16 +28,23 @@ const iconMap = {
 
 
 
+
 export default function DisplayRouteScreen({ navigation, route }) {
   // route is a prop passed by the navigator, hence why that is used instead of other variable names
   const { origin, destination, routeData, polylineCoordinates } = route.params;
   const [location, setLocation] = useState(null);
   const [travelledPolyline, setTravelledPolyline] = useState([]);
-  const [remainingPolyline, setRemainingPolyline] =
-    useState(polylineCoordinates);
+  const [remainingPolyline, setRemainingPolyline] = useState(polylineCoordinates);
+  const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
   const [devMode, setDevMode] = useState(false);
+  const [audioOn, setAudioOn] = useState(false);
+  const [currentInstruction, setCurrentInstruction] = useState(null);
   const [incidentInfo, setIncidentInfo] = useState([]);
+  const [detailedStepData, setDetailedStepData] = useState([]);
+ 
 
+
+  
   const handleIncidentSubmit = async (incidentData) => {
     // Here you would process the incident data
     console.log('Incident reported:', incidentData);
@@ -50,6 +56,88 @@ export default function DisplayRouteScreen({ navigation, route }) {
     // Example: Update local state to show on map
     // setMapIncidents(prev => [...prev, incidentData]);
   };
+
+  useEffect(() => {
+    setDetailedStepData([]);
+    getDetailedStepData();
+  }, [routeData]);
+
+   // Check proximity to the next coordinate in the polyline
+
+   useEffect(() => {
+    let locationSubscription;
+    // Start tracking location
+    const startTracking = async () => {
+      try {
+        locationSubscription = await startLocationTracking(
+          (currentLocation) => {
+            if (!devMode) {
+              setLocation(currentLocation);
+              checkProximityAndUpdate(currentLocation);
+            }
+          },
+        );
+      } catch (error) {
+        console.error('Error starting location tracking:', error);
+      }
+    };
+    if (!devMode) {
+      startTracking();
+    }
+    return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
+    };
+  }, [devMode, checkProximityAndUpdate]);
+
+  useEffect(() => {
+    if (audioOn) {
+      Speech.speak(currentInstruction);
+    }
+  }, [currentInstruction]);
+
+  function removeHtmlTags(instruction) {
+    return instruction.replace(/<\/?[^>]+(>|$)/g, '');
+  }
+
+  // Creating a dictionary of step data for each step in the route
+  // Pairing locations along with the instructions of each step of the route
+  // Using this data to display the instructions on the map as the user moves along the route
+  const getDetailedStepData = () => {
+    routeData.legs[0].steps.map((step) => {
+      // Due to the complicated nature of the response some modes of transport have instructions in outer steps and other in inner
+      if (step.travel_mode !== 'TRANSIT' && step.steps) {
+        // For non-transit steps within a transit route
+        step.steps.forEach((detailedStep) => {
+          const temp = detailedStepData;
+          temp.push({
+            html_instructions: removeHtmlTags(detailedStep.html_instructions),
+            start_location: detailedStep.start_location,
+          });
+          setDetailedStepData(temp);
+        });
+      } else if (step.travel_mode === 'TRANSIT') {
+        // If the step is a transit step, add the arrival stop to the instructions
+        const temp = detailedStepData;
+        temp.push({
+          html_instructions: `${removeHtmlTags(step.html_instructions)} until ${step.transit_details.arrival_stop.name}`,
+          start_location: step.start_location,
+        });
+        setDetailedStepData(temp);
+      } else {
+        // For non transit routes
+        const temp = detailedStepData;
+        temp.push({
+          html_instructions: removeHtmlTags(step.html_instructions),
+          start_location: step.start_location,
+        });
+        setDetailedStepData(temp);
+      }
+      return null;
+    });
+  };
+
 
   const pollIncident = async () => {
     try {
@@ -116,26 +204,10 @@ export default function DisplayRouteScreen({ navigation, route }) {
     [currentPolylineIndex, polylineCoordinates, navigation],
   );
 
-  useEffect(() => {
-    let locationSubscription;
-    // Start tracking location
-    const startTracking = async () => {
-      try {
-        locationSubscription = await startLocationTracking(
-          (currentLocation) => {
-            if (!devMode) {
-              setLocation(currentLocation);
-              checkProximityAndUpdate(currentLocation);
-            }
-          },
-        );
-      } catch (error) {
-        console.error('Error starting location tracking:', error);
-      }
-    };
 
-    startTracking();
-  }, [devMode, polylineCoordinates, checkProximityAndUpdate]);
+ 
+   
+
 
   // Poll for incidents every 5 seconds
     useEffect(() => {
@@ -195,6 +267,11 @@ export default function DisplayRouteScreen({ navigation, route }) {
               <Switch
                 value={devMode}
                 onValueChange={(value) => toggleDevMode(value)}
+              />
+              <Text style={displayRouteStyles.devModeText}>Audio</Text>
+              <Switch
+                value={audioOn}
+                onValueChange={(value) => setAudioOn(value)}
               />
             </View>
           </View>
