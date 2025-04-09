@@ -1,6 +1,6 @@
 from enum import Enum
 import logging
-from fastapi import Query, HTTPException, APIRouter
+from fastapi import Query, HTTPException, APIRouter, Body
 from dotenv import load_dotenv
 from .Database_class import DataBase
 
@@ -101,7 +101,31 @@ class Sustainability:
                 "raw_distances": raw_distances,
                 "friends_sus_scores": friends_sus_scores,
             }
-
+            
+            
+    def api_update_sus_stats(self):
+        @self.app.post("/update_sus_stats")
+        async def update_sus_stats(
+            username: str = Body(..., alias="sender"),
+            flag: bool = Body(...),
+            modeDistances: dict = Body(...),
+        ):
+            journeyData = {
+                "username": username,
+                "bike": modeDistances["BICYCLING"],
+                "car": modeDistances["DRIVING"],
+                "luas": modeDistances["Luas"],
+                "train": modeDistances["Train"],
+                "bus": modeDistances["Bus"],
+                "walk": modeDistances["WALKING"],
+            }
+            if (flag):
+                self.db_update_monthly_distances(username, journeyData)
+                self.logger.info("Monthly distances updated")
+                
+            return self.calc_scores_from_route(username, journeyData)
+            
+            
     def db_fetch_month_sus_stats(self, user):
         table_name = "monthly_distance"
         db = DataBase()

@@ -16,6 +16,7 @@ export default function SelectRouteScreen({ navigation, route }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [polylineCoordinates, setPolylineCoordinates] = useState([]);
   const [currentRoute, setCurrentRoute] = useState(routeData.routes[0]);
+  
 
   // Get current location
   useEffect(() => {
@@ -53,6 +54,29 @@ export default function SelectRouteScreen({ navigation, route }) {
     const decodedPath = decodeRoute(encodedPolyline); // Decode into lat/lng pairs
     setPolylineCoordinates(decodedPath);
   };
+
+  const getSustainabilityScore = (index) => {
+    let sustainabilityScore = {
+      "Bus": 0,
+      "Train": 0,
+      "WALKING": 0,
+      "Luas": 0,
+      "DRIVING": 0,
+      "BICYCLING": 0,
+    };
+    routeData.routes[index].legs[0].steps.forEach((step) => {
+      let key = '';
+      if (step.travel_mode === 'TRANSIT') {
+        key = step.html_instructions.split()[0]
+      }
+      else {
+        key = step.travel_mode;
+      }
+      sustainabilityScore[key] += step.distance.value/1000;
+    })
+    
+    return sustainabilityScore;
+  }
 
   return (
     <View style={selectRouteStyles.container}>
