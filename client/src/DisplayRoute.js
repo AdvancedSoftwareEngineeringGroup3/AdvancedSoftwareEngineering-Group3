@@ -1,13 +1,32 @@
 /* eslint-disable no-undef, no-use-before-define, react-hooks/exhaustive-deps, array-callback-return */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Alert, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, Alert, TouchableOpacity, Switch, Image, } from 'react-native';
 import * as Speech from 'expo-speech';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { haversine, startLocationTracking } from './utils/mapUtils';
 import displayRouteStyles from './components/styles/DisplayRoute.styles';
-
+import { Platform } from 'react-native';
 import locationCircleIcon from './assets/location-circle.png';
+import IncidentReporter from './IncidentReporter';
+import { postIncident } from './utils/incidentReporterUtils';
+import accident from './assets/Crowdsource/TrafficAccident.png';
+import roadClosure from './assets/Crowdsource/RoadClosure.png';
+import roadHazard from './assets/Crowdsource/hazard.png';
+import police from './assets/Crowdsource/Speeding.png';
+import trafficJam from './assets/Crowdsource/TrafficSlow.png';
+import construction from './assets/Crowdsource/construction.png';
+
+
+const iconMap = {
+  'Accident': accident,
+  'Closure': roadClosure,
+  'Hazard': roadHazard,
+  'Police': police,
+  'Traffic': trafficJam,
+  'Construction': construction,
+};
+
 
 
 export default function DisplayRouteScreen({ navigation, route }) {
@@ -18,15 +37,84 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const [remainingPolyline, setRemainingPolyline] =
     useState(polylineCoordinates);
   const [devMode, setDevMode] = useState(false);
-  const [detailedStepData, setDetailedStepData] = useState([]);
-  const [currentInstruction, setCurrentInstruction] = useState(null);
+  const [incidentInfo, setIncidentInfo] = useState([]);
 
-  useEffect(() => {
-    setDetailedStepData([]);
-    getDetailedStepData();
-  }, [routeData]);
+  const handleIncidentSubmit = async (incidentData) => {
+    // Here you would process the incident data
+    console.log('Incident reported:', incidentData);
 
-  // Check proximity to the next coordinate in the polyline
+    // Example: Send to your API
+    const data = await postIncident(incidentData);
+    console.log('Response:', data);
+
+    // Example: Update local state to show on map
+    // setMapIncidents(prev => [...prev, incidentData]);
+  };
+
+  const pollIncident = async () => {
+    try {
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
+      console.log(
+        `Sending request to ${baseUrl}/check_incidents`,
+      );
+
+      const response = await fetch(`${baseUrl}/check_incidents`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      // Check if the response is ok
+      if (response.ok) {
+        // Parse the response as JSON
+        const serverMessage = await response.json();
+        console.log('Response from Server: ', serverMessage.message);
+
+        // process the return incidents object, which contains multiple incidents
+        setIncidentInfo(serverMessage.message)
+
+      } else {
+        // Log the raw response text for debugging
+        const responseText = await response.text();
+        console.error('Failed to get crowd sourced incidents:', responseText);
+        alert('Server Error: ', responseText);
+      }
+    } catch (error) {
+      console.error('Error getting crowd sourced incidents:', error);
+    }
+  };
+
+  const checkProximityAndUpdate = useCallback(
+    (currentLocation) => {
+      if (currentPolylineIndex >= polylineCoordinates.length) return;
+
+      const nextCoordinate = polylineCoordinates[currentPolylineIndex];
+      const distance = haversine(currentLocation, nextCoordinate);
+
+      if (distance < 50) {
+        // Assuming 50 meters as the proximity threshold
+        setTravelledPolyline((prev) => [...prev, nextCoordinate]);
+        setCurrentPolylineIndex((prev) => prev + 1);
+        // setTravelledPolyline([...travelledPolyline, nextCoordinate]);
+        // setCurrentPolylineIndex(currentPolylineIndex + 1);
+
+        if (currentPolylineIndex + 1 >= polylineCoordinates.length) {
+          Alert.alert(
+            'Destination reached',
+            'You have reached your destination.',
+          );
+          navigation.navigate('Map');
+        }
+      }
+    },
+    [currentPolylineIndex, polylineCoordinates, navigation],
+  );
 
   useEffect(() => {
     let locationSubscription;
@@ -45,104 +133,19 @@ export default function DisplayRouteScreen({ navigation, route }) {
         console.error('Error starting location tracking:', error);
       }
     };
-    if (!devMode) {
-      startTracking();
-    }
-    return () => {
-      if (locationSubscription) {
-        locationSubscription.remove();
-      }
-    };
-  }, [devMode, checkProximityAndUpdate]);
 
-  useEffect(() => {
-    Speech.speak(currentInstruction);
-  }, [currentInstruction]);
+    startTracking();
+  }, [devMode, polylineCoordinates, checkProximityAndUpdate]);
 
-  function removeHtmlTags(instruction) {
-    return instruction.replace(/<\/?[^>]+(>|$)/g, '');
-  }
-
-  // Creating a dictionary of step data for each step in the route
-  // Pairing locations along with the instructions of each step of the route
-  // Using this data to display the instructions on the map as the user moves along the route
-  const getDetailedStepData = () => {
-    routeData.legs[0].steps.map((step) => {
-      // Due to the complicated nature of the response some modes of transport have instructions in outer steps and other in inner
-      if (step.travel_mode !== 'TRANSIT' && step.steps) {
-        // For non-transit steps within a transit route
-        step.steps.forEach((detailedStep) => {
-          const temp = detailedStepData;
-          temp.push({
-            html_instructions: removeHtmlTags(detailedStep.html_instructions),
-            start_location: detailedStep.start_location,
-          });
-          setDetailedStepData(temp);
-        });
-      } else if (step.travel_mode === 'TRANSIT') {
-        // If the step is a transit step, add the arrival stop to the instructions
-        const temp = detailedStepData;
-        temp.push({
-          html_instructions: `${removeHtmlTags(step.html_instructions)} until ${step.transit_details.arrival_stop.name}`,
-          start_location: step.start_location,
-        });
-        setDetailedStepData(temp);
-      } else {
-        // For non transit routes
-        const temp = detailedStepData;
-        temp.push({
-          html_instructions: removeHtmlTags(step.html_instructions),
-          start_location: step.start_location,
-        });
-        setDetailedStepData(temp);
-      }
-      return null;
-    });
-  };
-
-  const checkProximityAndUpdate = useCallback(
-    (currentLocation) => {
-      for (let i = 0; i < remainingPolyline.length; i += 1) {
-        const distance = haversine(currentLocation, remainingPolyline[i]);
-
-        // Assuming 50 meters as the proximity threshold
-        if (distance < 50) {
-          setTravelledPolyline((prev) => [
-            ...prev,
-            ...remainingPolyline.slice(0, i),
-          ]);
-          setRemainingPolyline((prev) => prev.slice(i));
-
-          if (remainingPolyline.length === 1) {
-            Alert.alert(
-              'Destination reached',
-              'You have reached your destination.',
-            );
-            // TODO: maybe navigate to sustainability
-            navigation.navigate('Map');
-          } else {
-            // Update instruction if previous instruction complete
-            for (let j = 0; j < detailedStepData.length; j += 1) {
-              const instructionLocation = {
-                latitude: detailedStepData[j].start_location.lat,
-                longitude: detailedStepData[j].start_location.lng,
-              };
-              const instructionDistance = haversine(
-                currentLocation,
-                instructionLocation,
-              );
-              if (instructionDistance < 50) {
-                setCurrentInstruction(detailedStepData[j].html_instructions);
-                setDetailedStepData((prev) => prev.slice(j));
-              }
-            }
-          }
-          break;
-        }
-      }
-    },
-    [remainingPolyline, navigation, detailedStepData],
-  );
+  // Poll for incidents every 5 seconds
+    useEffect(() => {
+      const intervalId = setInterval(() => {
+        pollIncident();
+      }, 5000); // Poll every 5 seconds
+  
+      // Cleanup function to clear the interval when the component unmounts
+      return () => clearInterval(intervalId);
+    }, []);
 
   // Call checkProximityAndUpdate and update setlocation on latitude / longitude button click
   const devMove = ({ delLat = 0, delLng = 0 }) => {
@@ -204,6 +207,31 @@ export default function DisplayRouteScreen({ navigation, route }) {
               longitudeDelta: 1,
             }}
           >
+            {Array.isArray(incidentInfo) &&
+                incidentInfo.map((incident, index) => {
+                  const type = incident[2]; // Adjust this if the incident type is in a different index
+                  const icon = iconMap[type] || accident; // default fallback icon
+
+                  return (
+                    <Marker
+                      key={incident[0]}
+                      coordinate={{
+                        latitude: parseFloat(incident[5]),
+                        longitude: parseFloat(incident[6]),
+                      }}
+                      title={incident[2]}
+                      description={incident[3]}
+                    >
+                      <Image
+                        source={icon}
+                        style={{ width: 40, height: 40 }}
+                        resizeMode="contain"
+                      />
+                    </Marker>
+                  );
+                })}
+
+
             <Marker
               coordinate={location}
               description="Real-time location"
@@ -267,6 +295,8 @@ export default function DisplayRouteScreen({ navigation, route }) {
           Fetching your location...
         </Text>
       )}
+
+      <IncidentReporter onSubmitIncident={handleIncidentSubmit} />
     </View>
   );
 }

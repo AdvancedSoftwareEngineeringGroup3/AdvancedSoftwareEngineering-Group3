@@ -174,6 +174,34 @@ def test_search_user_not_found(db):
     cursor_mock.close.assert_called_once()
     assert result is False
 
+def test_search_table(db):
+    """Test search_table method when entry is found"""
+    db.connection = MagicMock()
+    cursor_mock = db.connection.cursor.return_value
+    cursor_mock.fetchall.return_value = [["Accident", "58.049", "-6.412"], ["Police", "32.211", "10.909"], ["Roadworks", "86.924", "-3.123"]]
+    table_name = "test_table"
+
+    result = db.search_table(table_name)
+    cursor_mock.execute.assert_called_once_with(
+        "SELECT * FROM test_table;"
+    )
+    cursor_mock.close.assert_called_once()
+    assert result == [["Accident", "58.049", "-6.412"], ["Police", "32.211", "10.909"], ["Roadworks", "86.924", "-3.123"]]
+
+def test_search_table_empty(db):
+    """Test search_table method when entry is found"""
+    db.connection = MagicMock()
+    cursor_mock = db.connection.cursor.return_value
+    cursor_mock.fetchall.return_value = []
+    table_name = "test_table"
+
+    result = db.search_table(table_name)
+    cursor_mock.execute.assert_called_once_with(
+        "SELECT * FROM test_table;"
+    )
+    cursor_mock.close.assert_called_once()
+    assert result == []
+
 
 def test_close_con(db):
     """Test close_con method"""

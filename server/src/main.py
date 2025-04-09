@@ -11,6 +11,7 @@ from src.preferences import router as preferences_router
 from src.weatherApi import weatherAPI
 from src.preferences import Preferences
 from src.networking import Networking
+from src.incident_reporter import IncidentReporter
 from src.wayfinding import wayfinding_router_setup
 from src.sustainability import Sustainability
 from src.dublin_bike_api import bikeAPI
@@ -44,6 +45,7 @@ class Server:
 
         self.app.include_router(wayfinding_router, prefix="/wayfinding")
         self.app.include_router(preferences_router, prefix="/preferences")
+        self.incident_reporter = IncidentReporter(self.app, self.logger)
 
         # Configure CORS
         self.configure_cors()
