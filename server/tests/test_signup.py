@@ -11,6 +11,11 @@ class MockPreferences:
         print("Mocking preferences")
 
 
+class MockSustainability:
+    def db_initialise_sustainability(self, username):
+        print("Mocking sustainability")
+
+
 @pytest.fixture
 def test_app():
     """
@@ -20,8 +25,13 @@ def test_app():
     app = FastAPI()
     logger = logging.getLogger("test_logger")
     mock_preferences = MockPreferences()
+    mock_sustainability = MockSustainability()
     signup = Signup(  # noqa: F841
-        api=app, logger=logger, preferences_logic=mock_preferences)
+        api=app,
+        logger=logger,
+        preferences_logic=mock_preferences,
+        sustainability=mock_sustainability,
+    )
     return TestClient(app)
 
 

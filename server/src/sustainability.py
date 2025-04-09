@@ -1,8 +1,10 @@
 from enum import Enum
 import logging
-from fastapi import Query, HTTPException
+from fastapi import Query, HTTPException, APIRouter
 from dotenv import load_dotenv
 from .Database_class import DataBase
+
+router = APIRouter()
 
 
 class VehicleEnum(Enum):
@@ -24,6 +26,48 @@ class Sustainability:
         load_dotenv()
         # Register Endpoints
         self.api_get_sus_stats()
+
+    def db_initialise_sustainability(self, username):
+        db = DataBase()
+        db.connect_db()
+
+        # Monthly distances table
+        current_month_distances_dict = {
+            "username": username,
+            "bike": 0,
+            "car": 0,
+            "luas": 0,
+            "train": 0,
+            "bus": 0,
+            "walk": 0,
+            "total": 0,
+        }
+
+        db.add_entry("monthly_distance", current_month_distances_dict)
+        self.logger.info("User entry added to current month distances")
+
+        # Current year emissions table
+
+        year_emissions_dict = {
+            "username": username,
+            "month_1": 0,
+            "month_2": 0,
+            "month_3": 0,
+            "month_4": 0,
+            "month_5": 0,
+            "month_6": 0,
+            "month_7": 0,
+            "month_8": 0,
+            "month_9": 0,
+            "month_10": 0,
+            "month_11": 0,
+            "month_12": 0,
+        }
+
+        db.add_entry("monthly_emissions_2025", year_emissions_dict)
+        self.logger.info("User entry added to monthly emissions table")
+
+        db.close_con()
 
     def api_get_sus_stats(self):
         @self.app.get("/get_sus_stats")
@@ -133,7 +177,14 @@ class Sustainability:
         if isinstance(friends_list, tuple):
             friends_list = list(friends_list)
 
-        friends_list.append(user)
+        # Check for no friends
+        if not friends_list:  # This handles both None and empty lists
+            self.logger.info(f"Friends list empty for: {user}")
+            friends_list = [
+                user
+            ]  # Create a list with the user as the only entry
+        else:
+            friends_list.append(user)  # Append the user to the existing list
 
         friend_scores = {}
         for friend in friends_list:

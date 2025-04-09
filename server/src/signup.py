@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from fastapi import HTTPException
 from .Database_class import DataBase
 from src.preferences import Preferences
+from src.sustainability import Sustainability
+
 import logging
 
 
@@ -9,11 +11,17 @@ logger = logging.getLogger("test_logger")
 
 
 class Signup:
-    def __init__(self, api, logger: logging.Logger,
-                 preferences_logic: Preferences):
+    def __init__(
+        self,
+        api,
+        logger: logging.Logger,
+        preferences_logic: Preferences,
+        sustainability: Sustainability,
+    ):
         self.app = api
         self.logger = logger
         self.preferences = preferences_logic
+        self.sustainability = sustainability
         # register signup route
         self.handle_signup()
 
@@ -59,6 +67,10 @@ class Signup:
         db.close_con()
 
         self.preferences.db_initialise_preferences(username)
+        self.sustainability.db_initialise_sustainability(
+            username
+        )
+
         return True
 
 
