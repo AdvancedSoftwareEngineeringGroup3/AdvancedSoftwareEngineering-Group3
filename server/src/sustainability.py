@@ -284,6 +284,35 @@ class Sustainability:
 
         return round(emissions_difference / 1000, 2)
 
+    def calc_scores_from_route(self, user, journey_data):
+        table_name = "monthly_distance"
+        db = DataBase()
+        db.connect_db()
+
+        calc_emissions_savings = self.calc_emissions_savings(journey_data)
+        transport_score = 0
+
+        # If user found
+        if db.search_user(table_name, user):
+            self.logger.info("Found user")
+            for transport_mode in journey_data:
+                if transport_mode not in self.vehicle_types:
+                    self.logger.error(
+                        f"Invalid transport mode: {transport_mode}"
+                    )
+                    continue
+                
+                transport_score += self.calc_scores(
+                    calc_emissions_savings[transport_mode]
+                )
+            db.close_con()
+            return transport_score
+
+        else:
+            db.close_con()
+            print("Monthly distances not found")
+            return 0
+
     def calc_emissions_savings(self, monthly_distances):
         emissions_dif = {
             "bike": 0,
