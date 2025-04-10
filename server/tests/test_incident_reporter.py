@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
 from fastapi import FastAPI
 import logging
-from src.incident_reporter import IncidentReporter, IncidentReport
+from src.incident_reporter import IncidentReporter
 
 
 @pytest.fixture
@@ -20,7 +20,8 @@ def test_app():
 
 def test_report_incident_success(test_app):
     """
-    Test for /report_incident endpoint where the incident is reported successfully.
+    Test for /report_incident endpoint where the incident is
+    reported successfully.
     """
     with patch("src.incident_reporter.DataBase") as mock_db_class:
         mock_db = MagicMock()
@@ -66,7 +67,9 @@ def test_report_incident_internal_server_error(test_app):
     """
     with patch("src.incident_reporter.DataBase") as mock_db_class:
         mock_db = MagicMock()
-        mock_db.add_entry.side_effect = Exception("Database error")  # Simulate DB error
+        mock_db.add_entry.side_effect = Exception(
+            "Database error"
+        )  # Simulate DB error
         mock_db_class.return_value = mock_db
 
         incident_data = {

@@ -35,8 +35,9 @@ class Server:
         self.networking = Networking(self.app, self.logger)
         self.preferences_logic = Preferences(self.app, self.logger)
         self.sustainability = Sustainability(self.app, self.logger)
-        self.signup_logic = Signup(self.app, self.logger,
-                                   self.preferences_logic)
+        self.signup_logic = Signup(
+            self.app, self.logger, self.preferences_logic
+        )
 
         wayfinding_router = wayfinding_router_setup(
             preferences_logic=self.preferences_logic,
@@ -115,28 +116,42 @@ class Server:
                 raise
 
         @self.app.get("/weather")
-        async def get_weather(longitude: str = Query(...), latitude: str = Query(...)):
-            self.logger.info(f"Received weather API request: lat={latitude}, lng={longitude}")
+        async def get_weather(
+            longitude: str = Query(...), latitude: str = Query(...)
+        ):
+            self.logger.info(
+                f"Received weather API request: lat={latitude}, lng={longitude}"  # noqa: E501
+            )
             try:
-                realtimeweatherdata, temperature = self.weather_api.get(lat=latitude, lng=longitude)
+                realtimeweatherdata, temperature = self.weather_api.get(
+                    lat=latitude, lng=longitude
+                )
                 print(f"Temperature: {temperature}")
-                return {"weather": realtimeweatherdata, "temperature": temperature}
+                return {
+                    "weather": realtimeweatherdata,
+                    "temperature": temperature,
+                }
             except Exception as e:
                 self.logger.error(f"Error hitting weather endpoint: {e}")
                 raise
 
         @self.app.get("/BikeStand")
-        async def get_bikeStand(longitude: str = Query(...), latitude: str = Query(...)):
-            self.logger.info(f"Received bike API request: lat={latitude}, lng={longitude}")
+        async def get_bikeStand(
+            longitude: str = Query(...), latitude: str = Query(...)
+        ):
+            self.logger.info(
+                f"Received bike API request: lat={latitude}, lng={longitude}"
+            )
             try:
-                realtimeBikeInfo = self.bike_api.get(lat=latitude, lng=longitude)
+                realtimeBikeInfo = self.bike_api.get(
+                    lat=latitude, lng=longitude
+                )
                 print(f"real time bike info: {realtimeBikeInfo}")
-        
+
                 return {"BikeInfo": realtimeBikeInfo}
             except Exception as e:
                 self.logger.error(f"Error hitting BikeApi endpoint: {e}")
                 raise
-
 
         @self.app.websocket("/ws/location")
         async def websocket_endpoint(websocket: WebSocket):

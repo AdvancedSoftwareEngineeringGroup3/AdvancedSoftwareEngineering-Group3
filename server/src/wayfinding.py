@@ -32,16 +32,16 @@ def get_routes(
     response = requests.get(url, params=parameters)
     data = response.json()
 
-
     if data.get("status") != "OK":
         return {
             "error": True,
             "status": data.get("status"),
-            "message": data.get("error_message", "Could not retrieve directions."),
+            "message": data.get(
+                "error_message", "Could not retrieve directions."
+            ),
         }
 
     return data  # Return full successful response
-
 
 
 def wayfinding_router_setup(preferences_logic: Preferences, logger):
@@ -85,18 +85,19 @@ def wayfinding_router_setup(preferences_logic: Preferences, logger):
             "alternatives": str(alternatives).lower(),
             "key": GOOGLE_MAPS_API_KEY,
             "username": username,
-            "avoid": toAvoid
+            "avoid": toAvoid,
         }
 
         response = requests.get(url, params=parameters)
         data = response.json()
 
-
         if data.get("status") != "OK":
             return {
                 "error": True,
                 "status": data.get("status"),
-                "message": data.get("error_message", "Could not retrieve directions."),
+                "message": data.get(
+                    "error_message", "Could not retrieve directions."
+                ),
             }
 
         return data  # Return full successful response

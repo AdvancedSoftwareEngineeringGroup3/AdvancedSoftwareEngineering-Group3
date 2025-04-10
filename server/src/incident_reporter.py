@@ -1,12 +1,13 @@
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import logging
-from fastapi import Query, HTTPException
 from src.Database_class import DataBase
+
 
 class Location(BaseModel):
     latitude: float
     longitude: float
+
 
 class IncidentReport(BaseModel):
     type: str
@@ -33,12 +34,10 @@ class IncidentReporter:
 
             self.logger.info(f"Incident report for {request.type}")
 
-            response = self.db_handle_incident_report(
-                request
-            )
+            response = self.db_handle_incident_report(request)
 
             return {"message": response}
-    
+
     def db_handle_incident_report(self, request: IncidentReport):
         try:
             db = DataBase()
@@ -57,7 +56,7 @@ class IncidentReporter:
                 comment_column: request.comment,
                 timestamp_column: request.timestamp,
                 latitude_column: request.location.latitude,
-                longitude_column: request.location.longitude
+                longitude_column: request.location.longitude,
             }
 
             db.add_entry(table_name, incident_dict)
@@ -72,14 +71,14 @@ class IncidentReporter:
     def api_check_incident(self):
         @self.app.post("/check_incidents")
         async def check_incident():
-            self.logger.info(f"Checking for incident reports in database")
+            self.logger.info("Checking for incident reports in database")
 
             response = self.db_handle_checking_incidents()
 
             print(response)
 
             return {"message": response}
-        
+
     def db_handle_checking_incidents(self):
         try:
             db = DataBase()
