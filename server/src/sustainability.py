@@ -122,6 +122,7 @@ class Sustainability:
             if (flag):
                 self.db_update_monthly_distances(username, journeyData)
                 self.logger.info("Monthly distances updated")
+                self.update_user_sus_score(username)
                 
             journeyData.pop('car', None)
             return self.calc_scores_from_route(username, journeyData)
@@ -337,6 +338,28 @@ class Sustainability:
             db.close_con()
             print("Monthly distances not found")
             return 0
+
+
+    def update_user_sus_score(self, user: str) -> float:
+        db = DataBase()
+        db.connect_db()
+
+        monthly_data = db.return_user_row("monthly_distance", user)
+        if not monthly_data:
+            self.logger.warning(f"No monthly distance data found for {user}")
+            db.close_con()
+            return 0
+        
+        emissions_savings = self.calc_emissions_savings(monthly_data)
+        total_score = 0
+        for mode in emissions_savings:
+            total_score += self.calc_scores(emissions_savings[mode])
+
+        db.update_entry("user_table", user, "sus_score", total_score)
+        self.logger.info(f"Updated sustainability score for {user}: {total_score}")
+        db.close_con()
+        return total_score
+
 
     def calc_emissions_savings(self, monthly_distances):
         emissions_dif = {
