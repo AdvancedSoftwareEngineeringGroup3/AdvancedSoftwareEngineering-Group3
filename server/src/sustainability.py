@@ -26,6 +26,7 @@ class Sustainability:
         load_dotenv()
         # Register Endpoints
         self.api_get_sus_stats()
+        self.api_update_sus_stats()
 
     def db_initialise_sustainability(self, username):
         db = DataBase()
@@ -106,15 +107,14 @@ class Sustainability:
     def api_update_sus_stats(self):
         @self.app.post("/update_sus_stats")
         async def update_sus_stats(
-            username: str = Body(..., alias="sender"),
+            username: str = Body(...),
             flag: bool = Body(...),
             modeDistances: dict = Body(...),
         ):
             journeyData = {
-                "username": username,
                 "bike": modeDistances["BICYCLING"],
                 "car": modeDistances["DRIVING"],
-                "luas": modeDistances["Luas"],
+                "luas": modeDistances["Tram"],
                 "train": modeDistances["Train"],
                 "bus": modeDistances["Bus"],
                 "walk": modeDistances["WALKING"],
@@ -123,6 +123,7 @@ class Sustainability:
                 self.db_update_monthly_distances(username, journeyData)
                 self.logger.info("Monthly distances updated")
                 
+            journeyData.pop('car', None)
             return self.calc_scores_from_route(username, journeyData)
             
             
@@ -166,45 +167,38 @@ class Sustainability:
             print("Year stats not found")
             return None
 
-def db_update_monthly_distances(self, user, journey_data):
-    table_name = "monthly_distance"
-    db = DataBase()
-    db.connect_db()
+    def db_update_monthly_distances(self, user, journey_data):
+        table_name = "monthly_distance"
+        db = DataBase()
+        db.connect_db()
 
-    # If user found
-    if db.search_user(table_name, user):
-        self.logger.info("Found user")
-        raw_distances = db.return_user_row(table_name, user)
-        self.logger.info(f"Raw distances: {raw_distances}")
+        # If user found
+        if db.search_user(table_name, user):
+            self.logger.info("Found user")
+            for transport_mode in journey_data:
+                if transport_mode not in self.vehicle_types:
+                    self.logger.error(
+                        f"Invalid transport mode: {transport_mode}"
+                    )
+                    continue
 
-        # Keep track of the updated total
-        updated_total = 0
-
-        # Update each transport mode in journey_data
-        for transport_mode in self.vehicle_types:
-            if transport_mode in journey_data:
+                # Get distance for each transport mode
+                raw_distances = db.return_user_row(table_name, user)
+                self.logger.info(f"Raw distances: {raw_distances}")
                 # Add new distances to the existing ones
-                updated_distance = raw_distances[transport_mode] + journey_data[transport_mode]
-                db.update_entry(table_name, user, transport_mode, updated_distance)
-                self.logger.info(f"Updated {transport_mode} distance: {updated_distance}")
-            else:
-                # Keep the existing distance for modes not in current journey
-                updated_distance = raw_distances[transport_mode]
-            
-            # Add to the total regardless of whether it was updated
-            updated_total += updated_distance
+                journey_data[transport_mode] += raw_distances[transport_mode]
+                self.logger.info(f"Updated distances: {journey_data[transport_mode]}")
+                # Update the database with new distances
+                db.update_entry(
+                    table_name, user, transport_mode, journey_data[transport_mode]
+                )
+            db.close_con()
+            return True
 
-        # Update the total column
-        db.update_entry(table_name, user, "total", updated_total)
-        self.logger.info(f"Updated total distance: {updated_total}")
-
-        db.close_con()
-        return True
-
-    else:
-        db.close_con()
-        self.logger.error("User not found in monthly distances table")
-        return False
+        else:
+            db.close_con()
+            print("Monthly distances not found")
+            return False
 
 
     def db_fetch_raw_distances(self, user):

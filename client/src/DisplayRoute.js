@@ -62,7 +62,11 @@ export default function DisplayRouteScreen({ navigation, route }) {
   }, [currentInstruction]);
 
   function removeHtmlTags(instruction) {
-    return instruction.replace(/<\/?[^>]+(>|$)/g, '');
+    if(instruction) {
+      return instruction.replace(/<\/?[^>]+(>|$)/g, '');
+    } else {
+      return instruction
+    }
   }
 
   // Creating a dictionary of step data for each step in the route
