@@ -1,7 +1,7 @@
 /* eslint-disable no-undef, no-use-before-define, react-hooks/exhaustive-deps, array-callback-return */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Alert, TouchableOpacity, Switch, Image, Platform} from 'react-native';
+import { View, Text, Alert, TouchableOpacity, Switch, ImageBackground, Platform} from 'react-native';
 import * as Speech from 'expo-speech';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { haversine, startLocationTracking } from './utils/mapUtils';
@@ -139,6 +139,12 @@ export default function DisplayRouteScreen({ navigation, route }) {
   };
 
 
+  const isGpsCoordinates = (str) => {
+    const gpsRegex = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/; // Regex to match "latitude,longitude"
+    return gpsRegex.test(str);
+  };
+
+
   const pollIncident = async () => {
     try {
       const baseUrl =
@@ -180,30 +186,47 @@ export default function DisplayRouteScreen({ navigation, route }) {
 
   const checkProximityAndUpdate = useCallback(
     (currentLocation) => {
-      if (currentPolylineIndex >= polylineCoordinates.length) return;
+      for (let i = 0; i < remainingPolyline.length; i += 1) {
+        const distance = haversine(currentLocation, remainingPolyline[i]);
 
-      const nextCoordinate = polylineCoordinates[currentPolylineIndex];
-      const distance = haversine(currentLocation, nextCoordinate);
-
-      if (distance < 50) {
         // Assuming 50 meters as the proximity threshold
-        setTravelledPolyline((prev) => [...prev, nextCoordinate]);
-        setCurrentPolylineIndex((prev) => prev + 1);
-        // setTravelledPolyline([...travelledPolyline, nextCoordinate]);
-        // setCurrentPolylineIndex(currentPolylineIndex + 1);
+        if (distance < 50) {
+          setTravelledPolyline((prev) => [
+            ...prev,
+            ...remainingPolyline.slice(0, i),
+          ]);
+          setRemainingPolyline((prev) => prev.slice(i));
 
-        if (currentPolylineIndex + 1 >= polylineCoordinates.length) {
-          Alert.alert(
-            'Destination reached',
-            'You have reached your destination.',
-          );
-          navigation.navigate('Map');
+          if (remainingPolyline.length === 1) {
+            Alert.alert(
+              'Destination reached',
+              'You have reached your destination.',
+            );
+            // TODO: maybe navigate to sustainability
+            navigation.navigate('Map');
+          } else {
+            // Update instruction if previous instruction complete
+            for (let j = 0; j < detailedStepData.length; j += 1) {
+              const instructionLocation = {
+                latitude: detailedStepData[j].start_location.lat,
+                longitude: detailedStepData[j].start_location.lng,
+              };
+              const instructionDistance = haversine(
+                currentLocation,
+                instructionLocation,
+              );
+              if (instructionDistance < 50) {
+                setCurrentInstruction(detailedStepData[j].html_instructions);
+                setDetailedStepData((prev) => prev.slice(j));
+              }
+            }
+          }
+          break;
         }
       }
     },
-    [currentPolylineIndex, polylineCoordinates, navigation],
+    [remainingPolyline, navigation, detailedStepData],
   );
-
 
  
    
@@ -213,7 +236,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
     useEffect(() => {
       const intervalId = setInterval(() => {
         pollIncident();
-      }, 5000); // Poll every 5 seconds
+      }, 500000); // Poll every 5 seconds
   
       // Cleanup function to clear the interval when the component unmounts
       return () => clearInterval(intervalId);
@@ -242,39 +265,6 @@ export default function DisplayRouteScreen({ navigation, route }) {
     <View style={displayRouteStyles.container}>
       {location && routeData ? (
         <>
-          <View style={displayRouteStyles.infoContainer}>
-            <View style={displayRouteStyles.routeInfoContainer}>
-              {currentInstruction != null ? (
-                <Text style={displayRouteStyles.routeInfo}>
-                  {currentInstruction}
-                </Text>
-              ) : (
-                <>
-                  <Text style={displayRouteStyles.routeInfo}>
-                    Route from {origin} to {destination}
-                  </Text>
-                  <Text style={displayRouteStyles.routeInfo}>
-                    Distance: {routeData.legs[0].distance.text}
-                  </Text>
-                  <Text style={displayRouteStyles.routeInfo}>
-                    Duration: {routeData.legs[0].duration.text}
-                  </Text>
-                </>
-              )}
-            </View>
-            <View style={displayRouteStyles.devModeContainer}>
-              <Text style={displayRouteStyles.devModeText}>Dev Mode</Text>
-              <Switch
-                value={devMode}
-                onValueChange={(value) => toggleDevMode(value)}
-              />
-              <Text style={displayRouteStyles.devModeText}>Audio</Text>
-              <Switch
-                value={audioOn}
-                onValueChange={(value) => setAudioOn(value)}
-              />
-            </View>
-          </View>
           <MapView
             style={displayRouteStyles.map}
             initialRegion={{
@@ -336,6 +326,48 @@ export default function DisplayRouteScreen({ navigation, route }) {
               />
             )}
           </MapView>
+
+
+        
+            <View style={displayRouteStyles.barContainer}>
+              <ImageBackground
+              source={require('./assets/MapDashboard/movementbar.png')}
+              style={displayRouteStyles.barImage}
+              resizeMode="contain"
+              >
+             
+              {currentInstruction != null ? (
+                <Text style={displayRouteStyles.routeInfo}>
+                  {currentInstruction}
+                </Text>
+              ) : (
+                <>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Route from {isGpsCoordinates(origin) ? 'current location' : origin} to {destination}
+                  </Text>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Distance: {routeData.legs[0].distance.text} {" "} 
+                    Duration: {routeData.legs[0].duration.text}
+                  </Text>
+                </>
+              )}
+              </ImageBackground>
+            </View>
+            <View style={displayRouteStyles.devModeContainer}>
+              <Text style={displayRouteStyles.devModeText}>Dev Mode</Text>
+              <Switch
+                value={devMode}
+                onValueChange={(value) => toggleDevMode(value)}
+              />
+              <Text style={displayRouteStyles.devModeText}>Audio</Text>
+              <Switch
+                value={audioOn}
+                onValueChange={(value) => setAudioOn(value)}
+              />
+          </View>
+        
+
+
           {devMode && (
             <View style={displayRouteStyles.dpadContainer}>
               <TouchableOpacity
@@ -372,6 +404,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
           Fetching your location...
         </Text>
       )}
+      
 
       <IncidentReporter onSubmitIncident={handleIncidentSubmit} />
     </View>

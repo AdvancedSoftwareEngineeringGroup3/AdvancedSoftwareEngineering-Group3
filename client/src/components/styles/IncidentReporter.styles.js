@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   reportButton: {
     position: 'absolute',
     left: 20,
-    bottom: Platform.OS === 'ios' ? 100 : 80,
+    top: 40,
     backgroundColor: '#FF4500',
     borderRadius: 30,
     padding: 16, // Slightly increased padding

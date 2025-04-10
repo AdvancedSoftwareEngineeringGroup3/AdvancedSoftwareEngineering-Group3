@@ -28,7 +28,8 @@ export default function FindRouteScreen({ navigation }) {
 
   const [selectedMode, setSelectedMode] = useState(null);
 
-  const isFormValid = start.trim() !== '' && destination.trim() !== '';
+  const isFormValid =
+    start.trim() !== '' && destination.trim() !== '' && selectedMode !== null;
 
   const fetchRoutes = async () => {
     let username = await retrieveData('username');
