@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Text,
   ImageBackground,
+  View,
 } from 'react-native';
 import Picker from 'react-native-picker-select';
 import ActionSheet from 'react-native-actionsheet';
@@ -14,7 +15,7 @@ import {
   findRouteStyles,
   pickerSelectStyles,
 } from './components/styles/FindRoute.styles';
-import bgImage from './assets/FindRouteScreen/Navigationbackground.png'
+import bgImage from './assets/FindRouteScreen/Navigationbackground.png';
 import { storeData, retrieveData, removeData, updateData } from './caching';
 
 export default function FindRouteScreen({ navigation }) {
