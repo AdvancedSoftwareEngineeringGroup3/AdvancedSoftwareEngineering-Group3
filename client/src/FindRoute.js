@@ -16,7 +16,8 @@ import {
   pickerSelectStyles,
 } from './components/styles/FindRoute.styles';
 import bgImage from './assets/FindRouteScreen/Navigationbackground.png';
-import { storeData, retrieveData, removeData, updateData } from './caching';
+import { retrieveData } from './caching';
+import { getCurrentLocation } from './utils/mapUtils';
 
 export default function FindRouteScreen({ navigation }) {
   const pickerRef = useRef();
@@ -46,15 +47,13 @@ export default function FindRouteScreen({ navigation }) {
         normalizedStart === 'my location';
   
       if (isCurrentLocation) {
-        const currentlat = await retrieveData('currentLat'); // e.g., { lat: 53.35, lng: -6.26 }
-        const currentlon = await retrieveData('currentLon');
-      
-        if (!currentlat || !currentlon) {
-          alert('Current location not available in cache.');
+        const initialLocation = await getCurrentLocation();
+        if (!initialLocation) {
+          alert('Unable to fetch current location.');
           return;
         }
   
-        originToSend = `${currentlat},${currentlon}`;
+        originToSend = `${initialLocation.latitude},${initialLocation.longitude}`;
       }
   
       const payload = {

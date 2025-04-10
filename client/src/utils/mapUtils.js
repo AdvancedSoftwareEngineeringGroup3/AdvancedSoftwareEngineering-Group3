@@ -1,6 +1,5 @@
 import { decode } from '@googlemaps/polyline-codec';
 import * as Location from 'expo-location';
-import { storeData, retrieveData, removeData, updateData } from '../caching';
 
 // Convert degrees to radians
 const deg2rad = (deg) => deg * (Math.PI / 180);
@@ -54,20 +53,6 @@ export const getCurrentLocation = async () => {
   const location = await Location.getCurrentPositionAsync({
     accuracy: Location.Accuracy.BestForNavigation,
   });
-
-  if (retrieveData('currentLat') !== null) {
-    await removeData('currentLat');
-    await updateData('currentLat', location.coords.latitude);
-  } else {
-    await storeData('currentLat', location.coords.latitude);
-  }
-
-  if (retrieveData('currentLon') !== null) {
-    await removeData('currentLon');
-    await updateData('currentLon', location.coords.longitude);
-  } else {
-    await storeData('currentLon', location.coords.longitude);
-  }
 
   return {
     latitude: location.coords.latitude,
