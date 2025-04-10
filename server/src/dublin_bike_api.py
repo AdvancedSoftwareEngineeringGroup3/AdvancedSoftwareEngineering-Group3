@@ -1,8 +1,9 @@
 import requests
 import math
+import os
+from dotenv import load_dotenv
 
-# URL of Open Data
-APIKEY = "3386ce10aca77dde762ab5c2de0177f7405cb6b3"
+load_dotenv()
 
 
 class bikeAPI:
@@ -12,10 +13,11 @@ class bikeAPI:
 
     def get(self, lat=53.349562, lng=-6.278198):
         # URL of Open Data
-        self.apiKey = APIKEY
+        self.api_key = os.getenv("DUBLIN_BIKE_API_KEY")
+
         self.url = (
             "https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey="
-            + APIKEY
+            + self.api_key
         )
 
         self.response = requests.get(self.url)
