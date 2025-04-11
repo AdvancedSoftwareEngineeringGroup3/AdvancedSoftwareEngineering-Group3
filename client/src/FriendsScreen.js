@@ -8,9 +8,11 @@ import {
   FlatList,
   TouchableOpacity,
   Platform,
+  ImageBackground,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import styles from './components/styles/FriendsScreen.styles';
+import beachBackground from './assets/FriendsUI/BeachBackground.png'; // Import your background image
 import { retrieveData } from './caching';
 
 // Not logged in message component
@@ -329,38 +331,47 @@ export default function FriendsScreen() {
   // Otherwise, show the normal friends dashboard
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        {/* Top Section: Input & Button */}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter friend's name"
-            value={friendRequestName}
-            onChangeText={setFriendName}
-          />
-          <Button title="Send Request" onPress={sendFriendRequest} />
-        </View>
+      {/* Background Image */}
+      <ImageBackground
+        source={beachBackground} // Set the background image
+        style={styles.backgroundImage} // Apply styles to stretch the image
+        resizeMode="cover" // Ensure the image covers the entire screen
+      >
+        <View style={styles.container}>
+          {/* Top Section: Input & Button */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter friend's name"
+              value={friendRequestName}
+              onChangeText={setFriendName}
+            />
+            <Button
+              title="Send Request"
+              onPress={sendFriendRequest}
+              style={styles.requestButton}
+            />
+          </View>
 
-        {/* Sent Friend Requests */}
-        <View style={styles.listContainer}>
-          <Text style={styles.sectionTitle}>Sent Friend Requests</Text>
-          <FlatList
-            data={sentFriends}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.pendingItem}>
-                <Text style={styles.friendRequestName}>{item}</Text>
-                {/* Cancel friend request */}
-                <TouchableOpacity
-                  onPress={() => cancelFriendRequest(item)}
-                  style={styles.cancelButton}
-                >
-                  <Text style={styles.buttonText}>Cancel</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          />
-        </View>
+          {/* Sent Friend Requests */}
+          <View style={styles.listContainer}>
+            <Text style={styles.sectionTitle}>Sent Friend Requests</Text>
+            <FlatList
+              data={sentFriends}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.pendingItem}>
+                  <Text style={styles.friendRequestName}>{item}</Text>
+                  <TouchableOpacity
+                    onPress={() => cancelFriendRequest(item)}
+                    style={styles.cancelButton}
+                  >
+                    <Text style={styles.buttonText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+          </View>
 
         {/* Pending Friends List */}
         <View style={styles.listContainer}>
@@ -388,27 +399,27 @@ export default function FriendsScreen() {
           />
         </View>
 
-        {/* Current Friends List */}
-        <View style={styles.listContainer}>
-          <Text style={styles.sectionTitle}>Current Friends</Text>
-          <FlatList
-            data={currentFriends}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.friendItem}>
-                <Text style={styles.friendRequestName}>{item}</Text>
-                {/* Remove friend */}
-                <TouchableOpacity
-                  onPress={() => removeFriend(item)}
-                  style={styles.removeButton}
-                >
-                  <Text style={styles.buttonText}>Remove</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          />
+          {/* Current Friends List */}
+          <View style={styles.listContainer}>
+            <Text style={styles.sectionTitle}>Current Friends</Text>
+            <FlatList
+              data={currentFriends}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.friendItem}>
+                  <Text style={styles.friendRequestName}>{item}</Text>
+                  <TouchableOpacity
+                    onPress={() => removeFriend(item)}
+                    style={styles.removeButton}
+                  >
+                    <Text style={styles.buttonText}>Remove</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+          </View>
         </View>
-      </View>
+      </ImageBackground>
     </GestureHandlerRootView>
   );
 }

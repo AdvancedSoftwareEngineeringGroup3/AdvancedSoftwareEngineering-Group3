@@ -1,4 +1,6 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform, Dimensions } from 'react-native';
+
+const screenWidth = Dimensions.get('window').width;
 
 const MapStyles = StyleSheet.create({
   container: {
@@ -27,9 +29,9 @@ const MapStyles = StyleSheet.create({
   loginButton: {
     position: 'absolute',
     alignItems: 'center',
-    left: '70%',
+    left: '34%',
     top: '0%',
-    backgroundColor: '#007bff',
+    backgroundColor: '#33CC66',
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 10,
@@ -127,6 +129,73 @@ const MapStyles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
     fontSize: 18,
+  },
+  bar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    width: screenWidth,
+    height: 120,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  barImage: {
+    position: 'absolute',
+    width: screenWidth,
+    height: 140,
+    left: 0,
+    bottom: 0,
+    zIndex: 0, // put image behind buttons
+    resizeMode: 'stretch', // or 'cover' if stretch distorts
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  centerButton: {
+    marginBottom: 10, // visually pop it up if needed
+  },
+  icon: {
+    width: 36,
+    height: 36,
+  },
+  centerIcon: {
+    width: 44,
+    height: 44,
+  },
+  label: {
+    fontSize: 12,
+    color: '#fff',
+    marginTop: 4,
+  },
+  weatherContainer: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    flexDirection: 'column', // 🔁 stack vertically
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    zIndex: 100,
+  },
+
+  weatherIcon: {
+    width: 50,
+    height: 50,
+    marginBottom: 4, // space between icon and text
+  },
+
+  weatherText: {
+    fontSize: 14,
+    color: '#333',
   },
 });
 
