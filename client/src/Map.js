@@ -32,6 +32,7 @@ export default function MapScreen({ navigation }) {
   const [temperature, setTemperature] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const mapRef = useRef(null);
+  const [pollingFlag, setPollingFlag] = useState(false);
 
   const pollIncident = async () => {
     try {
@@ -83,7 +84,7 @@ export default function MapScreen({ navigation }) {
     }
   };
 
-  const fetchWeather = async () => {
+  const fetchWeather = async (initialLocation) => {
     try {
       const baseUrl =
         Platform.OS === 'web'
@@ -91,11 +92,11 @@ export default function MapScreen({ navigation }) {
           : process.env.EXPO_PUBLIC_API_URL;
 
       console.log(
-        `Sending request to ${baseUrl}/weather?longitude=${location.longitude}&latitude=${location.latitude}`,
+        `Sending request to ${baseUrl}/weather?longitude=${initialLocation.longitude}&latitude=${initialLocation.latitude}`,
       );
 
       const response = await fetch(
-        `${baseUrl}/weather?longitude=${location.longitude}&latitude=${location.latitude}`,
+        `${baseUrl}/weather?longitude=${initialLocation.longitude}&latitude=${initialLocation.latitude}`,
         {
           method: 'GET',
           headers: {
@@ -123,7 +124,7 @@ export default function MapScreen({ navigation }) {
     }
   };
 
-  const fetchBikeApi = async () => {
+  const fetchBikeApi = async (initialLocation) => {
     try {
       const baseUrl =
         Platform.OS === 'web'
@@ -131,11 +132,11 @@ export default function MapScreen({ navigation }) {
           : process.env.EXPO_PUBLIC_API_URL;
 
       console.log(
-        `Sending request to ${baseUrl}/BikeStand?longitude=${location.longitude}&latitude=${location.latitude}`,
+        `Sending request to ${baseUrl}/BikeStand?longitude=${initialLocation.longitude}&latitude=${initialLocation.latitude}`,
       );
 
       const response = await fetch(
-        `${baseUrl}/BikeStand?longitude=${location.longitude}&latitude=${location.latitude}`,
+        `${baseUrl}/BikeStand?longitude=${initialLocation.longitude}&latitude=${initialLocation.latitude}`,
         {
           method: 'GET',
           headers: {
@@ -169,6 +170,11 @@ export default function MapScreen({ navigation }) {
       try {
         const initialLocation = await getCurrentLocation();
         setLocation(initialLocation);
+        //weatherBikePollIncident(initialLocation);
+
+        fetchWeather(initialLocation);
+        fetchBikeApi(initialLocation);
+        pollIncident();
 
         const locationSubscription = await startLocationTracking(setLocation);
 
@@ -181,18 +187,17 @@ export default function MapScreen({ navigation }) {
     fetchLocation();
   }, []);
 
-  useEffect(() => {
-    const pollOnce = async () => {
-      if (location) {
-        fetchWeather();
-        fetchBikeApi();
-        pollIncident();
-      }
-    };
+  const weatherBikePollIncident = async (initialLocation) => {
+    //await new Promise((resolve) => setTimeout(resolve, 15000));
+    console.log("initial location: ", initialLocation)
+    if(initialLocation && location){
+      fetchWeather(initialLocation);
+      fetchBikeApi(initialLocation);
+      pollIncident();
+    }
+  }
 
-    pollOnce();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location]); // Empty dependency array ensures this runs only once when the component mounts
+  
 
   const renderContent = () => {
     if (errorMessage) {
