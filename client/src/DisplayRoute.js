@@ -335,22 +335,29 @@ export default function DisplayRouteScreen({ navigation, route }) {
               style={displayRouteStyles.barImage}
               resizeMode="contain"
               >
-             
-              {currentInstruction != null ? (
-                <Text style={displayRouteStyles.routeInfo}>
-                  {currentInstruction}
-                </Text>
-              ) : (
-                <>
+
+              <Text style={displayRouteStyles.routeInfo}>
+                {currentInstruction != null ? (
                   <Text style={displayRouteStyles.routeInfo}>
                     Route from {isGpsCoordinates(origin) ? 'current location' : origin} to {destination}
                   </Text>
                   <Text style={displayRouteStyles.routeInfo}>
                     Distance: {routeData.legs[0].distance.text} {" "} 
-                    Duration: {routeData.legs[0].duration.text}
+                    Duration: {routeData.legs[0].duration.text} {"\n"}
+                    {currentInstruction}
                   </Text>
-                </>
-              )}
+                ) : (
+                  <>
+                    <Text style={displayRouteStyles.routeInfo}>
+                      Route from {isGpsCoordinates(origin) ? 'current location' : origin} to {destination}
+                    </Text>
+                    <Text style={displayRouteStyles.routeInfo}>
+                      Distance: {routeData.legs[0].distance.text} {" "} 
+                      Duration: {routeData.legs[0].duration.text}
+                    </Text>
+                  </>
+                )}
+              </Text>
               </ImageBackground>
             </View>
             <View style={displayRouteStyles.devModeContainer}>
