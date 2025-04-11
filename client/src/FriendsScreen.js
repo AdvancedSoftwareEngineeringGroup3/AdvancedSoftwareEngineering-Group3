@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -12,20 +13,78 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import styles from './components/styles/FriendsScreen.styles';
 import beachBackground from './assets/FriendsUI/BeachBackground.png'; // Import your background image
+import { retrieveData } from './caching';
+
+// Not logged in message component
+function NotLoggedInMessage() {
+  return (
+    <View
+      style={[
+        styles.container,
+        { justifyContent: 'center', alignItems: 'center', padding: 20 },
+      ]}
+    >
+      <Text
+        style={{
+          fontSize: 18,
+          fontWeight: 'bold',
+          marginBottom: 10,
+          textAlign: 'center',
+        }}
+      >
+        You are not logged in
+      </Text>
+      <Text style={{ fontSize: 16, textAlign: 'center' }}>
+        Please login to access friends dashboard.
+      </Text>
+    </View>
+  );
+}
+
+// Loading component
+function LoadingIndicator() {
+  return (
+    <View
+      style={[
+        styles.container,
+        { justifyContent: 'center', alignItems: 'center' },
+      ]}
+    >
+      <Text style={{ fontSize: 16 }}>Loading friends dashboard...</Text>
+    </View>
+  );
+}
 
 export default function FriendsScreen() {
+  const [username, setUsername] = useState(''); // Username of the person sending the request
+  const [isLoading, setIsLoading] = useState(true);
   const [friendRequestName, setFriendName] = useState('');
   const [pendingFriends, setPendingFriends] = useState([]);
   const [currentFriends, setCurrentFriends] = useState([]);
   const [sentFriends, setSentFriends] = useState([]);
 
-  // Commented for future use
-  //  const [senderName, setSenderName] = useState('');
+  useEffect(() => {
+    // eslint-disable-next-line no-use-before-define
+    fetchUserAndFriends();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const senderName = 'Conor'; // Username of the person sending the request
+  const fetchUserAndFriends = async () => {
+    try {
+      const retrievedUsername = await retrieveData('username');
+      setUsername(retrievedUsername || '');
 
-  // friend_list
-  // pending_friends
+      if (retrievedUsername && retrievedUsername !== '') {
+        // Fetch the friend requests and friends list
+        await pollFriendRequests(retrievedUsername);
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setIsLoading(false);
+    }
+  };
 
   // Function to send a friend request
   const sendFriendRequest = async () => {
@@ -33,7 +92,7 @@ export default function FriendsScreen() {
       // send friend request name & username of the person sending friend request
       const payload = {
         receiver: friendRequestName,
-        sender: senderName, // username of the person sending friend request
+        sender: username, // username of the person sending friend request
       };
 
       const baseUrl =
@@ -70,13 +129,8 @@ export default function FriendsScreen() {
     }
   };
 
-  const Poll = async () => {
+  const pollFriendRequests = async (senderName) => {
     try {
-      // send friend request name & username of the person sending friend request
-      // const payload = {
-      // sender: "Conor", // username of the person sending friend request
-      // };
-
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost:8000'
@@ -118,23 +172,29 @@ export default function FriendsScreen() {
 
   // Poll for friend requests every 5 seconds
   useEffect(() => {
+    // Only set up polling if the user is logged in
+    if (!username || username === '') {
+      return () => {}; // Return empty cleanup function if not logged in
+    }
+
+    // Initial poll
+    pollFriendRequests(username);
+
     const intervalId = setInterval(() => {
-      Poll();
+      pollFriendRequests(username);
     }, 5000); // Poll every 5 seconds
 
     // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, []);
+  }, [username]); // Re-run if username changes
 
   // Function to accept a friend request
   const processFriendRequest = async (friend, answer) => {
-    // setCurrentFriends([...currentFriends, friend]);
-
     try {
       // send friend request name & username of the person sending friend request
       const payload = {
         requester: friend,
-        user: senderName,
+        user: username,
         answer,
       };
 
@@ -160,7 +220,9 @@ export default function FriendsScreen() {
 
         alert(serverMessage.message);
         setPendingFriends(pendingFriends.filter((name) => name !== friend));
-        setCurrentFriends(currentFriends.filter((name) => name !== friend));
+        if (answer) {
+          setCurrentFriends([...currentFriends, friend]);
+        }
       } else {
         // Log the raw response text for debugging
         const responseText = await response.text();
@@ -177,7 +239,7 @@ export default function FriendsScreen() {
     try {
       // send friend request name & username of the person sending friend request
       const payload = {
-        user: senderName, // username of the person removing friend
+        user: username, // username of the person removing friend
         friend, // friend to be removed
       };
 
@@ -219,7 +281,7 @@ export default function FriendsScreen() {
     try {
       // send friend request name & username of the person sending friend request
       const payload = {
-        user: senderName, // username of the person removing friend
+        user: username, // username of the person removing friend
         friend, // friend to be removed
       };
 
@@ -256,6 +318,17 @@ export default function FriendsScreen() {
     }
   };
 
+  // If still loading, show loading indicator
+  if (isLoading) {
+    return <LoadingIndicator />;
+  }
+
+  // If not logged in (username is empty), show not logged in message
+  if (!username || username === '') {
+    return <NotLoggedInMessage />;
+  }
+
+  // Otherwise, show the normal friends dashboard
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       {/* Background Image */}
@@ -300,32 +373,31 @@ export default function FriendsScreen() {
             />
           </View>
 
-          {/* Pending Friends List */}
-          <View style={styles.listContainer}>
-            <Text style={styles.sectionTitle}>Pending Friend Requests</Text>
-            <FlatList
-              onPress={() => Poll()}
-              data={pendingFriends}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.pendingItem}>
-                  <Text style={styles.friendRequestName}>{item}</Text>
-                  <TouchableOpacity
-                    onPress={() => processFriendRequest(item, true)}
-                    style={styles.acceptButton}
-                  >
-                    <Text style={styles.buttonText}>Accept</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => processFriendRequest(item, false)}
-                    style={styles.rejectButton}
-                  >
-                    <Text style={styles.buttonText}>Reject</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            />
-          </View>
+        {/* Pending Friends List */}
+        <View style={styles.listContainer}>
+          <Text style={styles.sectionTitle}>Pending Friend Requests</Text>
+          <FlatList
+            data={pendingFriends}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.pendingItem}>
+                <Text style={styles.friendRequestName}>{item}</Text>
+                <TouchableOpacity
+                  onPress={() => processFriendRequest(item, true)}
+                  style={styles.acceptButton}
+                >
+                  <Text style={styles.buttonText}>Accept</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => processFriendRequest(item, false)}
+                  style={styles.rejectButton}
+                >
+                  <Text style={styles.buttonText}>Reject</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+        </View>
 
           {/* Current Friends List */}
           <View style={styles.listContainer}>

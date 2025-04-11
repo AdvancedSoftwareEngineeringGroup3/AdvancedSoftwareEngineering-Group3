@@ -118,24 +118,25 @@ const configureLineChartData = (yearEmissions) => {
 
   // Month mapping to full names
   const monthMapping = {
-    1: 'Jan',
-    2: 'Feb',
-    3: 'Mar',
-    4: 'Apr',
-    5: 'May',
-    6: 'Jun',
-    7: 'Jul',
-    8: 'Aug',
-    9: 'Sep',
-    10: 'Oct',
-    11: 'Nov',
-    12: 'Dec',
+    month_1: 'Jan',
+    month_2: 'Feb',
+    month_3: 'Mar',
+    month_4: 'Apr',
+    month_5: 'May',
+    month_6: 'Jun',
+    month_7: 'Jul',
+    month_8: 'Aug',
+    month_9: 'Sep',
+    month_10: 'Oct',
+    month_11: 'Nov',
+    month_12: 'Dec',
   };
 
-  // Sort the months numerically
-  const sortedMonths = Object.keys(yearEmissions)
-    // eslint-disable-next-line prettier/prettier
-    .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+  // Sort the months numerically based on their suffix
+  const sortedMonths = Object.keys(yearEmissions).sort(
+    (a, b) => parseInt(a.split('_')[1], 10) - parseInt(b.split('_')[1], 10),
+  );
+
   return {
     labels: sortedMonths.map((month) => monthMapping[month]),
     datasets: [
@@ -165,7 +166,50 @@ const chartConfig = {
   },
 };
 
+// Not logged in message component
+function NotLoggedInMessage() {
+  return (
+    <View
+      style={[
+        susDashboardStyles.container,
+        { justifyContent: 'center', alignItems: 'center', padding: 20 },
+      ]}
+    >
+      <Text
+        style={{
+          fontSize: 18,
+          fontWeight: 'bold',
+          marginBottom: 10,
+          textAlign: 'center',
+        }}
+      >
+        You are not logged in
+      </Text>
+      <Text style={{ fontSize: 16, textAlign: 'center' }}>
+        Please log in to view your sustainability dashboard and track your
+        progress.
+      </Text>
+    </View>
+  );
+}
+
+// Loading component
+function LoadingIndicator() {
+  return (
+    <View
+      style={[
+        susDashboardStyles.container,
+        { justifyContent: 'center', alignItems: 'center' },
+      ]}
+    >
+      <Text style={{ fontSize: 16 }}>Loading dashboard...</Text>
+    </View>
+  );
+}
+
 export default function Dashboard() {
+  const [username, setUsername] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [userSustainabilityScore, setUserSustainabilityScore] = useState(0);
   const [userSustainabilityImage, setUserSustainabilityImage] = useState(bald); // Default image
   const [leaderBoardData, setLeaderBoardData] = useState([]);
@@ -187,9 +231,25 @@ export default function Dashboard() {
 
   useEffect(() => {
     // eslint-disable-next-line no-use-before-define
-    getSustainabilityStats();
+    fetchUserAndStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const fetchUserAndStats = async () => {
+    try {
+      const retrievedUsername = await retrieveData('username');
+      setUsername(retrievedUsername || '');
+
+      if (retrievedUsername && retrievedUsername !== '') {
+        // eslint-disable-next-line no-use-before-define
+        await getSustainabilityStats(retrievedUsername);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setIsLoading(false);
+    }
+  };
 
   const updateGridItems = (rawDistances) => {
     const items = [
@@ -240,16 +300,8 @@ export default function Dashboard() {
     );
   };
 
-  const getSustainabilityStats = async () => {
+  const getSustainabilityStats = async (senderName) => {
     try {
-      let senderName = await retrieveData('username');
-
-      console.log(senderName);
-
-      if (senderName == null) {
-        senderName = 'test_user'; // Default name if not found
-      }
-
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost:8000'
@@ -288,8 +340,8 @@ export default function Dashboard() {
 
         // Format leaderboard data with icons
         const formattedLeaderboardData = Object.entries(friendsSusScores)
-          .map(([username, sustainabilityScore]) => ({
-            name: username,
+          .map(([usernameParam, sustainabilityScore]) => ({
+            name: usernameParam,
             sustainabilityScore: parseInt(sustainabilityScore, 10),
             icon: getIconForScore(parseInt(sustainabilityScore, 10)),
           }))
@@ -346,6 +398,17 @@ export default function Dashboard() {
     ]).start();
   };
 
+  // If still loading, show loading indicator
+  if (isLoading) {
+    return <LoadingIndicator />;
+  }
+
+  // If not logged in (username is empty), show not logged in message
+  if (!username || username === '') {
+    return <NotLoggedInMessage />;
+  }
+
+  // Otherwise, render the full dashboard
   return (
     <ScrollView
       style={susDashboardStyles.container} // Outer container styles
