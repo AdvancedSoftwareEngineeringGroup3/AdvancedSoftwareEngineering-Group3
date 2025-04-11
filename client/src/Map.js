@@ -1,50 +1,168 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { getCurrentLocation, startLocationTracking } from './utils/mapUtils';
-import locationCircleIcon from './assets/location-circle.png';
 import MapStyles from './components/styles/Map.styles';
 
+import Sunny from './assets/MapDashboard/SunIcon.png';
+import Rain from './assets/MapDashboard/rainIcon.png';
+import Cloud from './assets/MapDashboard/CloudIcon.png';
+import Thunder from './assets/MapDashboard/lightingIcon.png';
+import accident from './assets/Crowdsource/TrafficAccident.png';
+import roadClosure from './assets/Crowdsource/RoadClosure.png';
+import roadHazard from './assets/Crowdsource/hazard.png';
+import police from './assets/Crowdsource/Speeding.png';
+import trafficJam from './assets/Crowdsource/TrafficSlow.png';
+import construction from './assets/Crowdsource/construction.png';
+
+const iconMap = {
+  Accident: accident,
+  Closure: roadClosure,
+  Hazard: roadHazard,
+  Police: police,
+  Traffic: trafficJam,
+  Construction: construction,
+};
+
 export default function MapScreen({ navigation }) {
-  const [webSocket, setWebSocket] = useState(null);
+  const [bikeStations, setBikeStations] = useState([]);
+  const [incidentInfo, setIncidentInfo] = useState([]);
   const [location, setLocation] = useState(null);
+  const [weather, setWeather] = useState(null);
+  const [temperature, setTemperature] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const mapRef = useRef(null);
 
-  // WebSocket Setup
-  useEffect(() => {
-    const wsUrl = `${process.env.EXPO_PUBLIC_API_URL.replace(/^http/, 'ws')}/ws/location`;
-    console.log('Connecting to WebSocket:', wsUrl);
+  const pollIncident = async () => {
+    try {
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
+      console.log(`Sending request to ${baseUrl}/check_incidents`);
 
-    const socket = new WebSocket(wsUrl);
+      const response = await fetch(`${baseUrl}/check_incidents`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    socket.onopen = () => {
-      console.log('WebSocket connection opened');
-      setWebSocket(socket);
-    };
+      // Check if the response is ok
+      if (response.ok) {
+        // Parse the response as JSON
+        const serverMessage = await response.json();
+        console.log('Response from Server: ', serverMessage.message);
 
-    socket.onmessage = (event) =>
-      console.log('Message from server:', event.data); // check if required
-    socket.onerror = (error) => console.error('WebSocket error:', error);
-    socket.onclose = () => console.log('WebSocket connection closed');
+        // process the return incidents object, which contains multiple incidents
+        setIncidentInfo(serverMessage.message);
+      } else {
+        // Log the raw response text for debugging
+        const responseText = await response.text();
+        console.error('Failed to get crowd sourced incidents:', responseText);
+        alert('Server Error: ', responseText);
+      }
+    } catch (error) {
+      console.error('Error getting crowd sourced incidents:', error);
+    }
+  };
 
-    return () => socket.close();
-  }, []);
+  // choose weather Icon
+  const getWeatherIcon = (weatherCondition) => {
+    switch (weatherCondition) {
+      case 'sun':
+        return Sunny;
+      case 'cloud':
+        return Cloud;
+      case 'rain':
+        return Rain;
+      case 'thunder':
+        return Thunder;
+      default:
+        return null;
+    }
+  };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const initialLocation = await getCurrentLocation();
-  //       setLocation(initialLocation);
+  const fetchWeather = async () => {
+    try {
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
 
-  //       const locationSubscription = await startLocationTracking(setLocation);
+      console.log(
+        `Sending request to ${baseUrl}/weather?longitude=${location.longitude}&latitude=${location.latitude}`,
+      );
 
-  //       return () => locationSubscription.remove();
-  //     } catch (error) {
-  //       setErrorMessage(error.message);
-  //     }
-  //   })();
-  // }, []);
+      const response = await fetch(
+        `${baseUrl}/weather?longitude=${location.longitude}&latitude=${location.latitude}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (response.ok) {
+        const serverMessage = await response.json();
+        console.log('Response from Server: ', serverMessage.weather);
+        console.log('Response from Server: ', serverMessage.temperature);
+        setWeather(serverMessage.weather);
+        setTemperature(serverMessage.temperature);
+      } else {
+        const responseText = await response.text();
+        console.error('Failed to get weather:', responseText);
+        setWeather('cloud'); // fallback
+        setTemperature('10');
+      }
+    } catch (error) {
+      console.error('Error getting real time weather', error);
+      setWeather('cloud'); // fallback on network error
+      setTemperature('10');
+    }
+  };
+
+  const fetchBikeApi = async () => {
+    try {
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
+
+      console.log(
+        `Sending request to ${baseUrl}/BikeStand?longitude=${location.longitude}&latitude=${location.latitude}`,
+      );
+
+      const response = await fetch(
+        `${baseUrl}/BikeStand?longitude=${location.longitude}&latitude=${location.latitude}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      const raw = await response.text();
+      console.log('Raw Bike API Response:', raw);
+
+      const serverMessage = raw ? JSON.parse(raw) : null;
+
+      if (serverMessage && Array.isArray(serverMessage.BikeInfo)) {
+        setBikeStations(serverMessage.BikeInfo);
+      } else if (Array.isArray(serverMessage)) {
+        // if it's just a raw array
+        setBikeStations(serverMessage);
+      } else {
+        console.warn('Unexpected or null response, setting empty bikeStations');
+        setBikeStations([]);
+      }
+    } catch (error) {
+      console.error('Error fetching bike station data:', error);
+      setBikeStations([]); // fallback
+    }
+  };
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -63,18 +181,18 @@ export default function MapScreen({ navigation }) {
     fetchLocation();
   }, []);
 
-  // Send Location to WebSocket
-  const sendLocation = () => {
-    if (webSocket && location) {
-      webSocket.send(JSON.stringify(location));
-      console.log('Sent location:', location);
-    } else {
-      Alert.alert(
-        'Location/WebSocket Issue',
-        !location ? 'Fetching GPS location...' : 'WebSocket not connected.',
-      );
-    }
-  };
+  useEffect(() => {
+    const pollOnce = async () => {
+      if (location) {
+        fetchWeather();
+        fetchBikeApi();
+        pollIncident();
+      }
+    };
+
+    pollOnce();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]); // Empty dependency array ensures this runs only once when the component mounts
 
   const renderContent = () => {
     if (errorMessage) {
@@ -82,8 +200,20 @@ export default function MapScreen({ navigation }) {
     }
 
     if (location) {
+      const weatherIcon = getWeatherIcon(weather);
       return (
         <>
+          {weatherIcon && (
+            <View style={MapStyles.weatherContainer}>
+              <Image
+                source={weatherIcon}
+                style={MapStyles.weatherIcon}
+                resizeMode="contain"
+              />
+              <Text style={MapStyles.weatherText}>{temperature}°C</Text>
+            </View>
+          )}
+
           <MapView
             ref={mapRef}
             style={MapStyles.map}
@@ -94,62 +224,114 @@ export default function MapScreen({ navigation }) {
               longitudeDelta: 0.01,
             }}
           >
+            {Array.isArray(bikeStations) &&
+              bikeStations.map((station) => (
+                <Marker
+                  key={station.number}
+                  coordinate={{
+                    latitude: station.position.lat,
+                    longitude: station.position.lng,
+                  }}
+                  title={station.name}
+                  description={`Available Bikes: ${station.available_bikes}`}
+                >
+                  <Image
+                    // eslint-disable-next-line global-require
+                    source={require('./assets/MapDashboard/bikeicon.png')}
+                    style={{ width: 40, height: 40 }}
+                    resizeMode="contain"
+                  />
+                </Marker>
+              ))}
+
+            {Array.isArray(incidentInfo) &&
+              incidentInfo.map((incident) => {
+                const type = incident[2]; // Adjust this if the incident type is in a different index
+                const icon = iconMap[type] || accident; // default fallback icon
+
+                return (
+                  <Marker
+                    key={incident[0]}
+                    coordinate={{
+                      latitude: parseFloat(incident[5]),
+                      longitude: parseFloat(incident[6]),
+                    }}
+                    title={incident[2]}
+                    description={incident[3]}
+                  >
+                    <Image
+                      source={icon}
+                      style={{ width: 40, height: 40 }}
+                      resizeMode="contain"
+                    />
+                  </Marker>
+                );
+              })}
+
             <Marker
               coordinate={location}
               title="Your Location"
               description="Real-time location"
-              icon={locationCircleIcon}
-            />
+            >
+              <Image
+                // eslint-disable-next-line global-require
+                source={require('./assets/location-circle.png')}
+                style={{ width: 20, height: 20 }}
+                resizeMode="contain"
+              />
+            </Marker>
           </MapView>
 
-          <TouchableOpacity style={MapStyles.sendButton} onPress={sendLocation}>
-            <Text style={MapStyles.buttonText}>Send Location</Text>
-          </TouchableOpacity>
           <TouchableOpacity
             style={MapStyles.loginButton}
             onPress={() => navigation.navigate('AccountScreen')}
           >
             <Text style={MapStyles.buttonText}>Account</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={MapStyles.findRouteButton}
-            onPress={() => navigation.navigate('FindRouteScreen')}
-          >
-            <Text style={MapStyles.buttonText}>Find Route</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={MapStyles.findRouteButton}
-            onPress={() => navigation.navigate('FindRouteScreen')}
-          >
-            <Text style={MapStyles.buttonText}>Find Route</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={MapStyles.friendScreenButton}
-            onPress={() => navigation.navigate('FriendsScreen')}
-          >
-            <Text style={MapStyles.buttonText}>Friends UI</Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            style={MapStyles.dashboardButton}
-            onPress={() => navigation.navigate('Dashboard')}
-          >
-            <Text style={MapStyles.buttonText}>Sustainability Dashboard</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={MapStyles.weatherButton}
-            onPress={() => navigation.navigate('WeatherScreen')}
-          >
-            <Text style={MapStyles.buttonText}>Weather</Text>
-          </TouchableOpacity>
+          <View style={MapStyles.bar}>
+            <Image
+              // eslint-disable-next-line global-require
+              source={require('./assets/MapDashboard/movementbar.png')}
+              style={MapStyles.barImage}
+              resizeMode="contain"
+            />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Dashboard')}
+              style={MapStyles.button}
+            >
+              <Image
+                // eslint-disable-next-line global-require
+                source={require('./assets/MapDashboard/leaficon.png')}
+                style={MapStyles.icon}
+              />
+              <Text style={MapStyles.label}>Dashboard</Text>
+            </TouchableOpacity>
 
-          {/* todo: Need to make new changes to the preferences logic */}
-          <TouchableOpacity
-            style={MapStyles.PreferencesButton}
-            onPress={() => navigation.navigate('PreferencesScreen')}
-          >
-            <Text style={MapStyles.buttonText}>User Preferences</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('FindRouteScreen')}
+              style={[MapStyles.button, MapStyles.centerButton]}
+            >
+              <Image
+                // eslint-disable-next-line global-require
+                source={require('./assets/MapDashboard/routeicon.png')}
+                style={[MapStyles.icon, MapStyles.centerIcon]}
+              />
+              <Text style={MapStyles.label}>Find Route</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('FriendsScreen')}
+              style={MapStyles.button}
+            >
+              <Image
+                // eslint-disable-next-line global-require
+                source={require('./assets/MapDashboard/friendsicon.png')}
+                style={MapStyles.icon}
+              />
+              <Text style={MapStyles.label}>Friends</Text>
+            </TouchableOpacity>
+          </View>
         </>
       );
     }

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Query
 
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -11,8 +11,10 @@ from src.preferences import router as preferences_router
 from src.weatherApi import weatherAPI
 from src.preferences import Preferences
 from src.networking import Networking
+from src.incident_reporter import IncidentReporter
 from src.wayfinding import wayfinding_router_setup
 from src.sustainability import Sustainability
+from src.dublin_bike_api import bikeAPI
 
 
 class Server:
@@ -29,6 +31,7 @@ class Server:
         self.login_logic = Login(self.app, self.logger)
         self.connection_manager = ConnectionManager()
         self.weather_api = weatherAPI()
+        self.bike_api = bikeAPI()
         self.networking = Networking(self.app, self.logger)
         self.preferences_logic = Preferences(self.app, self.logger)
         self.sustainability = Sustainability(self.app, self.logger)
@@ -43,6 +46,7 @@ class Server:
 
         self.app.include_router(wayfinding_router, prefix="/wayfinding")
         self.app.include_router(preferences_router, prefix="/preferences")
+        self.incident_reporter = IncidentReporter(self.app, self.logger)
 
         # Configure CORS
         self.configure_cors()
@@ -112,13 +116,41 @@ class Server:
                 raise
 
         @self.app.get("/weather")
-        async def get_weather():
-            self.logger.info(f'{"Received weather API request"}')
+        async def get_weather(
+            longitude: str = Query(...), latitude: str = Query(...)
+        ):
+            self.logger.info(
+                f"Received weather API request: lat={latitude}, lng={longitude}"  # noqa: E501
+            )
             try:
-                # Example coordinates for Dublin
-                return self.weather_api.get(lat="-6.266155", lng="53.350140")
+                realtimeweatherdata, temperature = self.weather_api.get(
+                    lat=latitude, lng=longitude
+                )
+                print(f"Temperature: {temperature}")
+                return {
+                    "weather": realtimeweatherdata,
+                    "temperature": temperature,
+                }
             except Exception as e:
                 self.logger.error(f"Error hitting weather endpoint: {e}")
+                raise
+
+        @self.app.get("/BikeStand")
+        async def get_bikeStand(
+            longitude: str = Query(...), latitude: str = Query(...)
+        ):
+            self.logger.info(
+                f"Received bike API request: lat={latitude}, lng={longitude}"
+            )
+            try:
+                realtimeBikeInfo = self.bike_api.get(
+                    lat=latitude, lng=longitude
+                )
+                print(f"real time bike info: {realtimeBikeInfo}")
+
+                return {"BikeInfo": realtimeBikeInfo}
+            except Exception as e:
+                self.logger.error(f"Error hitting BikeApi endpoint: {e}")
                 raise
 
         @self.app.websocket("/ws/location")

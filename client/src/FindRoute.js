@@ -6,6 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   Text,
+  ImageBackground,
+  View,
 } from 'react-native';
 import Picker from 'react-native-picker-select';
 import ActionSheet from 'react-native-actionsheet';
@@ -13,7 +15,9 @@ import {
   findRouteStyles,
   pickerSelectStyles,
 } from './components/styles/FindRoute.styles';
+import bgImage from './assets/FindRouteScreen/Navigationbackground.png';
 import { retrieveData } from './caching';
+import { getCurrentLocation } from './utils/mapUtils';
 
 export default function FindRouteScreen({ navigation }) {
   const pickerRef = useRef();
@@ -24,7 +28,8 @@ export default function FindRouteScreen({ navigation }) {
 
   const [selectedMode, setSelectedMode] = useState(null);
 
-  const isFormValid = start.trim() !== '' && destination.trim() !== '';
+  const isFormValid =
+    start.trim() !== '' && destination.trim() !== '' && selectedMode !== null;
 
   const fetchRoutes = async () => {
     let username = await retrieveData('username');
@@ -33,8 +38,27 @@ export default function FindRouteScreen({ navigation }) {
     }
 
     try {
+      let originToSend = start.trim();
+
+      // Check for "current location" variations
+      const normalizedStart = originToSend.toLowerCase();
+      const isCurrentLocation =
+        normalizedStart === 'current location' ||
+        normalizedStart === 'Current Location' ||
+        normalizedStart === 'my location';
+
+      if (isCurrentLocation) {
+        const initialLocation = await getCurrentLocation();
+        if (!initialLocation) {
+          alert('Unable to fetch current location.');
+          return;
+        }
+
+        originToSend = `${initialLocation.latitude},${initialLocation.longitude}`;
+      }
+
       const payload = {
-        origin: start,
+        origin: originToSend,
         destination,
         mode: selectedMode,
         alternatives: true,
@@ -66,9 +90,12 @@ export default function FindRouteScreen({ navigation }) {
 
       const data = await response.json();
 
-      // Navigate to SelectRouteScreen with the response data
+      if (data.error) {
+        alert(`Error finding route: ${response.message || response.status}`);
+        return;
+      }
       navigation.navigate('SelectRouteScreen', {
-        origin: start,
+        origin: originToSend,
         destination,
         routeData: data,
       });
@@ -88,66 +115,97 @@ export default function FindRouteScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={findRouteStyles.container}>
-      <TextInput
-        placeholder="Enter starting point"
-        value={start}
-        onChangeText={(text) => setStartPoint(text)}
-        onSubmitEditing={() => ref2.current.focus()}
-      />
-      <TextInput
-        ref={ref2}
-        placeholder="Enter destination point"
-        value={destination}
-        onChangeText={(text) => setDestinationPoint(text)}
-        onSubmitEditing={() => alert(`Route Entered`)}
-      />
+    <ImageBackground
+      source={bgImage}
+      style={findRouteStyles.container}
+      resizeMode="cover"
+    >
+      <SafeAreaView style={findRouteStyles.container}>
+        <TextInput
+          style={findRouteStyles.input}
+          placeholder="Enter starting point"
+          value={start}
+          onChangeText={setStartPoint}
+          onSubmitEditing={() => ref2.current.focus()}
+        />
 
-      <Text style={findRouteStyles.label}>Select an option:</Text>
-      {Platform.OS === 'android' ? (
-        <TouchableOpacity onPress={() => pickerRef.current.togglePicker()}>
-          <Picker
-            ref={pickerRef}
-            onValueChange={handlePickerSelect}
-            items={modeDropdownData}
-            placeholder={{ label: 'Choose an option...', value: null }}
-            useNativeAndroidPickerStyle={false}
-            style={pickerSelectStyles}
-            doneText="Done"
-          />
+        <TouchableOpacity
+          style={findRouteStyles.useLocationButton}
+          onPress={() => setStartPoint('Current Location')}
+        >
+          <Text style={findRouteStyles.useLocationButtonText}>
+            📍 Use Current Location as Start
+          </Text>
         </TouchableOpacity>
-      ) : (
-        <>
-          <TouchableOpacity onPress={() => actionSheetRef.current.show()}>
-            <Text style={findRouteStyles.label}>Choose an option...</Text>
-          </TouchableOpacity>
-          <ActionSheet
-            ref={actionSheetRef}
-            title="Select Mode"
-            options={modeDropdownData
-              .map((item) => item.label)
-              .concat('Cancel')}
-            cancelButtonIndex={modeDropdownData.length}
-            onPress={(index) => {
-              if (index !== modeDropdownData.length) {
-                handlePickerSelect(modeDropdownData[index].value);
-              }
-            }}
-          />
-        </>
-      )}
-      {selectedMode && (
-        <Text style={findRouteStyles.selected}>Selected: {selectedMode}</Text>
-      )}
 
-      <TouchableOpacity
-        style={findRouteStyles.TouchableOpacity}
-        onPress={isFormValid ? fetchRoutes : null}
-        color="#841584"
-      >
-        {/* activeOpacity={isFormValid ? 0.7 : 1} */}
-        <Text>Search</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+        <TextInput
+          ref={ref2}
+          style={findRouteStyles.input}
+          placeholder="Enter destination point"
+          value={destination}
+          onChangeText={setDestinationPoint}
+          onSubmitEditing={() => alert(`Route Entered`)}
+        />
+
+        <Text style={findRouteStyles.label}>Mode of Transport:</Text>
+        {Platform.OS === 'android' ? (
+          <TouchableOpacity onPress={() => pickerRef.current.togglePicker()}>
+            <View style={findRouteStyles.pickerWrapper}>
+              <Picker
+                ref={pickerRef}
+                onValueChange={handlePickerSelect}
+                items={modeDropdownData}
+                placeholder={{ label: 'Choose a mode ...', value: null }}
+                useNativeAndroidPickerStyle={false}
+                style={pickerSelectStyles}
+                doneText="Done"
+              />
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <>
+            <TouchableOpacity
+              style={findRouteStyles.dropdownButton}
+              onPress={() => actionSheetRef.current.show()}
+              activeOpacity={0.8}
+            >
+              <Text style={findRouteStyles.dropdownButtonText}>
+                {selectedMode
+                  ? `Selected: ${selectedMode}`
+                  : 'Choose an option ▼'}
+              </Text>
+            </TouchableOpacity>
+
+            <ActionSheet
+              ref={actionSheetRef}
+              title="Select Mode"
+              options={modeDropdownData
+                .map((item) => item.label)
+                .concat('Cancel')}
+              cancelButtonIndex={modeDropdownData.length}
+              onPress={(index) => {
+                if (index !== modeDropdownData.length) {
+                  handlePickerSelect(modeDropdownData[index].value);
+                }
+              }}
+            />
+          </>
+        )}
+        {/* {selectedMode && (
+        <Text style={findRouteStyles.selected}>Selected: {selectedMode}</Text>
+      )} */}
+
+        <TouchableOpacity
+          style={[
+            findRouteStyles.button,
+            !isFormValid && findRouteStyles.disabledButton,
+          ]}
+          disabled={!isFormValid}
+          onPress={isFormValid ? fetchRoutes : null}
+        >
+          <Text style={findRouteStyles.buttonText}>Search</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    </ImageBackground>
   );
 }
