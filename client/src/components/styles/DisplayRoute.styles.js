@@ -8,6 +8,8 @@ const displayRouteStyles = StyleSheet.create({
   map: { flex: 1 },
   routeInfo: { 
     fontSize: 16,
+    fontWeight:'bold',
+    color: 'white',
     textAlign: 'center',
     top: 60,
     
@@ -18,8 +20,8 @@ const displayRouteStyles = StyleSheet.create({
   loadingText: { textAlign: 'center', margin: 10 },
   dpadContainer: {
     position: 'absolute',
-    top: 20,
-    left: '70%',
+    top: '50%',
+    left: '15%',
     transform: [{ translateX: -50 }],
     alignItems: 'center',
   },
@@ -28,9 +30,15 @@ const displayRouteStyles = StyleSheet.create({
   },
   dpadButton: {
     padding: 10,
-    backgroundColor: '#ADD8E6',
+    backgroundColor: '#33CC66',
+    colour: 'white',
     borderRadius: 5,
     margin: 5,
+  },
+  dpadtext: {
+    color: 'white',
+    fontWeight: 'bold', 
+
   },
   barContainer: {
     position: 'absolute', // Position it relative to the parent container

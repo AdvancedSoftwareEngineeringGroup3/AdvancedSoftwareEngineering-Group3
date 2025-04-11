@@ -197,9 +197,9 @@ export default function MapScreen({ navigation }) {
   useEffect(() => {
     const pollOnce = async () => {
       if (location) {
-        await fetchWeather();
-        await fetchBikeApi();
-        await pollIncident();
+        fetchWeather();
+        fetchBikeApi();
+        pollIncident();
       }
     };
   

@@ -37,7 +37,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
   const [remainingPolyline, setRemainingPolyline] = useState(polylineCoordinates);
   const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
   const [devMode, setDevMode] = useState(false);
-  const [audioOn, setAudioOn] = useState(false);
+  const [audioOn, setAudioOn] = useState(true);
   const [currentInstruction, setCurrentInstruction] = useState(null);
   const [incidentInfo, setIncidentInfo] = useState([]);
   const [detailedStepData, setDetailedStepData] = useState([]);
@@ -343,7 +343,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
                     </Text>
                     <Text style={displayRouteStyles.routeInfo}>
                       Distance: {routeData.legs[0].distance.text} {" "} 
-                      Duration: {routeData.legs[0].duration.text} {"\n"}
+                      Duration: {routeData.legs[0].duration.text} {"\n \n"}
                       {currentInstruction}
                     </Text>
                   </View>
@@ -382,27 +382,27 @@ export default function DisplayRouteScreen({ navigation, route }) {
                 onPress={() => devMove({ delLat: 0.0003 })}
                 style={displayRouteStyles.dpadButton}
               >
-                <Text>lat +</Text>
+                <Text style={displayRouteStyles.dpadtext}>lat +</Text>
               </TouchableOpacity>
               <View style={displayRouteStyles.dpadRow}>
                 <TouchableOpacity
                   onPress={() => devMove({ delLng: -0.0004 })}
                   style={displayRouteStyles.dpadButton}
                 >
-                  <Text>long -</Text>
+                  <Text style={displayRouteStyles.dpadtext}>long -</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => devMove({ delLng: 0.0004 })}
                   style={displayRouteStyles.dpadButton}
                 >
-                  <Text>long +</Text>
+                  <Text style={displayRouteStyles.dpadtext}>long +</Text>
                 </TouchableOpacity>
               </View>
               <TouchableOpacity
                 onPress={() => devMove({ delLat: -0.0003 })}
                 style={displayRouteStyles.dpadButton}
               >
-                <Text>lat -</Text>
+                <Text style={displayRouteStyles.dpadtext}>lat -</Text>
               </TouchableOpacity>
             </View>
           )}

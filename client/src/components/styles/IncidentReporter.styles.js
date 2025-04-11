@@ -34,24 +34,24 @@ const styles = StyleSheet.create({
     left: 0,
     width: MODAL_WIDTH + 15, // Just enough to cover the modal with padding
     height: MODAL_HEIGHT + 15,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', // More transparent
+    //backgroundColor: 'rgba(0, 0, 0, 0.3)', // More transparent
     zIndex: 100,
     borderRadius: 20, // Round the corners of the backdrop
   },
   container: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 200,
     left: 60,
     width: MODAL_WIDTH,
     height: MODAL_HEIGHT,
     backgroundColor: 'white',
     borderRadius: 20,
     zIndex: 101,
-    //shadowColor: '#000',
-    //shadowOffset: { width: 0, height: 3 },
-    //shadowOpacity: 0.3,
-    //shadowRadius: 6,
-    //elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 10,
     overflow: 'hidden', // Ensure content doesn't overflow the container
   },
   safeArea: {

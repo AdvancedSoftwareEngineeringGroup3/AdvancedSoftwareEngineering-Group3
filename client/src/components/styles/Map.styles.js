@@ -33,7 +33,7 @@ const MapStyles = StyleSheet.create({
     alignItems: 'center',
     left: '70%',
     top: '0%',
-    backgroundColor: '#007bff',
+    backgroundColor: '#33CC66',
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 10,
