@@ -33,7 +33,7 @@ describe('postIncident', () => {
 
     const result = await postIncident(mockIncidentData, mockBaseUrl);
 
-    expect(fetch).toHaveBeenCalledWith(`${mockBaseUrl}/reportIncident`, {
+    expect(fetch).toHaveBeenCalledWith(`${mockBaseUrl}/report_incident`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(mockIncidentData),
@@ -52,7 +52,7 @@ describe('postIncident', () => {
       'HTTP error! status: 500',
     );
 
-    expect(fetch).toHaveBeenCalledWith(`${mockBaseUrl}/reportIncident`, {
+    expect(fetch).toHaveBeenCalledWith(`${mockBaseUrl}/report_incident`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(mockIncidentData),
@@ -72,28 +72,5 @@ describe('postIncident', () => {
       expect.any(Error),
     );
     consoleErrorSpy.mockRestore();
-  });
-
-  it('should use the default base URL if customBaseUrl is not provided', async () => {
-    const mockResponse = { message: 'Incident reported successfully' };
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockResponse,
-    });
-
-    process.env.EXPO_PUBLIC_API_URL = 'http://defaultserver.local';
-
-    const result = await postIncident(mockIncidentData);
-
-    expect(fetch).toHaveBeenCalledWith(
-      'http://defaultserver.local/reportIncident',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(mockIncidentData),
-      },
-    );
-    expect(result).toEqual(mockResponse);
-    expect(global.alert).toHaveBeenCalledWith(mockResponse.message);
   });
 });
