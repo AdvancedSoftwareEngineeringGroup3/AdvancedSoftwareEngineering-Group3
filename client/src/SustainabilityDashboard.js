@@ -95,7 +95,7 @@ const configurePieChartData = (emissionsSavings) => {
   // Map emissions savings JSON to PieChart data
   return Object.keys(emissionsSavings).map((key) => ({
     name: key.charAt(0).toUpperCase() + key.slice(1),
-    emissions: emissionsSavings[key],
+    emissions: Math.round(emissionsSavings[key]),
     color: colors[key] || '#cccccc', // default color
     legendFontColor: '#7F7F7F',
     legendFontSize: 15,
@@ -257,37 +257,37 @@ export default function Dashboard() {
         type: 'bike',
         label: 'Distance traveled by Bike',
         value: rawDistances.bike || 0,
-        total: 100,
+        total: Math.max(100, Math.ceil(rawDistances.bike / 100) * 100),
       },
       {
         type: 'walk',
         label: 'Distance traveled by Walking',
         value: rawDistances.walk || 0,
-        total: 100,
+        total: Math.max(100, Math.ceil(rawDistances.walk / 100) * 100),
       },
       {
         type: 'bus',
         label: 'Distance traveled by Bus',
         value: rawDistances.bus || 0,
-        total: 100,
+        total: Math.max(100, Math.ceil(rawDistances.bus / 100) * 100),
       },
       {
         type: 'car',
         label: 'Distance traveled by Car',
         value: rawDistances.car || 0,
-        total: 100,
+        total: Math.max(100, Math.ceil(rawDistances.car / 100) * 100),
       },
       {
         type: 'train',
         label: 'Distance traveled by Train',
         value: rawDistances.train || 0,
-        total: 100,
+        total: Math.max(100, Math.ceil(rawDistances.train / 100) * 100),
       },
       {
         type: 'luas',
         label: 'Distance traveled by Luas',
         value: rawDistances.luas || 0,
-        total: 100,
+        total: Math.max(100, Math.ceil(rawDistances.luas / 100) * 100),
       },
     ];
 
@@ -490,7 +490,7 @@ export default function Dashboard() {
             </TouchableWithoutFeedback>
             <Text style={susDashboardStyles.gridLabel}>{item.label}</Text>
             <Text style={susDashboardStyles.progressText}>
-              {item.ratio}/{item.total}
+              {item.ratio.toFixed(2)}/{item.total}
             </Text>
             <Progress.Bar
               progress={item.ratio / item.total}
