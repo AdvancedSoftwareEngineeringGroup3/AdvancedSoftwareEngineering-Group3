@@ -36,16 +36,6 @@ export default function SelectRouteScreen({ navigation, route }) {
     })();
   }, [location]);
 
-  useEffect(() => {
-    for (let i = 0; i < routeData.routes.length; i++) {
-      setScores((prevScores) => [
-        ...prevScores,
-        getSustainabilityScore(i, false),
-      ]);
-      print(`Sustainability score for route ${i}: ${scores[i]}`);
-    }
-  }, [routeData.routes]);
-
   // Generate polyline
   // Decode and set polyline coordinates
   useEffect(() => {
@@ -66,36 +56,10 @@ export default function SelectRouteScreen({ navigation, route }) {
     setPolylineCoordinates(decodedPath);
   };
 
-  const getSustainabilityScore = async (index, startRouteFlag) => {
-    const sustainabilityScore = {
-      Bus: 0,
-      Train: 0,
-      WALKING: 0,
-      Tram: 0,
-      DRIVING: 0,
-      BICYCLING: 0,
-    };
-    routeData.routes[index].legs[0].steps.forEach((step) => {
-      let key = '';
-      if (step.travel_mode === 'TRANSIT') {
-        key = step.html_instructions.trim().split(' ')[0];
-        console.log('key: ', key);
-      } else {
-        key = step.travel_mode;
-      }
-      sustainabilityScore[key] += step.distance.value / 1000;
-    });
-    console.log('sustainability score: ', sustainabilityScore);
-    const transportScore = await sendSustainabilityScore(
-      startRouteFlag,
-      sustainabilityScore,
-    );
-    return transportScore;
-  };
-
   const sendSustainabilityScore = async (
     startRouteFlag,
     sustainabilityScore,
+    // eslint-disable-next-line consistent-return
   ) => {
     try {
       const baseUrl =
@@ -123,6 +87,44 @@ export default function SelectRouteScreen({ navigation, route }) {
       console.log('Error sending sustainability scores and distances:', error);
     }
   };
+
+  const getSustainabilityScore = async (index, startRouteFlag) => {
+    const sustainabilityScore = {
+      Bus: 0,
+      Train: 0,
+      WALKING: 0,
+      Tram: 0,
+      DRIVING: 0,
+      BICYCLING: 0,
+    };
+    routeData.routes[index].legs[0].steps.forEach((step) => {
+      let key = '';
+      if (step.travel_mode === 'TRANSIT') {
+        // eslint-disable-next-line prefer-destructuring
+        key = step.html_instructions.trim().split(' ')[0];
+        console.log('key: ', key);
+      } else {
+        key = step.travel_mode;
+      }
+      sustainabilityScore[key] += step.distance.value / 1000;
+    });
+    console.log('sustainability score: ', sustainabilityScore);
+    const transportScore = await sendSustainabilityScore(
+      startRouteFlag,
+      sustainabilityScore,
+    );
+    return transportScore;
+  };
+
+  useEffect(() => {
+    for (let i = 0; i < routeData.routes.length; i += 1) {
+      setScores((prevScores) => [
+        ...prevScores,
+        getSustainabilityScore(i, false),
+      ]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const startJourney = (index, routeOption) => {
     getSustainabilityScore(index, true);

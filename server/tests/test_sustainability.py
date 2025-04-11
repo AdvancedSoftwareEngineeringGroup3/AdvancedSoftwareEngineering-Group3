@@ -214,7 +214,8 @@ def test_db_update_monthly_distances_success(sustainability_instance):
             "monthly_distance", "test_user"
         )
 
-        # Verify that update_entry was called with correct parameters for each transport mode
+        # Verify that update_entry was called with correct
+        #  parameters for each transport mode
         assert mock_db.update_entry.call_count == 6
 
         assert mock_db.update_entry_any_call(

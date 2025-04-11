@@ -32,7 +32,6 @@ export default function MapScreen({ navigation }) {
   const [temperature, setTemperature] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const mapRef = useRef(null);
-  const [pollingFlag, setPollingFlag] = useState(false);
 
   const pollIncident = async () => {
     try {
@@ -186,16 +185,6 @@ export default function MapScreen({ navigation }) {
     };
     fetchLocation();
   }, []);
-
-  const weatherBikePollIncident = async (initialLocation) => {
-    // await new Promise((resolve) => setTimeout(resolve, 15000));
-    console.log('initial location: ', initialLocation);
-    if (initialLocation && location) {
-      fetchWeather(initialLocation);
-      fetchBikeApi(initialLocation);
-      pollIncident();
-    }
-  };
 
   const renderContent = () => {
     if (errorMessage) {
