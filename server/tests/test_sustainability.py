@@ -175,6 +175,7 @@ def test_emissions_savings(sustainability_instance):
             "walk": 510,
         }
 
+
 def test_db_update_monthly_distances_success(sustainability_instance):
     """
     Test for successful update of monthly distances
@@ -201,27 +202,39 @@ def test_db_update_monthly_distances_success(sustainability_instance):
             "luas": 10,
             "train": 10,
             "bus": 20,
-            "walk": 5
+            "walk": 5,
         }
 
-        result = sustainability_instance.db_update_monthly_distances("test_user", journey_data)
+        result = sustainability_instance.db_update_monthly_distances(
+            "test_user", journey_data
+        )
 
         assert result is True
-        mock_db.search_user.assert_called_once_with("monthly_distance", "test_user")
+        mock_db.search_user.assert_called_once_with(
+            "monthly_distance", "test_user"
+        )
 
         # Verify that update_entry was called with correct parameters for each transport mode
         assert mock_db.update_entry.call_count == 6
 
-        assert mock_db.update_entry_any_call("monthly_distance", "test_user", "bike", 15)
-        assert mock_db.update_entry_any_call("monthly_distance", "test_user", "car", 35)
-        assert mock_db.update_entry_any_call("monthly_distance", "test_user", "luas", 40)
-        assert mock_db.update_entry_any_call("monthly_distance", "test_user", "train", 60)
-        assert mock_db.update_entry_any_call("monthly_distance", "test_user", "bus", 100)
-        assert mock_db.update_entry_any_call("monthly_distance", "test_user", "walk", 25)
-
-
-
-
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "bike", 15
+        )
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "car", 35
+        )
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "luas", 40
+        )
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "train", 60
+        )
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "bus", 100
+        )
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "walk", 25
+        )
 
 
 def test_car_calc_emissions(sustainability_instance):

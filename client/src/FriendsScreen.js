@@ -373,31 +373,31 @@ export default function FriendsScreen() {
             />
           </View>
 
-        {/* Pending Friends List */}
-        <View style={styles.listContainer}>
-          <Text style={styles.sectionTitle}>Pending Friend Requests</Text>
-          <FlatList
-            data={pendingFriends}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.pendingItem}>
-                <Text style={styles.friendRequestName}>{item}</Text>
-                <TouchableOpacity
-                  onPress={() => processFriendRequest(item, true)}
-                  style={styles.acceptButton}
-                >
-                  <Text style={styles.buttonText}>Accept</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => processFriendRequest(item, false)}
-                  style={styles.rejectButton}
-                >
-                  <Text style={styles.buttonText}>Reject</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          />
-        </View>
+          {/* Pending Friends List */}
+          <View style={styles.listContainer}>
+            <Text style={styles.sectionTitle}>Pending Friend Requests</Text>
+            <FlatList
+              data={pendingFriends}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.pendingItem}>
+                  <Text style={styles.friendRequestName}>{item}</Text>
+                  <TouchableOpacity
+                    onPress={() => processFriendRequest(item, true)}
+                    style={styles.acceptButton}
+                  >
+                    <Text style={styles.buttonText}>Accept</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => processFriendRequest(item, false)}
+                    style={styles.rejectButton}
+                  >
+                    <Text style={styles.buttonText}>Reject</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+          </View>
 
           {/* Current Friends List */}
           <View style={styles.listContainer}>

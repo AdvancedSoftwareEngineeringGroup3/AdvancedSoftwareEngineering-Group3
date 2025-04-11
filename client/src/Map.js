@@ -170,7 +170,7 @@ export default function MapScreen({ navigation }) {
       try {
         const initialLocation = await getCurrentLocation();
         setLocation(initialLocation);
-        //weatherBikePollIncident(initialLocation);
+        // weatherBikePollIncident(initialLocation);
 
         fetchWeather(initialLocation);
         fetchBikeApi(initialLocation);
@@ -188,16 +188,14 @@ export default function MapScreen({ navigation }) {
   }, []);
 
   const weatherBikePollIncident = async (initialLocation) => {
-    //await new Promise((resolve) => setTimeout(resolve, 15000));
-    console.log("initial location: ", initialLocation)
-    if(initialLocation && location){
+    // await new Promise((resolve) => setTimeout(resolve, 15000));
+    console.log('initial location: ', initialLocation);
+    if (initialLocation && location) {
       fetchWeather(initialLocation);
       fetchBikeApi(initialLocation);
       pollIncident();
     }
-  }
-
-  
+  };
 
   const renderContent = () => {
     if (errorMessage) {
