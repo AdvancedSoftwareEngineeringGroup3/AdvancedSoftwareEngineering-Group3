@@ -34,6 +34,8 @@ npx expo start
 
 **Here's an example: `EXPO_PUBLIC_API_URL=http://192.168.13.1:8000`**
 
+If you are running the server on the Digital Ocean Droplet, the above instructions stand, but the IP address should be that of the droplet: `134.199.188.243`
+
 ## Linting and Formatting Scripts
 
 This project uses ESLint and Prettier to maintain code quality and consistency. Below are the scripts defined in the `package.json` for linting and formatting:

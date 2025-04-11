@@ -100,7 +100,10 @@ export default function DisplayRouteScreen({ navigation, route }) {
   }, [currentInstruction]);
 
   function removeHtmlTags(instruction) {
-    return instruction.replace(/<\/?[^>]+(>|$)/g, '');
+    if (instruction) {
+      return instruction.replace(/<\/?[^>]+(>|$)/g, '');
+    }
+    return instruction;
   }
 
   // Creating a dictionary of step data for each step in the route
@@ -149,7 +152,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
     try {
       const baseUrl =
         Platform.OS === 'web'
-          ? 'http://localhost:8000'
+          ? 'http://localhost'
           : process.env.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/check_incidents`);
 

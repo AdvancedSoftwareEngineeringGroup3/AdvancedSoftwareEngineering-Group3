@@ -176,6 +176,68 @@ def test_emissions_savings(sustainability_instance):
         }
 
 
+def test_db_update_monthly_distances_success(sustainability_instance):
+    """
+    Test for successful update of monthly distances
+    """
+    with patch("src.sustainability.DataBase") as mock_db_class:
+        mock_db = MagicMock()
+        mock_db.search_user.return_value = True
+        mock_db.return_user_row.return_value = {
+            "username": "test_user",
+            "bike": 10,
+            "car": 20,
+            "luas": 30,
+            "train": 50,
+            "bus": 80,
+            "walk": 20,
+            "total": 210,
+        }
+
+        mock_db_class.return_value = mock_db
+
+        journey_data = {
+            "bike": 5,
+            "car": 15,
+            "luas": 10,
+            "train": 10,
+            "bus": 20,
+            "walk": 5,
+        }
+
+        result = sustainability_instance.db_update_monthly_distances(
+            "test_user", journey_data
+        )
+
+        assert result is True
+        mock_db.search_user.assert_called_once_with(
+            "monthly_distance", "test_user"
+        )
+
+        # Verify that update_entry was called with correct
+        #  parameters for each transport mode
+        assert mock_db.update_entry.call_count == 6
+
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "bike", 15
+        )
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "car", 35
+        )
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "luas", 40
+        )
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "train", 60
+        )
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "bus", 100
+        )
+        assert mock_db.update_entry_any_call(
+            "monthly_distance", "test_user", "walk", 25
+        )
+
+
 def test_car_calc_emissions(sustainability_instance):
     assert sustainability_instance.calc_emissions(7, "car") == 714
 

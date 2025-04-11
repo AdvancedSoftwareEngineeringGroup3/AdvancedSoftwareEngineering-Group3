@@ -67,9 +67,7 @@ class Signup:
         db.close_con()
 
         self.preferences.db_initialise_preferences(username)
-        self.sustainability.db_initialise_sustainability(
-            username
-        )
+        self.sustainability.db_initialise_sustainability(username)
 
         return True
 

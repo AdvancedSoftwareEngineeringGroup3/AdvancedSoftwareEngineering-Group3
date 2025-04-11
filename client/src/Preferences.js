@@ -47,7 +47,7 @@ export default function PreferencesScreen({ navigation }) {
     try {
       const baseUrl =
         Platform.OS === 'web'
-          ? 'http://localhost:8000'
+          ? 'http://localhost'
           : process.env.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/setPreferences`);
 

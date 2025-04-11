@@ -6,7 +6,7 @@ export const postIncident = async (incidentData, customBaseUrl = null) => {
     const baseUrl =
       customBaseUrl ||
       (Platform.OS === 'web'
-        ? 'http://localhost:8000'
+        ? 'http://localhost'
         : process.env.EXPO_PUBLIC_API_URL);
     console.log(`Sending request to ${baseUrl}/report_incident}`);
 

@@ -1,6 +1,6 @@
 from enum import Enum
 import logging
-from fastapi import Query, HTTPException, APIRouter
+from fastapi import Query, HTTPException, APIRouter, Body
 from dotenv import load_dotenv
 from .Database_class import DataBase
 
@@ -26,6 +26,7 @@ class Sustainability:
         load_dotenv()
         # Register Endpoints
         self.api_get_sus_stats()
+        self.api_update_sus_stats()
 
     def db_initialise_sustainability(self, username):
         db = DataBase()
@@ -102,6 +103,29 @@ class Sustainability:
                 "friends_sus_scores": friends_sus_scores,
             }
 
+    def api_update_sus_stats(self):
+        @self.app.post("/update_sus_stats")
+        async def update_sus_stats(
+            username: str = Body(...),
+            flag: bool = Body(...),
+            modeDistances: dict = Body(...),
+        ):
+            journeyData = {
+                "bike": modeDistances["BICYCLING"],
+                "car": modeDistances["DRIVING"],
+                "luas": modeDistances["Tram"],
+                "train": modeDistances["Train"],
+                "bus": modeDistances["Bus"],
+                "walk": modeDistances["WALKING"],
+            }
+            if flag:
+                self.db_update_monthly_distances(username, journeyData)
+                self.logger.info("Monthly distances updated")
+                self.update_user_sus_score(username)
+
+            journeyData.pop("car", None)
+            return self.calc_scores_from_route(username, journeyData)
+
     def db_fetch_month_sus_stats(self, user):
         table_name = "monthly_distance"
         db = DataBase()
@@ -141,6 +165,44 @@ class Sustainability:
             db.close_con()
             print("Year stats not found")
             return None
+
+    def db_update_monthly_distances(self, user, journey_data):
+        table_name = "monthly_distance"
+        db = DataBase()
+        db.connect_db()
+
+        # If user found
+        if db.search_user(table_name, user):
+            self.logger.info("Found user")
+            for transport_mode in journey_data:
+                if transport_mode not in self.vehicle_types:
+                    self.logger.error(
+                        f"Invalid transport mode: {transport_mode}"
+                    )
+                    continue
+
+                # Get distance for each transport mode
+                raw_distances = db.return_user_row(table_name, user)
+                self.logger.info(f"Raw distances: {raw_distances}")
+                # Add new distances to the existing ones
+                journey_data[transport_mode] += raw_distances[transport_mode]
+                self.logger.info(
+                    f"Updated distances: {journey_data[transport_mode]}"
+                )
+                # Update the database with new distances
+                db.update_entry(
+                    table_name,
+                    user,
+                    transport_mode,
+                    journey_data[transport_mode],
+                )
+            db.close_con()
+            return True
+
+        else:
+            db.close_con()
+            print("Monthly distances not found")
+            return False
 
     def db_fetch_raw_distances(self, user):
         table_name = "monthly_distance"
@@ -249,6 +311,57 @@ class Sustainability:
             return -1
 
         return round(emissions_difference / 1000, 2)
+
+    def calc_scores_from_route(self, user, journey_data):
+        table_name = "monthly_distance"
+        db = DataBase()
+        db.connect_db()
+
+        calc_emissions_savings = self.calc_emissions_savings(journey_data)
+        transport_score = 0
+
+        # If user found
+        if db.search_user(table_name, user):
+            self.logger.info("Found user")
+            for transport_mode in journey_data:
+                if transport_mode not in self.vehicle_types:
+                    self.logger.error(
+                        f"Invalid transport mode: {transport_mode}"
+                    )
+                    continue
+
+                transport_score += self.calc_scores(
+                    calc_emissions_savings[transport_mode]
+                )
+            db.close_con()
+            return transport_score
+
+        else:
+            db.close_con()
+            print("Monthly distances not found")
+            return 0
+
+    def update_user_sus_score(self, user: str) -> float:
+        db = DataBase()
+        db.connect_db()
+
+        monthly_data = db.return_user_row("monthly_distance", user)
+        if not monthly_data:
+            self.logger.warning(f"No monthly distance data found for {user}")
+            db.close_con()
+            return 0
+
+        emissions_savings = self.calc_emissions_savings(monthly_data)
+        total_score = 0
+        for mode in emissions_savings:
+            total_score += self.calc_scores(emissions_savings[mode])
+
+        db.update_entry("user_table", user, "sus_score", total_score)
+        self.logger.info(
+            f"Updated sustainability score for {user}: {total_score}"
+        )
+        db.close_con()
+        return total_score
 
     def calc_emissions_savings(self, monthly_distances):
         emissions_dif = {

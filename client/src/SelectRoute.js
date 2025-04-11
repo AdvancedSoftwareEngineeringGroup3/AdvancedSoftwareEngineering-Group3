@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import {
   decodeRoute,
@@ -8,6 +8,7 @@ import {
 } from './utils/mapUtils';
 import locationCircleIcon from './assets/location-circle.png';
 import selectRouteStyles from './components/styles/SelectRoute.styles';
+import { retrieveData } from './caching';
 
 export default function SelectRouteScreen({ navigation, route }) {
   const { origin, destination, routeData } = route.params;
@@ -16,6 +17,7 @@ export default function SelectRouteScreen({ navigation, route }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [polylineCoordinates, setPolylineCoordinates] = useState([]);
   const [currentRoute, setCurrentRoute] = useState(routeData.routes[0]);
+  const [scores, setScores] = useState([]);
 
   // Get current location
   useEffect(() => {
@@ -52,6 +54,86 @@ export default function SelectRouteScreen({ navigation, route }) {
     const encodedPolyline = selectedRoute.overview_polyline.points;
     const decodedPath = decodeRoute(encodedPolyline); // Decode into lat/lng pairs
     setPolylineCoordinates(decodedPath);
+  };
+
+  const sendSustainabilityScore = async (
+    startRouteFlag,
+    sustainabilityScore,
+    // eslint-disable-next-line consistent-return
+  ) => {
+    try {
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost'
+          : process.env.EXPO_PUBLIC_API_URL;
+      console.log(`Sending request to ${baseUrl}/update_sus_stats`);
+
+      const response = await fetch(`${baseUrl}/update_sus_stats`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: await retrieveData('username'),
+          flag: startRouteFlag,
+          modeDistances: sustainabilityScore,
+        }),
+      });
+
+      const data = await response.json();
+      console.log('response (transport score): ', data);
+      return data;
+    } catch (error) {
+      console.log('Error sending sustainability scores and distances:', error);
+    }
+  };
+
+  const getSustainabilityScore = async (index, startRouteFlag) => {
+    const sustainabilityScore = {
+      Bus: 0,
+      Train: 0,
+      WALKING: 0,
+      Tram: 0,
+      DRIVING: 0,
+      BICYCLING: 0,
+    };
+    routeData.routes[index].legs[0].steps.forEach((step) => {
+      let key = '';
+      if (step.travel_mode === 'TRANSIT') {
+        // eslint-disable-next-line prefer-destructuring
+        key = step.html_instructions.trim().split(' ')[0];
+        console.log('key: ', key);
+      } else {
+        key = step.travel_mode;
+      }
+      sustainabilityScore[key] += step.distance.value / 1000;
+    });
+    console.log('sustainability score: ', sustainabilityScore);
+    const transportScore = await sendSustainabilityScore(
+      startRouteFlag,
+      sustainabilityScore,
+    );
+    return transportScore;
+  };
+
+  useEffect(() => {
+    for (let i = 0; i < routeData.routes.length; i += 1) {
+      setScores((prevScores) => [
+        ...prevScores,
+        getSustainabilityScore(i, false),
+      ]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const startJourney = (index, routeOption) => {
+    getSustainabilityScore(index, true);
+    navigation.navigate('DisplayRouteScreen', {
+      origin,
+      destination,
+      routeData: routeOption,
+      polylineCoordinates,
+    });
   };
 
   return (
@@ -110,17 +192,13 @@ export default function SelectRouteScreen({ navigation, route }) {
                   <Text>Route {index + 1}</Text>
                   <Text>Distance: {routeOption.legs[0].distance.text}</Text>
                   <Text>Duration: {routeOption.legs[0].duration.text}</Text>
+                  <Text>Sustainability score: {scores[index]}</Text>
                 </TouchableOpacity>
                 {/* routeData needs to rename the route variable because that is what react navigator calls its properties */}
                 <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('DisplayRouteScreen', {
-                      origin,
-                      destination,
-                      routeData: routeOption,
-                      polylineCoordinates,
-                    })
-                  }
+                  onPress={() => {
+                    startJourney(index, routeOption);
+                  }}
                   style={selectRouteStyles.startButton}
                 >
                   <Text>Start Journey</Text>
