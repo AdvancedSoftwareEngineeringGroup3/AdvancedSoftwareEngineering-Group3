@@ -96,7 +96,7 @@ export default function SelectRouteScreen({ navigation, route }) {
     try {
       const baseUrl =
         Platform.OS === 'web'
-          ? 'http://localhost:8000'
+          ? 'http://localhost'
           : process.env.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/update_sus_stats`);
 

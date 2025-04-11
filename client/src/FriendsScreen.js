@@ -97,7 +97,7 @@ export default function FriendsScreen() {
 
       const baseUrl =
         Platform.OS === 'web'
-          ? 'http://localhost:8000'
+          ? 'http://localhost'
           : process.env.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/send_request`);
 
@@ -133,7 +133,7 @@ export default function FriendsScreen() {
     try {
       const baseUrl =
         Platform.OS === 'web'
-          ? 'http://localhost:8000'
+          ? 'http://localhost'
           : process.env.EXPO_PUBLIC_API_URL;
       console.log(
         `Sending request to ${baseUrl}/check_requests?sender=${senderName}`,
@@ -200,7 +200,7 @@ export default function FriendsScreen() {
 
       const baseUrl =
         Platform.OS === 'web'
-          ? 'http://localhost:8000'
+          ? 'http://localhost'
           : process.env.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/request_response`);
 
@@ -245,7 +245,7 @@ export default function FriendsScreen() {
 
       const baseUrl =
         Platform.OS === 'web'
-          ? 'http://localhost:8000'
+          ? 'http://localhost'
           : process.env.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/cancel_friend_request`);
 
@@ -287,7 +287,7 @@ export default function FriendsScreen() {
 
       const baseUrl =
         Platform.OS === 'web'
-          ? 'http://localhost:8000'
+          ? 'http://localhost'
           : process.env.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/remove_friend`);
 

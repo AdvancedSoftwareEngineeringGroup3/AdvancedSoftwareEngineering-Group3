@@ -39,3 +39,6 @@ The `base_api.py` class contains the base API class that all other APIs should i
 Add a .env file with this 
 SUPABASE_URL=https://sawdavbqvabwequzmxpm.supabase.co
 SUPABASE_SERVICE_KEY=(see whatsapp)
+
+## Notes
+No setup is necessary here when running the app with the server running on the droplet. See `client/README.md`.

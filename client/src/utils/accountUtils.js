@@ -7,7 +7,7 @@ export const postConnection = async (url, payload, customBaseUrl = null) => {
     const baseUrl =
       customBaseUrl ||
       (Platform.OS === 'web'
-        ? 'http://localhost:8000'
+        ? 'http://localhost'
         : process.env.EXPO_PUBLIC_API_URL);
     console.log(`Sending request to ${baseUrl}/${url}`);
 

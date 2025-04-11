@@ -67,7 +67,7 @@ export default function FindRouteScreen({ navigation }) {
 
       const baseUrl =
         Platform.OS === 'web'
-          ? 'http://localhost:8000'
+          ? 'http://localhost'
           : process.env.EXPO_PUBLIC_API_URL;
       console.log(
         `Sending request to ${baseUrl}/wayfinding/preferences/get_routes`,

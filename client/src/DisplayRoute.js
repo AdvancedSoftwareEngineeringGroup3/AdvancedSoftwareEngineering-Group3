@@ -153,7 +153,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
     try {
       const baseUrl =
         Platform.OS === 'web'
-          ? 'http://localhost:8000'
+          ? 'http://localhost'
           : process.env.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/check_incidents`);
 
