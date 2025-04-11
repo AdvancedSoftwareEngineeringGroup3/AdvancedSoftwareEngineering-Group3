@@ -4,9 +4,8 @@ import styles from './components/styles/AccountScreen.styles';
 import buttonStyles from './components/common/button';
 import { retrieveData, removeData } from './caching';
 
-
 export default function AccountScreen({ navigation }) {
-  const [usernameValid, setUsernameValid] = useState(null)
+  const [usernameValid, setUsernameValid] = useState(null);
 
   useEffect(() => {
     const fetchUsername = async () => {
@@ -17,8 +16,8 @@ export default function AccountScreen({ navigation }) {
         console.error('Error retrieving username:', error);
       }
     };
-  fetchUsername();
-},[]);
+    fetchUsername();
+  }, []);
 
   const logout = async () => {
     try {
@@ -63,19 +62,17 @@ export default function AccountScreen({ navigation }) {
               onPress={logout}
               color="#841584"
             >
-
-            
               <Text style={buttonStyles.buttonText}>Log Out</Text>
             </TouchableOpacity>
             <Text style={styles.Text}>You are logged in</Text>
 
             {/* todo: Need to make new changes to the preferences logic */}
-          <TouchableOpacity
-            style={buttonStyles.button}
-            onPress={() => navigation.navigate('PreferencesScreen')}
-          >
-            <Text style={buttonStyles .buttonText}>User Preferences</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={buttonStyles.button}
+              onPress={() => navigation.navigate('PreferencesScreen')}
+            >
+              <Text style={buttonStyles.buttonText}>User Preferences</Text>
+            </TouchableOpacity>
           </>
         )}
       </SafeAreaView>

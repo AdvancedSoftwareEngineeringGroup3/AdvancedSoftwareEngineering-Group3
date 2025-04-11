@@ -57,7 +57,6 @@ export const getCurrentLocation = async () => {
   return {
     latitude: location.coords.latitude,
     longitude: location.coords.longitude,
-
   };
 };
 

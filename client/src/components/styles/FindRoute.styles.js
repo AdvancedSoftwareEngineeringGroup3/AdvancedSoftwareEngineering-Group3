@@ -67,7 +67,7 @@ const findRouteStyles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  
+
   dropdownButtonText: {
     fontSize: 16,
     color: '#333',
@@ -88,13 +88,11 @@ const findRouteStyles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     marginBottom: 16,
   },
-  
+
   useLocationButtonText: {
     color: '#333',
     fontSize: 14,
   },
-  
-  
 });
 
 const pickerSelectStyles = StyleSheet.create({
@@ -119,6 +117,5 @@ const pickerSelectStyles = StyleSheet.create({
     marginBottom: 16,
   },
 });
-
 
 export { pickerSelectStyles, findRouteStyles };

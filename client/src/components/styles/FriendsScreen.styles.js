@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    opacity:1,
+    opacity: 1,
     fontWeight: 'bold',
     marginBottom: 10,
   },
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 5,
     marginLeft: 10,
-    width: 100,	
+    width: 100,
     alignItems: '',
   },
 });

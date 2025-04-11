@@ -31,3 +31,5 @@ export const postIncident = async (incidentData, customBaseUrl = null) => {
     throw error;
   }
 };
+
+export default postIncident;

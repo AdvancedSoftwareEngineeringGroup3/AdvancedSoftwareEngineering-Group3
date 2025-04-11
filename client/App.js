@@ -21,7 +21,8 @@ export default function App() {
     retrieveData('username') === null ? 'AccountScreen' : 'Map';
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={firstScreen}
+      <Stack.Navigator
+        initialRouteName={firstScreen}
         screenOptions={({ route }) => {
           switch (route.name) {
             case 'FindRouteScreen':
@@ -34,9 +35,7 @@ export default function App() {
               return { animation: 'fade' };
           }
         }}
-      
-      
-      >  
+      >
         <Stack.Screen
           options={{ headerBackVisible: false }}
           name="Map"
@@ -50,55 +49,53 @@ export default function App() {
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
         <Stack.Screen name="WeatherScreen" component={WeatherScreen} />
-        <Stack.Screen name="FindRouteScreen" component={FindRouteScreen} 
-        options={{
-          title: 'Select Route', // Sets the header title
-          headerStyle: {
-            backgroundColor: '#99CC66',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-      }}
-        
+        <Stack.Screen
+          name="FindRouteScreen"
+          component={FindRouteScreen}
+          options={{
+            title: 'Select Route', // Sets the header title
+            headerStyle: {
+              backgroundColor: '#99CC66',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
         />
-        <Stack.Screen name="SelectRouteScreen" component={SelectRouteScreen} 
-          
-  
-        />
+        <Stack.Screen name="SelectRouteScreen" component={SelectRouteScreen} />
         <Stack.Screen
           name="DisplayRouteScreen"
           component={DisplayRouteScreen}
-         
         />
-        <Stack.Screen name="Dashboard" component={Dashboard} 
-         options={{
-          title: 'Sustainability Dashboard', // Sets the header title
-          headerStyle: {
-            backgroundColor: '#4CAF50',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}
-        
+        <Stack.Screen
+          name="Dashboard"
+          component={Dashboard}
+          options={{
+            title: 'Sustainability Dashboard', // Sets the header title
+            headerStyle: {
+              backgroundColor: '#4CAF50',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
         />
         <Stack.Screen name="PreferencesScreen" component={PreferencesScreen} />
-        <Stack.Screen name="FriendsScreen" component={FriendsScreen} 
-         options={{
-          title: 'Friends Screen', // Sets the header title
-          headerStyle: {
-            backgroundColor: '#66CCFF',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}
-        
-        
+        <Stack.Screen
+          name="FriendsScreen"
+          component={FriendsScreen}
+          options={{
+            title: 'Friends Screen', // Sets the header title
+            headerStyle: {
+              backgroundColor: '#66CCFF',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

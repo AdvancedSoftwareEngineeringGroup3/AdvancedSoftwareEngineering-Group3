@@ -1,16 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Alert, Image, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { getCurrentLocation, startLocationTracking } from './utils/mapUtils';
-import locationCircleIcon from './assets/location-circle.png';
 import MapStyles from './components/styles/Map.styles';
-
 
 import Sunny from './assets/MapDashboard/SunIcon.png';
 import Rain from './assets/MapDashboard/rainIcon.png';
 import Cloud from './assets/MapDashboard/CloudIcon.png';
 import Thunder from './assets/MapDashboard/lightingIcon.png';
-import bikeMarkerIcon from './assets/MapDashboard/bikeicon.png';
 import accident from './assets/Crowdsource/TrafficAccident.png';
 import roadClosure from './assets/Crowdsource/RoadClosure.png';
 import roadHazard from './assets/Crowdsource/hazard.png';
@@ -18,23 +15,17 @@ import police from './assets/Crowdsource/Speeding.png';
 import trafficJam from './assets/Crowdsource/TrafficSlow.png';
 import construction from './assets/Crowdsource/construction.png';
 
-
 const iconMap = {
-  'Accident': accident,
-  'Closure': roadClosure,
-  'Hazard': roadHazard,
-  'Police': police,
-  'Traffic': trafficJam,
-  'Construction': construction,
+  Accident: accident,
+  Closure: roadClosure,
+  Hazard: roadHazard,
+  Police: police,
+  Traffic: trafficJam,
+  Construction: construction,
 };
-
-
-
-
 
 export default function MapScreen({ navigation }) {
   const [bikeStations, setBikeStations] = useState([]);
-  const [webSocket, setWebSocket] = useState(null);
   const [incidentInfo, setIncidentInfo] = useState([]);
   const [location, setLocation] = useState(null);
   const [weather, setWeather] = useState(null);
@@ -48,18 +39,14 @@ export default function MapScreen({ navigation }) {
         Platform.OS === 'web'
           ? 'http://localhost:8000'
           : process.env.EXPO_PUBLIC_API_URL;
-      console.log(
-        `Sending request to ${baseUrl}/check_incidents`,
-      );
+      console.log(`Sending request to ${baseUrl}/check_incidents`);
 
-      const response = await fetch(`${baseUrl}/check_incidents`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      const response = await fetch(`${baseUrl}/check_incidents`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+      });
 
       // Check if the response is ok
       if (response.ok) {
@@ -68,8 +55,7 @@ export default function MapScreen({ navigation }) {
         console.log('Response from Server: ', serverMessage.message);
 
         // process the return incidents object, which contains multiple incidents
-        setIncidentInfo(serverMessage.message)
-
+        setIncidentInfo(serverMessage.message);
       } else {
         // Log the raw response text for debugging
         const responseText = await response.text();
@@ -81,9 +67,9 @@ export default function MapScreen({ navigation }) {
     }
   };
 
-  //choose weather Icon
-  const getWeatherIcon = (weather) => {
-    switch (weather) {
+  // choose weather Icon
+  const getWeatherIcon = (weatherCondition) => {
+    switch (weatherCondition) {
       case 'sun':
         return Sunny;
       case 'cloud':
@@ -96,84 +82,88 @@ export default function MapScreen({ navigation }) {
         return null;
     }
   };
- 
 
-     const fetchWeather = async () => {
-      try {
-        const baseUrl =
-          Platform.OS === 'web'
-            ? 'http://localhost:8000'
-            : process.env.EXPO_PUBLIC_API_URL;
-    
-        console.log(`Sending request to ${baseUrl}/weather?longitude=${location.longitude}&latitude=${location.latitude}`);
-    
-        const response = await fetch(`${baseUrl}/weather?longitude=${location.longitude}&latitude=${location.latitude}`, {
+  const fetchWeather = async () => {
+    try {
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
+
+      console.log(
+        `Sending request to ${baseUrl}/weather?longitude=${location.longitude}&latitude=${location.latitude}`,
+      );
+
+      const response = await fetch(
+        `${baseUrl}/weather?longitude=${location.longitude}&latitude=${location.latitude}`,
+        {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
-        });
-    
-        if (response.ok) {
-          const serverMessage = await response.json();
-          console.log('Response from Server: ', serverMessage.weather);
-          console.log('Response from Server: ', serverMessage.temperature);
-          setWeather(serverMessage.weather);
-          setTemperature(serverMessage.temperature);
-        } else {
-          const responseText = await response.text();
-          console.error('Failed to get weather:', responseText);
-          setWeather('cloud'); // fallback
-          setTemperature('10');
-        }
-      } catch (error) {
-        console.error('Error getting real time weather', error);
-        setWeather('cloud'); // fallback on network error
+        },
+      );
+
+      if (response.ok) {
+        const serverMessage = await response.json();
+        console.log('Response from Server: ', serverMessage.weather);
+        console.log('Response from Server: ', serverMessage.temperature);
+        setWeather(serverMessage.weather);
+        setTemperature(serverMessage.temperature);
+      } else {
+        const responseText = await response.text();
+        console.error('Failed to get weather:', responseText);
+        setWeather('cloud'); // fallback
         setTemperature('10');
       }
-    };
+    } catch (error) {
+      console.error('Error getting real time weather', error);
+      setWeather('cloud'); // fallback on network error
+      setTemperature('10');
+    }
+  };
 
+  const fetchBikeApi = async () => {
+    try {
+      const baseUrl =
+        Platform.OS === 'web'
+          ? 'http://localhost:8000'
+          : process.env.EXPO_PUBLIC_API_URL;
 
-    const fetchBikeApi = async () => {
-      try {
-        const baseUrl =
-          Platform.OS === 'web'
-            ? 'http://localhost:8000'
-            : process.env.EXPO_PUBLIC_API_URL;
-    
-        console.log(`Sending request to ${baseUrl}/BikeStand?longitude=${location.longitude}&latitude=${location.latitude}`);
-    
-        const response = await fetch(
-          `${baseUrl}/BikeStand?longitude=${location.longitude}&latitude=${location.latitude}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-    
-        const raw = await response.text();
-        console.log('Raw Bike API Response:', raw);
-    
-        const serverMessage = raw ? JSON.parse(raw) : null;
-    
-        if (serverMessage && Array.isArray(serverMessage.BikeInfo)) {
-          setBikeStations(serverMessage.BikeInfo);
-        } else if (Array.isArray(serverMessage)) {
-          // if it's just a raw array
-          setBikeStations(serverMessage);
-        } else {
-          console.warn('Unexpected or null response, setting empty bikeStations');
-          setBikeStations([]);
-        }
-      } catch (error) {
-        console.error('Error fetching bike station data:', error);
-        setBikeStations([]); // fallback
+      console.log(
+        `Sending request to ${baseUrl}/BikeStand?longitude=${location.longitude}&latitude=${location.latitude}`,
+      );
+
+      const response = await fetch(
+        `${baseUrl}/BikeStand?longitude=${location.longitude}&latitude=${location.latitude}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      const raw = await response.text();
+      console.log('Raw Bike API Response:', raw);
+
+      const serverMessage = raw ? JSON.parse(raw) : null;
+
+      if (serverMessage && Array.isArray(serverMessage.BikeInfo)) {
+        setBikeStations(serverMessage.BikeInfo);
+      } else if (Array.isArray(serverMessage)) {
+        // if it's just a raw array
+        setBikeStations(serverMessage);
+      } else {
+        console.warn('Unexpected or null response, setting empty bikeStations');
+        setBikeStations([]);
       }
-    };
-    
-    
+    } catch (error) {
+      console.error('Error fetching bike station data:', error);
+      setBikeStations([]); // fallback
+    }
+  };
+
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -191,9 +181,6 @@ export default function MapScreen({ navigation }) {
     fetchLocation();
   }, []);
 
- 
-
-
   useEffect(() => {
     const pollOnce = async () => {
       if (location) {
@@ -202,11 +189,10 @@ export default function MapScreen({ navigation }) {
         pollIncident();
       }
     };
-  
-    pollOnce();
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
-  
 
+    pollOnce();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   const renderContent = () => {
     if (errorMessage) {
@@ -228,7 +214,6 @@ export default function MapScreen({ navigation }) {
             </View>
           )}
 
-
           <MapView
             ref={mapRef}
             style={MapStyles.map}
@@ -239,53 +224,49 @@ export default function MapScreen({ navigation }) {
               longitudeDelta: 0.01,
             }}
           >
-
             {Array.isArray(bikeStations) &&
               bikeStations.map((station) => (
                 <Marker
-                key={station.number}
-                coordinate={{
-                  latitude: station.position.lat,
-                  longitude: station.position.lng,
-                }}
-                title={station.name}
-                description={`Available Bikes: ${station.available_bikes}`}
-              >
-                <Image
-                  source={require('./assets/MapDashboard/bikeicon.png')}
-                  style={{ width: 40, height: 40 }}
-                  resizeMode="contain"
-                />
-              </Marker>
-            ))}
-
-
-
-          {Array.isArray(incidentInfo) &&
-            incidentInfo.map((incident, index) => {
-              const type = incident[2]; // Adjust this if the incident type is in a different index
-              const icon = iconMap[type] || accident; // default fallback icon
-
-              return (
-                <Marker
-                  key={incident[0]}
+                  key={station.number}
                   coordinate={{
-                    latitude: parseFloat(incident[5]),
-                    longitude: parseFloat(incident[6]),
+                    latitude: station.position.lat,
+                    longitude: station.position.lng,
                   }}
-                  title={incident[2]}
-                  description={incident[3]}
+                  title={station.name}
+                  description={`Available Bikes: ${station.available_bikes}`}
                 >
                   <Image
-                    source={icon}
+                    // eslint-disable-next-line global-require
+                    source={require('./assets/MapDashboard/bikeicon.png')}
                     style={{ width: 40, height: 40 }}
                     resizeMode="contain"
                   />
                 </Marker>
-              );
-            })}
+              ))}
 
-            
+            {Array.isArray(incidentInfo) &&
+              incidentInfo.map((incident) => {
+                const type = incident[2]; // Adjust this if the incident type is in a different index
+                const icon = iconMap[type] || accident; // default fallback icon
+
+                return (
+                  <Marker
+                    key={incident[0]}
+                    coordinate={{
+                      latitude: parseFloat(incident[5]),
+                      longitude: parseFloat(incident[6]),
+                    }}
+                    title={incident[2]}
+                    description={incident[3]}
+                  >
+                    <Image
+                      source={icon}
+                      style={{ width: 40, height: 40 }}
+                      resizeMode="contain"
+                    />
+                  </Marker>
+                );
+              })}
 
             <Marker
               coordinate={location}
@@ -293,13 +274,14 @@ export default function MapScreen({ navigation }) {
               description="Real-time location"
             >
               <Image
+                // eslint-disable-next-line global-require
                 source={require('./assets/location-circle.png')}
                 style={{ width: 20, height: 20 }}
                 resizeMode="contain"
               />
             </Marker>
           </MapView>
-  
+
           <TouchableOpacity
             style={MapStyles.loginButton}
             onPress={() => navigation.navigate('AccountScreen')}
@@ -309,28 +291,47 @@ export default function MapScreen({ navigation }) {
 
           <View style={MapStyles.bar}>
             <Image
-            source={require('./assets/MapDashboard/movementbar.png')}
-            style={MapStyles.barImage}
-            resizeMode="contain"
+              // eslint-disable-next-line global-require
+              source={require('./assets/MapDashboard/movementbar.png')}
+              style={MapStyles.barImage}
+              resizeMode="contain"
             />
-            <TouchableOpacity onPress={() => navigation.navigate('Dashboard')} style={MapStyles.button}>
-              <Image source={require('./assets/MapDashboard/leaficon.png')} style={MapStyles.icon} />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Dashboard')}
+              style={MapStyles.button}
+            >
+              <Image
+                // eslint-disable-next-line global-require
+                source={require('./assets/MapDashboard/leaficon.png')}
+                style={MapStyles.icon}
+              />
               <Text style={MapStyles.label}>Dashboard</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('FindRouteScreen')} style={[MapStyles.button, MapStyles.centerButton]}>
-              <Image source={require('./assets/MapDashboard/routeicon.png')} style={[MapStyles.icon, MapStyles.centerIcon]} />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('FindRouteScreen')}
+              style={[MapStyles.button, MapStyles.centerButton]}
+            >
+              <Image
+                // eslint-disable-next-line global-require
+                source={require('./assets/MapDashboard/routeicon.png')}
+                style={[MapStyles.icon, MapStyles.centerIcon]}
+              />
               <Text style={MapStyles.label}>Find Route</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('FriendsScreen')} style={MapStyles.button}>
-              <Image source={require('./assets/MapDashboard/friendsicon.png')} style={MapStyles.icon} />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('FriendsScreen')}
+              style={MapStyles.button}
+            >
+              <Image
+                // eslint-disable-next-line global-require
+                source={require('./assets/MapDashboard/friendsicon.png')}
+                style={MapStyles.icon}
+              />
               <Text style={MapStyles.label}>Friends</Text>
             </TouchableOpacity>
           </View>
-          
-
-          
         </>
       );
     }

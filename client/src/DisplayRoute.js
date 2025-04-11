@@ -1,7 +1,16 @@
 /* eslint-disable no-undef, no-use-before-define, react-hooks/exhaustive-deps, array-callback-return */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Alert, TouchableOpacity, Switch, ImageBackground, Platform} from 'react-native';
+import {
+  View,
+  Text,
+  Alert,
+  TouchableOpacity,
+  Switch,
+  ImageBackground,
+  Platform,
+  Image,
+} from 'react-native';
 import * as Speech from 'expo-speech';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { haversine, startLocationTracking } from './utils/mapUtils';
@@ -16,35 +25,28 @@ import police from './assets/Crowdsource/Speeding.png';
 import trafficJam from './assets/Crowdsource/TrafficSlow.png';
 import construction from './assets/Crowdsource/construction.png';
 
-
 const iconMap = {
-  'Accident': accident,
-  'Closure': roadClosure,
-  'Hazard': roadHazard,
-  'Police': police,
-  'Traffic': trafficJam,
-  'Construction': construction,
+  Accident: accident,
+  Closure: roadClosure,
+  Hazard: roadHazard,
+  Police: police,
+  Traffic: trafficJam,
+  Construction: construction,
 };
-
-
-
 
 export default function DisplayRouteScreen({ navigation, route }) {
   // route is a prop passed by the navigator, hence why that is used instead of other variable names
   const { origin, destination, routeData, polylineCoordinates } = route.params;
   const [location, setLocation] = useState(null);
   const [travelledPolyline, setTravelledPolyline] = useState([]);
-  const [remainingPolyline, setRemainingPolyline] = useState(polylineCoordinates);
-  const [currentPolylineIndex, setCurrentPolylineIndex] = useState(0);
+  const [remainingPolyline, setRemainingPolyline] =
+    useState(polylineCoordinates);
   const [devMode, setDevMode] = useState(false);
   const [audioOn, setAudioOn] = useState(true);
   const [currentInstruction, setCurrentInstruction] = useState(null);
   const [incidentInfo, setIncidentInfo] = useState([]);
   const [detailedStepData, setDetailedStepData] = useState([]);
- 
 
-
-  
   const handleIncidentSubmit = async (incidentData) => {
     // Here you would process the incident data
     console.log('Incident reported:', incidentData);
@@ -62,9 +64,9 @@ export default function DisplayRouteScreen({ navigation, route }) {
     getDetailedStepData();
   }, [routeData]);
 
-   // Check proximity to the next coordinate in the polyline
+  // Check proximity to the next coordinate in the polyline
 
-   useEffect(() => {
+  useEffect(() => {
     let locationSubscription;
     // Start tracking location
     const startTracking = async () => {
@@ -138,12 +140,10 @@ export default function DisplayRouteScreen({ navigation, route }) {
     });
   };
 
-
   const isGpsCoordinates = (str) => {
     const gpsRegex = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/; // Regex to match "latitude,longitude"
     return gpsRegex.test(str);
   };
-
 
   const pollIncident = async () => {
     try {
@@ -151,18 +151,14 @@ export default function DisplayRouteScreen({ navigation, route }) {
         Platform.OS === 'web'
           ? 'http://localhost:8000'
           : process.env.EXPO_PUBLIC_API_URL;
-      console.log(
-        `Sending request to ${baseUrl}/check_incidents`,
-      );
+      console.log(`Sending request to ${baseUrl}/check_incidents`);
 
-      const response = await fetch(`${baseUrl}/check_incidents`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      const response = await fetch(`${baseUrl}/check_incidents`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+      });
 
       // Check if the response is ok
       if (response.ok) {
@@ -171,8 +167,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
         console.log('Response from Server: ', serverMessage.message);
 
         // process the return incidents object, which contains multiple incidents
-        setIncidentInfo(serverMessage.message)
-
+        setIncidentInfo(serverMessage.message);
       } else {
         // Log the raw response text for debugging
         const responseText = await response.text();
@@ -202,7 +197,6 @@ export default function DisplayRouteScreen({ navigation, route }) {
               'Destination reached',
               'You have reached your destination.',
             );
-            // TODO: maybe navigate to sustainability
             navigation.navigate('Map');
           } else {
             // Update instruction if previous instruction complete
@@ -228,19 +222,15 @@ export default function DisplayRouteScreen({ navigation, route }) {
     [remainingPolyline, navigation, detailedStepData],
   );
 
- 
-   
-
-
   // Poll for incidents every 5 seconds
-    useEffect(() => {
-      const intervalId = setInterval(() => {
-        pollIncident();
-      }, 500000); // Poll every 5 seconds
-  
-      // Cleanup function to clear the interval when the component unmounts
-      return () => clearInterval(intervalId);
-    }, []);
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      pollIncident();
+    }, 500000); // Poll every 5 seconds
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []);
 
   // Call checkProximityAndUpdate and update setlocation on latitude / longitude button click
   const devMove = ({ delLat = 0, delLng = 0 }) => {
@@ -275,29 +265,28 @@ export default function DisplayRouteScreen({ navigation, route }) {
             }}
           >
             {Array.isArray(incidentInfo) &&
-                incidentInfo.map((incident, index) => {
-                  const type = incident[2]; // Adjust this if the incident type is in a different index
-                  const icon = iconMap[type] || accident; // default fallback icon
+              incidentInfo.map((incident) => {
+                const type = incident[2]; // Adjust this if the incident type is in a different index
+                const icon = iconMap[type] || accident; // default fallback icon
 
-                  return (
-                    <Marker
-                      key={incident[0]}
-                      coordinate={{
-                        latitude: parseFloat(incident[5]),
-                        longitude: parseFloat(incident[6]),
-                      }}
-                      title={incident[2]}
-                      description={incident[3]}
-                    >
-                      <Image
-                        source={icon}
-                        style={{ width: 40, height: 40 }}
-                        resizeMode="contain"
-                      />
-                    </Marker>
-                  );
-                })}
-
+                return (
+                  <Marker
+                    key={incident[0]}
+                    coordinate={{
+                      latitude: parseFloat(incident[5]),
+                      longitude: parseFloat(incident[6]),
+                    }}
+                    title={incident[2]}
+                    description={incident[3]}
+                  >
+                    <Image
+                      source={icon}
+                      style={{ width: 40, height: 40 }}
+                      resizeMode="contain"
+                    />
+                  </Marker>
+                );
+              })}
 
             <Marker
               coordinate={location}
@@ -327,54 +316,53 @@ export default function DisplayRouteScreen({ navigation, route }) {
             )}
           </MapView>
 
-
-        
-            <View style={displayRouteStyles.barContainer}>
-              <ImageBackground
+          <View style={displayRouteStyles.barContainer}>
+            <ImageBackground
+              // eslint-disable-next-line global-require
               source={require('./assets/MapDashboard/movementbar.png')}
               style={displayRouteStyles.barImage}
               resizeMode="contain"
-              >
-
-                {currentInstruction != null ? (
-                  <View>
-                    <Text style={displayRouteStyles.routeInfo}>
-                      Route from {isGpsCoordinates(origin) ? 'current location' : origin} to {destination}
-                    </Text>
-                    <Text style={displayRouteStyles.routeInfo}>
-                      Distance: {routeData.legs[0].distance.text} {" "} 
-                      Duration: {routeData.legs[0].duration.text} {"\n \n"}
-                      {currentInstruction}
-                    </Text>
-                  </View>
-                ) : (
-                  <>
-                    <Text style={displayRouteStyles.routeInfo}>
-                      Route from {isGpsCoordinates(origin) ? 'current location' : origin} to {destination}
-                    </Text>
-                    <Text style={displayRouteStyles.routeInfo}>
-                      Distance: {routeData.legs[0].distance.text} {" "} 
-                      Duration: {routeData.legs[0].duration.text}
-                    </Text>
-                  </>
-                )}
-              
-              </ImageBackground>
-            </View>
-            <View style={displayRouteStyles.devModeContainer}>
-              <Text style={displayRouteStyles.devModeText}>Dev Mode</Text>
-              <Switch
-                value={devMode}
-                onValueChange={(value) => toggleDevMode(value)}
-              />
-              <Text style={displayRouteStyles.devModeText}>Audio</Text>
-              <Switch
-                value={audioOn}
-                onValueChange={(value) => setAudioOn(value)}
-              />
+            >
+              {currentInstruction != null ? (
+                <View>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Route from{' '}
+                    {isGpsCoordinates(origin) ? 'current location' : origin} to{' '}
+                    {destination}
+                  </Text>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Distance: {routeData.legs[0].distance.text} Duration:{' '}
+                    {routeData.legs[0].duration.text} {'\n \n'}
+                    {currentInstruction}
+                  </Text>
+                </View>
+              ) : (
+                <>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Route from{' '}
+                    {isGpsCoordinates(origin) ? 'current location' : origin} to{' '}
+                    {destination}
+                  </Text>
+                  <Text style={displayRouteStyles.routeInfo}>
+                    Distance: {routeData.legs[0].distance.text} Duration:{' '}
+                    {routeData.legs[0].duration.text}
+                  </Text>
+                </>
+              )}
+            </ImageBackground>
           </View>
-        
-
+          <View style={displayRouteStyles.devModeContainer}>
+            <Text style={displayRouteStyles.devModeText}>Dev Mode</Text>
+            <Switch
+              value={devMode}
+              onValueChange={(value) => toggleDevMode(value)}
+            />
+            <Text style={displayRouteStyles.devModeText}>Audio</Text>
+            <Switch
+              value={audioOn}
+              onValueChange={(value) => setAudioOn(value)}
+            />
+          </View>
 
           {devMode && (
             <View style={displayRouteStyles.dpadContainer}>
@@ -412,7 +400,6 @@ export default function DisplayRouteScreen({ navigation, route }) {
           Fetching your location...
         </Text>
       )}
-      
 
       <IncidentReporter onSubmitIncident={handleIncidentSubmit} />
     </View>

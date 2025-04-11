@@ -1,8 +1,6 @@
 import { StyleSheet, Platform, Dimensions } from 'react-native';
 
-
 const screenWidth = Dimensions.get('window').width;
-const screenheight = Dimensions.get('window').height;
 
 const MapStyles = StyleSheet.create({
   container: {
@@ -188,19 +186,17 @@ const MapStyles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     zIndex: 100,
   },
-  
+
   weatherIcon: {
     width: 50,
     height: 50,
     marginBottom: 4, // space between icon and text
   },
-  
+
   weatherText: {
     fontSize: 14,
     color: '#333',
   },
-  
-
 });
 
 export default MapStyles;

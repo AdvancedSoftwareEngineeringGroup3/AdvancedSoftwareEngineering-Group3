@@ -44,6 +44,7 @@ const INCIDENT_TYPES = [
 const { width, height } = Dimensions.get('window');
 
 // Modal dimensions (partial screen size)
+// eslint-disable-next-line no-unused-vars
 const MODAL_WIDTH = width * 0.7;
 const MODAL_HEIGHT = height * 0.6;
 

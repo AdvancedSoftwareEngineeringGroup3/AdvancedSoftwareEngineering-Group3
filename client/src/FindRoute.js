@@ -39,24 +39,24 @@ export default function FindRouteScreen({ navigation }) {
 
     try {
       let originToSend = start.trim();
-  
+
       // Check for "current location" variations
       const normalizedStart = originToSend.toLowerCase();
       const isCurrentLocation =
         normalizedStart === 'current location' ||
         normalizedStart === 'Current Location' ||
         normalizedStart === 'my location';
-  
+
       if (isCurrentLocation) {
         const initialLocation = await getCurrentLocation();
         if (!initialLocation) {
           alert('Unable to fetch current location.');
           return;
         }
-  
+
         originToSend = `${initialLocation.latitude},${initialLocation.longitude}`;
       }
-  
+
       const payload = {
         origin: originToSend,
         destination,
@@ -64,7 +64,7 @@ export default function FindRouteScreen({ navigation }) {
         alternatives: true,
         username,
       };
-  
+
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost:8000'
@@ -87,7 +87,7 @@ export default function FindRouteScreen({ navigation }) {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
 
       if (data.error) {
@@ -103,7 +103,6 @@ export default function FindRouteScreen({ navigation }) {
       console.error('Error details:', error);
     }
   };
-  
 
   const modeDropdownData = [
     { label: 'Walking', value: 'walking' },
@@ -121,92 +120,92 @@ export default function FindRouteScreen({ navigation }) {
       style={findRouteStyles.container}
       resizeMode="cover"
     >
-    <SafeAreaView style={findRouteStyles.container}>
-      <TextInput
-      style={findRouteStyles.input}
-      placeholder="Enter starting point"
-      value={start}
-      onChangeText={setStartPoint}
-      onSubmitEditing={() => ref2.current.focus()}
-    />
+      <SafeAreaView style={findRouteStyles.container}>
+        <TextInput
+          style={findRouteStyles.input}
+          placeholder="Enter starting point"
+          value={start}
+          onChangeText={setStartPoint}
+          onSubmitEditing={() => ref2.current.focus()}
+        />
 
-    <TouchableOpacity
-      style={findRouteStyles.useLocationButton}
-      onPress={() => setStartPoint('Current Location')}
-    >
-      <Text style={findRouteStyles.useLocationButtonText}>📍 Use Current Location as Start</Text>
-    </TouchableOpacity>
-
-      <TextInput
-        ref={ref2}
-        style={findRouteStyles.input}
-        placeholder="Enter destination point"
-        value={destination}
-        onChangeText={setDestinationPoint}
-        onSubmitEditing={() => alert(`Route Entered`)}
-      />
-
-
-      <Text style={findRouteStyles.label}>Mode of Transport:</Text>
-      {Platform.OS === 'android' ? (
-        <TouchableOpacity onPress={() => pickerRef.current.togglePicker()}>
-          <View style={findRouteStyles.pickerWrapper}>
-          <Picker
-            ref={pickerRef}
-            onValueChange={handlePickerSelect}
-            items={modeDropdownData}
-            placeholder={{ label: 'Choose a mode ...', value: null }}
-            useNativeAndroidPickerStyle={false}
-            style={pickerSelectStyles}
-            doneText="Done"
-          />
-
-        </View>
-
-        </TouchableOpacity>
-      ) : (
-        <>
         <TouchableOpacity
-        style={findRouteStyles.dropdownButton}
-        onPress={() => actionSheetRef.current.show()}
-        activeOpacity={0.8}
-      >
-        <Text style={findRouteStyles.dropdownButtonText}>
-          {selectedMode ? `Selected: ${selectedMode}` : 'Choose an option ▼'}
-        </Text>
-      </TouchableOpacity>
+          style={findRouteStyles.useLocationButton}
+          onPress={() => setStartPoint('Current Location')}
+        >
+          <Text style={findRouteStyles.useLocationButtonText}>
+            📍 Use Current Location as Start
+          </Text>
+        </TouchableOpacity>
 
-          <ActionSheet
-            ref={actionSheetRef}
-            title="Select Mode"
-            options={modeDropdownData
-              .map((item) => item.label)
-              .concat('Cancel')}
-            cancelButtonIndex={modeDropdownData.length}
-            onPress={(index) => {
-              if (index !== modeDropdownData.length) {
-                handlePickerSelect(modeDropdownData[index].value);
-              }
-            }}
-          />
-        </>
-      )}
-      {/* {selectedMode && (
+        <TextInput
+          ref={ref2}
+          style={findRouteStyles.input}
+          placeholder="Enter destination point"
+          value={destination}
+          onChangeText={setDestinationPoint}
+          onSubmitEditing={() => alert(`Route Entered`)}
+        />
+
+        <Text style={findRouteStyles.label}>Mode of Transport:</Text>
+        {Platform.OS === 'android' ? (
+          <TouchableOpacity onPress={() => pickerRef.current.togglePicker()}>
+            <View style={findRouteStyles.pickerWrapper}>
+              <Picker
+                ref={pickerRef}
+                onValueChange={handlePickerSelect}
+                items={modeDropdownData}
+                placeholder={{ label: 'Choose a mode ...', value: null }}
+                useNativeAndroidPickerStyle={false}
+                style={pickerSelectStyles}
+                doneText="Done"
+              />
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <>
+            <TouchableOpacity
+              style={findRouteStyles.dropdownButton}
+              onPress={() => actionSheetRef.current.show()}
+              activeOpacity={0.8}
+            >
+              <Text style={findRouteStyles.dropdownButtonText}>
+                {selectedMode
+                  ? `Selected: ${selectedMode}`
+                  : 'Choose an option ▼'}
+              </Text>
+            </TouchableOpacity>
+
+            <ActionSheet
+              ref={actionSheetRef}
+              title="Select Mode"
+              options={modeDropdownData
+                .map((item) => item.label)
+                .concat('Cancel')}
+              cancelButtonIndex={modeDropdownData.length}
+              onPress={(index) => {
+                if (index !== modeDropdownData.length) {
+                  handlePickerSelect(modeDropdownData[index].value);
+                }
+              }}
+            />
+          </>
+        )}
+        {/* {selectedMode && (
         <Text style={findRouteStyles.selected}>Selected: {selectedMode}</Text>
       )} */}
 
-      <TouchableOpacity
-      style={[
-        findRouteStyles.button,
-        !isFormValid && findRouteStyles.disabledButton,
-      ]}
-      disabled={!isFormValid}
-      onPress={isFormValid ? fetchRoutes : null}
-      >
-      <Text style={findRouteStyles.buttonText}>Search</Text>
-      </TouchableOpacity>
-
-    </SafeAreaView>
+        <TouchableOpacity
+          style={[
+            findRouteStyles.button,
+            !isFormValid && findRouteStyles.disabledButton,
+          ]}
+          disabled={!isFormValid}
+          onPress={isFormValid ? fetchRoutes : null}
+        >
+          <Text style={findRouteStyles.buttonText}>Search</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
     </ImageBackground>
   );
 }
