@@ -28,6 +28,12 @@ import bronzeBus from './assets/SustainablityDashboard/BusBronze.png';
 import goldTrain from './assets/SustainablityDashboard/GoldTrain.png';
 import silverTrain from './assets/SustainablityDashboard/SilverTrain.png';
 import bronzeTrain from './assets/SustainablityDashboard/BronzeTrain.png';
+import goldWalk from './assets/SustainablityDashboard/walkGold.png';
+import silverWalk from './assets/SustainablityDashboard/walkSilver.png';
+import bronzeWalk from './assets/SustainablityDashboard/walkBronze.png';
+import goldLuas from './assets/SustainablityDashboard/LuasGold.png';
+import silverLuas from './assets/SustainablityDashboard/LuasSilver.png';
+import bronzeLuas from './assets/SustainablityDashboard/LuasBronze.png';
 
 // Define thresholds for medals
 const MEDAL_THRESHOLDS = {
@@ -58,6 +64,16 @@ const getMedalImage = (value, vehicleType) => {
       gold: goldCar,
       silver: silverCar,
       bronze: bronzeCar,
+    },
+    walk: {
+      gold: goldWalk,
+      silver: silverWalk,
+      bronze: bronzeWalk,
+    },
+    luas: {
+      gold: goldLuas,
+      silver: silverLuas,
+      bronze: bronzeLuas,
     },
     // Add default images for other vehicle types
     default: {
