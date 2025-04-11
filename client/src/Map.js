@@ -191,17 +191,20 @@ export default function MapScreen({ navigation }) {
     fetchLocation();
   }, []);
 
+ 
+
+
   useEffect(() => {
-    const pollWeather = () => {
+    const pollOnce = async () => {
       if (location) {
-        fetchWeather();
-        fetchBikeApi();
-        pollIncident();
+        await fetchWeather();
+        await fetchBikeApi();
+        await pollIncident();
       }
     };
   
-    pollWeather();
-  }, [location]);
+    pollOnce();
+  }, []); // Empty dependency array ensures this runs only once when the component mounts
   
 
 

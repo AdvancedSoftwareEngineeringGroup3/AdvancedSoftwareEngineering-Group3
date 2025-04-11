@@ -336,16 +336,17 @@ export default function DisplayRouteScreen({ navigation, route }) {
               resizeMode="contain"
               >
 
-              <Text style={displayRouteStyles.routeInfo}>
                 {currentInstruction != null ? (
-                  <Text style={displayRouteStyles.routeInfo}>
-                    Route from {isGpsCoordinates(origin) ? 'current location' : origin} to {destination}
-                  </Text>
-                  <Text style={displayRouteStyles.routeInfo}>
-                    Distance: {routeData.legs[0].distance.text} {" "} 
-                    Duration: {routeData.legs[0].duration.text} {"\n"}
-                    {currentInstruction}
-                  </Text>
+                  <View>
+                    <Text style={displayRouteStyles.routeInfo}>
+                      Route from {isGpsCoordinates(origin) ? 'current location' : origin} to {destination}
+                    </Text>
+                    <Text style={displayRouteStyles.routeInfo}>
+                      Distance: {routeData.legs[0].distance.text} {" "} 
+                      Duration: {routeData.legs[0].duration.text} {"\n"}
+                      {currentInstruction}
+                    </Text>
+                  </View>
                 ) : (
                   <>
                     <Text style={displayRouteStyles.routeInfo}>
@@ -357,7 +358,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
                     </Text>
                   </>
                 )}
-              </Text>
+              
               </ImageBackground>
             </View>
             <View style={displayRouteStyles.devModeContainer}>
