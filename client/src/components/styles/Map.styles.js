@@ -29,7 +29,7 @@ const MapStyles = StyleSheet.create({
   loginButton: {
     position: 'absolute',
     alignItems: 'center',
-    left: '70%',
+    left: '34%',
     top: '0%',
     backgroundColor: '#33CC66',
     paddingVertical: 10,

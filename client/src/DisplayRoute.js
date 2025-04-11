@@ -226,8 +226,8 @@ export default function DisplayRouteScreen({ navigation, route }) {
   useEffect(() => {
     const intervalId = setInterval(() => {
       pollIncident();
-    }, 500000); // Poll every 5 seconds
-
+    }, 30000); // Poll every 5 seconds
+    pollIncident();
     // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(intervalId);
   }, []);

@@ -192,7 +192,7 @@ export default function MapScreen({ navigation }) {
 
     pollOnce();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
+  }, [location]); // Empty dependency array ensures this runs only once when the component mounts
 
   const renderContent = () => {
     if (errorMessage) {
