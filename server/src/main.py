@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Query
+from fastapi import FastAPI, Request, Query
 
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -29,7 +29,6 @@ class Server:
         # Instantiate components
 
         self.login_logic = Login(self.app, self.logger)
-        self.connection_manager = ConnectionManager()
         self.weather_api = weatherAPI()
         self.bike_api = bikeAPI()
         self.networking = Networking(self.app, self.logger)
@@ -153,23 +152,6 @@ class Server:
                 self.logger.error(f"Error hitting BikeApi endpoint: {e}")
                 raise
 
-        @self.app.websocket("/ws/location")
-        async def websocket_endpoint(websocket: WebSocket):
-            await self.connection_manager.connect(websocket)
-            try:
-                while True:
-                    data = await websocket.receive_text()
-                    self.logger.info(f"Received data: {data}")
-                    await self.connection_manager.broadcast(
-                        f"Received location: {data}"
-                    )
-            except WebSocketDisconnect:
-                self.connection_manager.disconnect(websocket)
-                self.logger.info("WebSocket disconnected")
-            except Exception as e:
-                self.logger.error(f"Unexpected error: {e}")
-                await websocket.close(code=1006)
-
     def run(self, host="0.0.0.0", port=8000):
         self.logger.info("Starting FastAPI server...")
         uvicorn.run(self.app, host=host, port=port, log_level="debug")
@@ -177,25 +159,6 @@ class Server:
 
 class Message(BaseModel):
     text: str
-
-
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-    async def send_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
-
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
 
 
 # Instantiate server

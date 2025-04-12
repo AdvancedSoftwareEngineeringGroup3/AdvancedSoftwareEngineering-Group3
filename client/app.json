@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Rootz",
+    "name": "Roots",
     "slug": "client",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -25,8 +25,7 @@
         "android.permission.INTERNET"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/app-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./src/assets/app-icon.png"
       },
       "package": "com.rootscs7cs3.client"
     },
