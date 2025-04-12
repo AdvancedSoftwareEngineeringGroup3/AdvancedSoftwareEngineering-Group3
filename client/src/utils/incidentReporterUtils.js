@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
 export const postIncident = async (incidentData, customBaseUrl = null) => {
   console.log('Sending data:', incidentData);
@@ -7,7 +8,7 @@ export const postIncident = async (incidentData, customBaseUrl = null) => {
       customBaseUrl ||
       (Platform.OS === 'web'
         ? 'http://localhost'
-        : process.env.EXPO_PUBLIC_API_URL);
+        : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL);
     console.log(`Sending request to ${baseUrl}/report_incident}`);
 
     const response = await fetch(`${baseUrl}/report_incident`, {

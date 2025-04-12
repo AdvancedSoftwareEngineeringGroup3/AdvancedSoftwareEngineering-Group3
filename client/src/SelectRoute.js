@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
+import Constants from 'expo-constants';
 import {
   decodeRoute,
   getCurrentLocation,
@@ -65,7 +66,7 @@ export default function SelectRouteScreen({ navigation, route }) {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/update_sus_stats`);
 
       const response = await fetch(`${baseUrl}/update_sus_stats`, {

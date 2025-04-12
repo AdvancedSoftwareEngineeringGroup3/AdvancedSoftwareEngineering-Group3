@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Image, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import Constants from 'expo-constants';
 import { getCurrentLocation, startLocationTracking } from './utils/mapUtils';
 import MapStyles from './components/styles/Map.styles';
 
@@ -38,7 +39,7 @@ export default function MapScreen({ navigation }) {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/check_incidents`);
 
       const response = await fetch(`${baseUrl}/check_incidents`, {
@@ -88,7 +89,7 @@ export default function MapScreen({ navigation }) {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
 
       console.log(
         `Sending request to ${baseUrl}/weather?longitude=${initialLocation.longitude}&latitude=${initialLocation.latitude}`,
@@ -128,7 +129,7 @@ export default function MapScreen({ navigation }) {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
 
       console.log(
         `Sending request to ${baseUrl}/BikeStand?longitude=${initialLocation.longitude}&latitude=${initialLocation.latitude}`,

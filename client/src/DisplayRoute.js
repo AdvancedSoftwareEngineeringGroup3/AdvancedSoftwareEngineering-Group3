@@ -153,7 +153,7 @@ export default function DisplayRouteScreen({ navigation, route }) {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/check_incidents`);
 
       const response = await fetch(`${baseUrl}/check_incidents`, {

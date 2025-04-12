@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Roots",
+    "name": "Rootz",
     "slug": "client",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/SustainablityDashboard/Rootyfullbloom.png",
+    "icon": "./src/assets/app-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./src/assets/splash.png",
@@ -16,16 +16,16 @@
     },
     "android": {
       "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "INTERNET",
-        "WRITE_EXTERNAL_STORAGE",
-        "READ_EXTERNAL_STORAGE",
         "FOREGROUND_SERVICE",
-        "VIBRATE"
+        "VIBRATE",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.INTERNET"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/SustainablityDashboard/Rootyfullbloom.png",
+        "foregroundImage": "./src/assets/app-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.rootscs7cs3.client"
@@ -34,7 +34,10 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "EXPO_PUBLIC_API_URL": "http://134.199.188.243"
+      "EXPO_PUBLIC_API_URL": "http://134.199.188.243",
+      "eas": {
+        "projectId": "98381cfd-1627-46fe-9fca-170158ca9f0a"
+      }
     },
     "plugins": [
       "expo-location",
