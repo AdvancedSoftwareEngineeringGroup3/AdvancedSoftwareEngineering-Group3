@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import Picker from 'react-native-picker-select';
 import ActionSheet from 'react-native-actionsheet';
+import Constants from 'expo-constants';
 import {
   findRouteStyles,
   pickerSelectStyles,
@@ -68,7 +69,7 @@ export default function FindRouteScreen({ navigation }) {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
       console.log(
         `Sending request to ${baseUrl}/wayfinding/preferences/get_routes`,
       );

@@ -11,6 +11,7 @@ import {
   ImageBackground,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Constants from 'expo-constants';
 import styles from './components/styles/FriendsScreen.styles';
 import beachBackground from './assets/FriendsUI/BeachBackground.png'; // Import your background image
 import { retrieveData } from './caching';
@@ -98,7 +99,7 @@ export default function FriendsScreen() {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/send_request`);
 
       const response = await fetch(`${baseUrl}/send_request`, {
@@ -134,7 +135,7 @@ export default function FriendsScreen() {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
       console.log(
         `Sending request to ${baseUrl}/check_requests?sender=${senderName}`,
       );
@@ -201,7 +202,7 @@ export default function FriendsScreen() {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/request_response`);
 
       const response = await fetch(`${baseUrl}/request_response`, {
@@ -246,7 +247,7 @@ export default function FriendsScreen() {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/cancel_friend_request`);
 
       const response = await fetch(`${baseUrl}/cancel_friend_request`, {
@@ -288,7 +289,7 @@ export default function FriendsScreen() {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/remove_friend`);
 
       const response = await fetch(`${baseUrl}/remove_friend`, {

@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import CryptoJS from 'crypto-js';
+import Constants from 'expo-constants';
 import { storeData, retrieveData, removeData, updateData } from '../caching';
 
 export const postConnection = async (url, payload, customBaseUrl = null) => {
@@ -8,7 +9,7 @@ export const postConnection = async (url, payload, customBaseUrl = null) => {
       customBaseUrl ||
       (Platform.OS === 'web'
         ? 'http://localhost'
-        : process.env.EXPO_PUBLIC_API_URL);
+        : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL);
     console.log(`Sending request to ${baseUrl}/${url}`);
 
     const response = await fetch(`${baseUrl}/${url}`, {

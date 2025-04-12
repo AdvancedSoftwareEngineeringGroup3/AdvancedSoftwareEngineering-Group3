@@ -10,6 +10,7 @@ import {
   Text,
 } from 'react-native';
 import { LineChart, PieChart } from 'react-native-chart-kit';
+import Constants from 'expo-constants';
 import { retrieveData } from './caching';
 import susDashboardStyles from './components/styles/SustainabilityDashboard.styles';
 import fullBloom from './assets/SustainablityDashboard/Rootyfullbloom.png';
@@ -321,7 +322,7 @@ export default function Dashboard() {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
       console.log(
         `Sending request to ${baseUrl}/get_sus_stats?sender=${senderName}`,
       );

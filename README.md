@@ -13,4 +13,4 @@ Download Expo Go on the playstore or appstore then follow the instructions withi
 ## Notes
 - Running the server locally will not be possible as you will not be able to connect to the Database without our input.
 - After the demo our servers on Digital Ocean will be taken down as it is a payed service. All functionality will be displayed in the demo.
-- An EAS account is required to package the app.
+- An EAS account is required to package the app.

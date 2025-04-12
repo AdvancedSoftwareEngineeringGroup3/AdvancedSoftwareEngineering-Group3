@@ -7,6 +7,7 @@ import {
   Text,
   Platform,
 } from 'react-native';
+import Constants from 'expo-constants';
 import buttonStyles from './components/common/button';
 import containerStyles from './components/common/commonContainer';
 
@@ -18,7 +19,7 @@ export default function WeatherScreen() {
       const baseUrl =
         Platform.OS === 'web'
           ? 'http://localhost'
-          : process.env.EXPO_PUBLIC_API_URL;
+          : Constants.expoConfig.extra.EXPO_PUBLIC_API_URL;
       console.log(`Sending request to ${baseUrl}/weather`);
 
       const response = await fetch(`${baseUrl}/weather`, {
