@@ -59,6 +59,7 @@ export default function SelectRouteScreen({ navigation, route }) {
   const sendSustainabilityScore = async (
     startRouteFlag,
     sustainabilityScore,
+    sustainabilityUsername,
     // eslint-disable-next-line consistent-return
   ) => {
     try {
@@ -74,7 +75,7 @@ export default function SelectRouteScreen({ navigation, route }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: await retrieveData('username'),
+          username: sustainabilityUsername,
           flag: startRouteFlag,
           modeDistances: sustainabilityScore,
         }),
@@ -88,7 +89,7 @@ export default function SelectRouteScreen({ navigation, route }) {
     }
   };
 
-  const getSustainabilityScore = async (index, startRouteFlag) => {
+  const getSustainabilityScore = async (index, startRouteFlag, sustainabilityUsername) => {
     const sustainabilityScore = {
       Bus: 0,
       Train: 0,
@@ -112,6 +113,7 @@ export default function SelectRouteScreen({ navigation, route }) {
     const transportScore = await sendSustainabilityScore(
       startRouteFlag,
       sustainabilityScore,
+      sustainabilityUsername,
     );
     return transportScore;
   };
@@ -120,14 +122,17 @@ export default function SelectRouteScreen({ navigation, route }) {
     for (let i = 0; i < routeData.routes.length; i += 1) {
       setScores((prevScores) => [
         ...prevScores,
-        getSustainabilityScore(i, false),
+        getSustainabilityScore(i, false, ''),
       ]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const startJourney = (index, routeOption) => {
-    getSustainabilityScore(index, true);
+  const startJourney = async (index, routeOption) => {
+    const sustainabilityUsername = await retrieveData('username');
+    if (sustainabilityUsername != null) {
+      getSustainabilityScore(index, true, sustainabilityUsername);
+    } 
     navigation.navigate('DisplayRouteScreen', {
       origin,
       destination,
