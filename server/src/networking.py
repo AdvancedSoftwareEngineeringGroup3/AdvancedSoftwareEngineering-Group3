@@ -48,6 +48,10 @@ class Networking:
                 request_list = db.search_entry(
                     table_name, receiver, "pending_friends"
                 )
+
+                if request_list is None:
+                    request_list = []
+
                 if sender not in request_list:
                     # print(f"Sender: {sender} Receiver: {receiver}")
                     db.append_entry(
