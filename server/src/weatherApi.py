@@ -11,9 +11,9 @@ class weatherAPI:  # (BaseAPI):
 
         self.who_table = {
             0: "sun",
-            1: "sun",
-            2: "sun",
-            3: "sun",
+            1: "cloud",
+            2: "cloud",
+            3: "cloud",
             45: "cloud",
             48: "cloud",
             51: "rain",
