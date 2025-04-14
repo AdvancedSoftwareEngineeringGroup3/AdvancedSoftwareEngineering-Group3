@@ -60,9 +60,9 @@ def test_send_friend_request_success(test_app):
     assert data["message"] == "Friend request to Bob sent successfully"
     # assert data.message == "Friend request to Bob sent successfully"
 
-    mock_db.search_user.assert_called_once_with("testing_table", "Bob")
+    mock_db.search_user.assert_called_once_with("user_table", "Bob")
     mock_db.search_entry.assert_called_once_with(
-        "testing_table", "Bob", "pending_friends"
+        "user_table", "Bob", "pending_friends"
     )
 
 
@@ -166,13 +166,13 @@ def test_request_response_accepted(test_app):
 
     # Check DB calls
     mock_db.remove_from_array.assert_called_once_with(
-        "testing_table", "Alice", "pending_friends", "Bob"
+        "user_table", "Alice", "pending_friends", "Bob"
     )
     mock_db.append_entry.assert_any_call(
-        "testing_table", "Bob", "Alice", "friends_list"
+        "user_table", "Bob", "Alice", "friends_list"
     )
     mock_db.append_entry.assert_any_call(
-        "testing_table", "Alice", "Bob", "friends_list"
+        "user_table", "Alice", "Bob", "friends_list"
     )
 
 
@@ -197,7 +197,7 @@ def test_request_response_rejected(test_app):
 
     # Check DB calls
     mock_db.remove_from_array.assert_called_once_with(
-        "testing_table", "Alice", "pending_friends", "Bob"
+        "user_table", "Alice", "pending_friends", "Bob"
     )
 
     # Make sure no calls were made to append entries for either user
@@ -222,10 +222,10 @@ def test_cancel_friend_request_success(test_app):
 
     assert response.json()["message"] == "Friend request removed successfully"
     mock_db.remove_from_array.assert_any_call(
-        "testing_table", "Alice", "sent_friends", "Bob"
+        "user_table", "Alice", "sent_friends", "Bob"
     )
     mock_db.remove_from_array.assert_any_call(
-        "testing_table", "Bob", "pending_friends", "Alice"
+        "user_table", "Bob", "pending_friends", "Alice"
     )
 
 
@@ -264,10 +264,10 @@ def test_remove_friend_success(test_app):
 
     assert response.json()["message"] == "Friend removed successfully"
     mock_db.remove_from_array.assert_any_call(
-        "testing_table", "Alice", "friends_list", "Bob"
+        "user_table", "Alice", "friends_list", "Bob"
     )
     mock_db.remove_from_array.assert_any_call(
-        "testing_table", "Bob", "friends_list", "Alice"
+        "user_table", "Bob", "friends_list", "Alice"
     )
 
 
