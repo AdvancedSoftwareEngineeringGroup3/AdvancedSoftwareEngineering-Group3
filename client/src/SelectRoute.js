@@ -122,7 +122,7 @@ export default function SelectRouteScreen({ navigation, route }) {
     for (let i = 0; i < routeData.routes.length; i += 1) {
       setScores((prevScores) => [
         ...prevScores,
-        getSustainabilityScore(i, false, ''),
+        getSustainabilityScore(i, false, '')
       ]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
