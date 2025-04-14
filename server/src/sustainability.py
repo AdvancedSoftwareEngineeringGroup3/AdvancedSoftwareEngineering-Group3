@@ -329,7 +329,6 @@ class Sustainability:
             )
         return transport_score
 
-
     def update_user_sus_score(self, user: str) -> float:
         db = DataBase()
         db.connect_db()
