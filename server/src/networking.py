@@ -40,7 +40,7 @@ class Networking:
     def db_handle_friend_request(self, sender: str, receiver: str):
         db = DataBase()
         db.connect_db()
-        table_name = "testing_table"
+        table_name = "user_table"
         sentfriends_column = "sent_friends"
 
         if db.search_user(table_name, receiver):
@@ -91,7 +91,7 @@ class Networking:
             }
 
     def db_fetch_all_friends(self, user):
-        table_name = "testing_table"
+        table_name = "user_table"
         db = DataBase()
         db.connect_db()
         friends_list = db.search_entry(table_name, user, "friends_list")
@@ -119,7 +119,7 @@ class Networking:
     ):
         db = DataBase()
         db.connect_db()
-        table_name = "testing_table"
+        table_name = "user_table"
         friend_column = "friends_list"
         pending_friends_column = "pending_friends"
 
@@ -128,7 +128,7 @@ class Networking:
             table_name, user, pending_friends_column, requester
         )
 
-        if db.search_user("testing_table", requester):
+        if db.search_user("user_table", requester):
             # if answer is yes (true)
             if answer:
                 # add to friends
@@ -145,7 +145,7 @@ class Networking:
         else:
             db.close_con()
             self.logger.info(
-                f"Requester '{requester}' not found in testing_table"
+                f"Requester '{requester}' not found in user_table"
             )
             return "user not found"
 
@@ -169,7 +169,7 @@ class Networking:
     def db_remove_friend(self, user: str, friend: str):
         db = DataBase()
         db.connect_db()
-        table_name = "testing_table"
+        table_name = "user_table"
         friend_column = "friends_list"
 
         print(f"Removing {friend} from {user}'s friends list")
@@ -211,7 +211,7 @@ class Networking:
     def db_cancel_friend_request(self, user: str, friend: str):
         db = DataBase()
         db.connect_db()
-        table_name = "testing_table"
+        table_name = "user_table"
         sent_friend_column = "sent_friends"
         pending_column = "pending_friends"
 
