@@ -59,7 +59,7 @@ class Signup:
 
         self.logger.info(f"User {username} available")
 
-        signup_data = {"username": username, "password": password, "friends_list": [], "pending_friends": [], "sus_score": [], "ip": None, "sent_firneds": []}  # noqa: E501
+        signup_data = {"username": username, "password": password, "friends_list": [], "pending_friends": [], "sus_score": 0, "ip": None, "sent_friends": []}  # noqa: E501
 
         db.add_entry(table_name, signup_data)
 
